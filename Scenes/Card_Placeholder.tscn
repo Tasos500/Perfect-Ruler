@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Card/CardBack.jpg" type="Texture" id=1]
+[ext_resource path="res://Scenes/Card_Placeholder.gd" type="Script" id=2]
+
+[node name="Card" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Monster" type="AnimatedSprite" parent="."]
+z_index = 1
+
+[node name="Card_Back" type="Sprite" parent="."]
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 1 )

@@ -1,0 +1,38 @@
+{
+	id = 0
+	name = "Blue-Eyes White Dragon"
+	texture = preload("res://Assets/CardArt/BlueEyesWhiteDragon.png")
+	card = "Normal Monster"
+	atk = 3000
+	def = 2500
+	cost = 8
+	attr = "LIGHT"
+	type1 = "Dragon"
+	type2 = "Normal"
+	dc = 55
+}
+{
+	id = 707
+	name = "Dian Keto The Cure Master"
+	texture = preload("res://Assets/CardArt/DianKetoTheCureMaster.png")
+	card = "Spell"
+	cost = 0
+	effect_spell = LPUpTo(4000)
+	dc = 60
+}
+{
+	id = 679
+	name = "Mucus Yolk"
+	texture = preload("res://Assets/CardArt/MucusYolk.png")
+	card = "Effect Monster"
+	atk = 0
+	def = 100
+	cost = 3
+	attr = "DARK"
+	type1 = "Immortal"
+	type2= "Effect"
+	effect_move = EnemyLPDown[50]
+	effect_destroy = ChangeTerrain[Crush,2]
+	description = "Each time Mucus Yolk moves, an opponent's LP is reduced by 50 points.\nTransforms adjacent spaces into CRUSH terrain when this card is destroyed in battle."
+	dc = 16
+}
