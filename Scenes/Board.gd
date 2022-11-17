@@ -46,6 +46,10 @@ func move_card_to_empty(x1, y1, x2, y2):
 	
 	print(matrix)
 
+func get_card(x, y):
+	if not((x<1 or x>7) or (y<1 or y>7)):
+		return matrix[x-1][y-1]
+
 func create_card(w, h):
 	var new_card = load_card.instance()
 	add_child(new_card, true)

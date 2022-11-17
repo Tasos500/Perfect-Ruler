@@ -26,8 +26,13 @@ var grid_y_red = 7
 # White's last position
 var grid_x_white = 4
 var grid_y_white = 1
+# Next move's position
+var grid_x_next = 4
+var grid_y_next = 7
+
 
 # Card holding variables
+# Held card's original position
 var grid_x_move
 var grid_y_move
 var holding_card = false
@@ -66,44 +71,52 @@ func process_button_input():
 		card_movement()
 
 func process_cursor_input():
-	if !can_move:
+	if !can_move and is_moving:
 		return
 	if input_direction.y == 0:
 		input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+		grid_x_next = grid_x + input_direction.x
+		grid_y_next = grid_y
 		if (input_direction.x == -1 and grid_x == 1) or (input_direction.x == 1 and grid_x == 7):
 			input_direction.x = 0
-		else:
-			grid_x += input_direction.x
-			if team == color.RED:
-				grid_x_red = grid_x
-			elif team == color.WHITE:
-				grid_x_white = grid_x
 	if input_direction.x == 0:
 		input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+		grid_x_next = grid_x
+		grid_y_next = grid_y + input_direction.y
 		if (input_direction.y == -1 and grid_y == 1) or (input_direction.y == 1 and grid_y == 7):
 			input_direction.y = 0
-		else:
-			grid_y += input_direction.y
-			if team == color.RED:
-				grid_y_red = grid_y
-			elif team == color.WHITE:
-				grid_y_white = grid_y
 	
-	if input_direction != Vector2.ZERO:
+	if (input_direction != Vector2.ZERO) and move_is_valid():
 		initial_position = position
 		if holding_card:
 			process_movement_stack()
 		is_moving = true
+		can_move = false
+
+func update_grid_x():
+	grid_x += input_direction.x
+	if team == color.RED:
+		grid_x_red = grid_x
+	elif team == color.WHITE:
+		grid_x_white = grid_x
+
+func update_grid_y():
+	grid_y += input_direction.y
+	if team == color.RED:
+		grid_y_red = grid_y
+	elif team == color.WHITE:
+		grid_y_white = grid_y
 
 func card_movement():
 	if !get_parent().is_empty(grid_x, grid_y) and !holding_card:
 		grid_x_move = grid_x
 		grid_y_move = grid_y
 		holding_card = true
-		card_held = get_parent().matrix[grid_x-1][grid_y-1]
-	elif get_parent().is_empty(grid_x, grid_y) and holding_card:
-		if get_parent().get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)):
-			get_parent().move_card_to_empty(grid_x_move, grid_y_move, grid_x, grid_y)
+		card_held = board.matrix[grid_x-1][grid_y-1]
+	elif (board.is_empty(grid_x, grid_y) or card_held == board.get_card(grid_x, grid_y)) and holding_card:
+		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)):
+			if !(card_held == board.get_card(grid_x, grid_y)):
+				board.move_card_to_empty(grid_x_move, grid_y_move, grid_x, grid_y)
 			holding_card = false
 			card_held = null
 			movement_stack = []
@@ -118,6 +131,13 @@ func process_movement_stack():
 	elif input_direction.y == -1:
 		movement_stack.append("up")
 	
+	simplify_stack()
+	
+	print(movement_stack)
+	print("Stack size: ", movement_stack.size())
+	return
+
+func simplify_stack():
 	var size = movement_stack.size() - 1
 	
 	if size >= 2:
@@ -131,11 +151,6 @@ func process_movement_stack():
 		if is_opposite(movement_stack[size-1], movement_stack[size]):
 			movement_stack.pop_back()
 			movement_stack.pop_back()
-			print(movement_stack)
-			return
-	
-	print(movement_stack)
-	return
 
 func is_opposite(last, next):
 	if (last == "right" and next == "left") \
@@ -146,11 +161,23 @@ func is_opposite(last, next):
 	else:
 		return false
 
+func move_is_valid():
+	if !holding_card:
+		return true
+	if board.get_node(card_held).tile_speed < (abs(grid_x_move-grid_x_next)+abs(grid_y_move-grid_y_next)):
+		return false
+	if board.get_node(card_held).is_leader:
+		return false
+	return true
+
 func move(delta):
 	movement_percentage += move_speed * delta
 	if movement_percentage >= 1.0:
 		position = initial_position + (tile_size * input_direction)
 		movement_percentage = 0.0
 		is_moving = false
+		can_move = true
+		update_grid_x()
+		update_grid_y()
 	else:
 		position = initial_position + (tile_size * input_direction * movement_percentage)
