@@ -57,10 +57,16 @@ func move(delta):
 		position = initial_position + (tile_size * input_direction)
 		movement_percentage = 0.0
 		is_moving = false
+		initial_position = position
 	else:
 		position = initial_position + (tile_size * input_direction * movement_percentage)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func _process(delta):
+	if !is_moving:
+		initial_position = position
+	elif input_direction != Vector2.ZERO:
+		move(delta)
+	else:
+		is_moving = false

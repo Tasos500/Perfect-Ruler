@@ -40,11 +40,12 @@ func add_to_matrix(card, w, h):
 
 func move_card_to_empty(x1, y1, x2, y2):
 	print(matrix[x1-1][y1-1])
-	get_node(matrix[x1-1][y1-1]).position = get_node("Cursor").position
 	matrix[x2-1][y2-1] = matrix[x1-1][y1-1]
 	matrix[x1-1][y1-1] = null
-	
-	print(matrix)
+
+func move_card(x1, y1, x2, y2):
+	if matrix[x2-1][y2-1] == null:
+		move_card_to_empty(x1, y1, x2, y2)
 
 func get_card(x, y):
 	if not((x<1 or x>7) or (y<1 or y>7)):
