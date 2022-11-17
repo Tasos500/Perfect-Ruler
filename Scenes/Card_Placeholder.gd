@@ -48,6 +48,7 @@ func _ready():
 	grid_y = cursor.grid_y
 	position = cursor.position
 	team = cursor.team
+	is_leader = false
 	pass
 	
 func move(delta):

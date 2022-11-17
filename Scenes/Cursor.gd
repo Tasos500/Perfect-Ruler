@@ -86,12 +86,15 @@ func process_cursor_input():
 		if (input_direction.y == -1 and grid_y == 1) or (input_direction.y == 1 and grid_y == 7):
 			input_direction.y = 0
 	
+	next_move = tile_to_move_next()
 	if (input_direction != Vector2.ZERO) and move_is_valid():
 		initial_position = position
 		if holding_card:
 			process_movement_stack()
 		is_moving = true
 		can_move = false
+	else:
+		input_direction = Vector2.ZERO
 
 func update_grid_x():
 	grid_x += input_direction.x
@@ -122,20 +125,23 @@ func card_movement():
 			movement_stack = []
 
 func process_movement_stack():
-	if input_direction.x == 1:
-		movement_stack.append("right")
-	elif input_direction.x == -1:
-		movement_stack.append("left")
-	elif input_direction.y == 1:
-		movement_stack.append("down")
-	elif input_direction.y == -1:
-		movement_stack.append("up")
+	movement_stack.append(tile_to_move_next())
 	
 	simplify_stack()
 	
 	print(movement_stack)
 	print("Stack size: ", movement_stack.size())
 	return
+
+func tile_to_move_next():
+	if input_direction.x == 1:
+		return("right")
+	elif input_direction.x == -1:
+		return("left")
+	elif input_direction.y == 1:
+		return("down")
+	elif input_direction.y == -1:
+		return("up")
 
 func simplify_stack():
 	var size = movement_stack.size() - 1
@@ -164,9 +170,31 @@ func is_opposite(last, next):
 func move_is_valid():
 	if !holding_card:
 		return true
+	# The following movements are illegal:
+	# If going outside of movement range
 	if board.get_node(card_held).tile_speed < (abs(grid_x_move-grid_x_next)+abs(grid_y_move-grid_y_next)):
 		return false
 	if board.get_node(card_held).is_leader:
+		# Check if next card is not itself and not empty
+		if (board.get_card(grid_x_next, grid_y_next) != null and card_held != board.get_card(grid_x_next, grid_y_next)):
+			# If leader attempts to move to enemy card
+			if board.get_node(card_held).team != board.get_node(board.get_card(grid_x_next, grid_y_next)).team:
+				return false
+	# Check if next card is not itself and not empty
+	if (board.get_card(grid_x_next, grid_y_next) != null and card_held != board.get_card(grid_x_next, grid_y_next)):
+		# If card attempts to move to own leader
+		if board.get_node(board.get_card(grid_x_next, grid_y_next)).is_leader \
+		and board.get_node(card_held).team == board.get_node(board.get_card(grid_x_next, grid_y_next)).team:
+			return false
+	# If trying to pass through a card, be it friend or enemy (to attempt attack or fusion)
+	# Is the cursor on a non-self card?
+	if board.get_card(grid_x, grid_y) != null \
+	and card_held != board.get_card(grid_x, grid_y) \
+	and !is_opposite(last_move, next_move):
+		return false
+	# If the next tile is a Labyrinth (NOTE: When Effects are added, check for "can pass through Labyrinth" effect)
+	print(tilemap.get_cell(grid_x_next, grid_y_next))
+	if tilemap.get_cell(grid_x_next, grid_y_next) == 8:
 		return false
 	return true
 
@@ -177,6 +205,7 @@ func move(delta):
 		movement_percentage = 0.0
 		is_moving = false
 		can_move = true
+		last_move = next_move
 		update_grid_x()
 		update_grid_y()
 	else:
