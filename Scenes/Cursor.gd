@@ -4,31 +4,42 @@ enum color {RED, WHITE}
 const cursor_red = preload("res://Assets/Cursor/Cursor_Red.png")
 const cursor_white = preload("res://Assets/Cursor/Cursor_White.png") 
 
+# Hardcoded
 export var team = color.RED
 const move_speed = 8
 var tile_size = 150
 
+#Movement vars
 var initial_position = Vector2(0,0)
 var input_direction = Vector2(0,0)
 var is_moving = false
 var movement_percentage = 0.0
 var can_move = true
 
+# Current position
 var grid_x = 4
 var grid_y = 7
 
+# Red's last position
 var grid_x_red = 4
 var grid_y_red = 7
-
+# White's last position
 var grid_x_white = 4
 var grid_y_white = 1
 
+# Card holding variables
 var grid_x_move
 var grid_y_move
 var holding_card = false
 var card_held
 
-var button_is_pressed = false
+onready var board = $".."
+onready var tilemap = $"../TileMap"
+
+# Movement stack, in order to hold moves to be done by a card once confirmed.
+var movement_stack = []
+var last_move = "none"
+var next_move = "none"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -80,6 +91,8 @@ func process_cursor_input():
 	
 	if input_direction != Vector2.ZERO:
 		initial_position = position
+		if holding_card:
+			process_movement_stack()
 		is_moving = true
 
 func card_movement():
@@ -93,6 +106,45 @@ func card_movement():
 			get_parent().move_card_to_empty(grid_x_move, grid_y_move, grid_x, grid_y)
 			holding_card = false
 			card_held = null
+			movement_stack = []
+
+func process_movement_stack():
+	if input_direction.x == 1:
+		movement_stack.append("right")
+	elif input_direction.x == -1:
+		movement_stack.append("left")
+	elif input_direction.y == 1:
+		movement_stack.append("down")
+	elif input_direction.y == -1:
+		movement_stack.append("up")
+	
+	var size = movement_stack.size() - 1
+	
+	if size >= 2:
+		if is_opposite(movement_stack[size-2], movement_stack[size]):
+			movement_stack.pop_back()
+			movement_stack.pop_at(size-2)
+	
+	size = movement_stack.size() - 1
+	
+	if size >= 1:
+		if is_opposite(movement_stack[size-1], movement_stack[size]):
+			movement_stack.pop_back()
+			movement_stack.pop_back()
+			print(movement_stack)
+			return
+	
+	print(movement_stack)
+	return
+
+func is_opposite(last, next):
+	if (last == "right" and next == "left") \
+	or (last == "left" and next == "right") \
+	or (last == "up" and next == "down") \
+	or (last == "down" and next == "up"):
+		return true
+	else:
+		return false
 
 func move(delta):
 	movement_percentage += move_speed * delta
