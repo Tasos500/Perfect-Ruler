@@ -19,9 +19,11 @@ var tile_speed = 1
 
 # Team based variables
 var team
-var is_leader
+var is_leader = false
 var can_move
 var card_name
+var card_id # The ID used to pull data from the database.
+var in_attack_position = true
 
 # Monster based variables
 # Ignored if is_leader == true
@@ -70,3 +72,10 @@ func _process(delta):
 		move(delta)
 	else:
 		is_moving = false
+	if in_attack_position:
+		if rotation_degrees > 5:
+			rotation_degrees -= 5
+	else:
+		if rotation_degrees < 90:
+			rotation_degrees += 5
+	

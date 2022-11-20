@@ -126,20 +126,20 @@ func grab_card():
 		card_held = board.matrix[grid_x-1][grid_y-1]
 
 func release_card():
-	if (board.is_empty(grid_x, grid_y) or card_held == board.get_card(grid_x, grid_y)) and holding_card:
-		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)):
-			if !(card_held == board.get_card(grid_x, grid_y)):
-				card_is_moving = true
+	if holding_card:
+		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)): # Speed check
+			card_is_moving = true
 
 
 func card_movement():
 	if movement_stack.size() != 0 and !board.get_node(card_held).is_moving:
 		card_direction = stack_to_vector()
 		board.get_node(card_held).input_direction = card_direction
-		board.get_node(card_held).is_moving = true
 		board.move_card(grid_x_move, grid_y_move, grid_x_move+card_direction.x, grid_y_move+card_direction.y)
-		grid_x_move += card_direction.x
-		grid_y_move += card_direction.y
+		if board.get_card(grid_x_move, grid_y_move) != card_held:
+			board.get_node(card_held).is_moving = true
+			grid_x_move += card_direction.x
+			grid_y_move += card_direction.y
 	elif movement_stack.size() == 0 and !board.get_node(card_held).is_moving:
 		card_is_moving = false
 		holding_card = false

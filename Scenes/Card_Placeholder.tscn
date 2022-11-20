@@ -3,7 +3,7 @@
 [ext_resource path="res://Assets/Card/CardBack.jpg" type="Texture" id=1]
 [ext_resource path="res://Scenes/Card_Placeholder.gd" type="Script" id=2]
 
-[node name="Card" type="Node2D"]
+[node name="Card" type="KinematicBody2D"]
 script = ExtResource( 2 )
 
 [node name="Monster" type="AnimatedSprite" parent="."]
