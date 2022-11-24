@@ -14,10 +14,6 @@ config/name="Perfect Ruler"
 run/main_scene="res://Scenes/Board.tscn"
 config/icon="res://icon.png"
 
-[editor]
-
-version_control_autoload_on_startup=false
-
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
