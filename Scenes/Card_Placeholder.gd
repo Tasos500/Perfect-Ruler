@@ -5,10 +5,8 @@ extends Node2D
 enum color {RED, WHITE}
 
 # Enums on all possible variables a card can have
-enum attributes {DARK, DIVINE, EARTH, FIRE, LIGHT, WATER, WIND}
-enum card_types {MONSTER, SPELL, TRAP, POWER_UP}
-# If it's a MONSTER, it should have one of the following monster types:
-enum monster_types {NULL, AQUA, BEAST, BEAST_WARRIOR, DINOSAUR, DRAGON, FAIRY, FIEND, FISH, INSECT, MACHINE, PLANT, PYRO, REPTILE, ROCK, SEA_SERPENT, SPELLCASTER, WARRIOR, WINGED_BEAST, ZOMBIE}
+enum attributes {LIGHT, DARK, FIRE, EARTH, WATER, WIND}
+enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
 
 # Position
 var grid_x
@@ -29,9 +27,9 @@ var in_attack_position = true
 # Ignored if is_leader == true
 var atk = 0
 var def = 0
+var dc
 var attribute
 var card_type
-var monster_type = monster_types.NULL
 var level
 
 # Movement based arrays
