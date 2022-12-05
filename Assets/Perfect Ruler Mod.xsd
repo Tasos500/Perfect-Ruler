@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="mod">
+<xs:complexType>
+
+
+
+<xs:sequence>
+
+
+<!-- Simple Elements -->
+<xs:element name="description" type="xs:string"  minOccurs="1" maxOccurs="1"/>
+<xs:element name="version"  minOccurs="1" maxOccurs="1"/>
+
+<!-- Cards -->
+<xs:element name="cards"> 
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="card" minOccurs="1" maxOccurs="1000"> 
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="number" type="cardNumber" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="dc" type="DeckCost" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="attribute" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="card_type" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="level" type="Level" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="atk" type="AtkDef" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="def" type="AtkDef" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="effect" minOccurs="0" maxOccurs="3">
+							<xs:complexType>
+								<xs:attribute name="type" type="xs:string" use="required"/>
+								<xs:attribute name="trigger" type="xs:string"/>
+								<xs:attribute name="attribute1" type="xs:string"/>
+								<xs:attribute name="attribute2" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:unique name="testUnique">
+      <xs:selector xpath="card"/>
+      <xs:field xpath="number"/>
+    </xs:unique>
+</xs:element>
+
+<!-- Fusions -->
+<xs:element name="fusions"> 
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="fusion"> 
+			<!-- Fusions declare what component cards (can be ANY card from within a set) from two arrays  can create the product card. -->
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="material1" type="cardNumber" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element name="material2" type="cardNumber" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element name="product" type="cardNumber" minOccurs="1" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+
+<!-- Dependencies -->
+<!-- Mods listed as dependencies must exist in order for this mod to function. -->
+<!-- Commented out until necessary. -->
+<!--
+<xs:element name="dependency"> 
+
+	<xs:simpleType>
+		<xs:attribute name="depcreator" type="xs:string"/>
+		<xs:attribute name="depname" type="xs:string"/>
+	</xs:simpleType>
+</xs:element>
+-->
+
+
+</xs:sequence>
+
+<!-- Attributes-->
+<xs:attribute name="modcreator" type="xs:string"/>
+<xs:attribute name="modname" type="xs:string"/>
+
+</xs:complexType>
+
+
+
+
+</xs:element>
+
+
+<!-- Types -->
+<xs:simpleType name="cardNumber">
+	<xs:restriction base="xs:integer">
+		<xs:pattern value="[0-9][0-9][0-9]"/>
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="AtkDef">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="9999"/>
+    </xs:restriction> 
+</xs:simpleType>
+  
+<xs:simpleType name="Level">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="12"/>
+    </xs:restriction> 
+</xs:simpleType>
+
+<xs:simpleType name="DeckCost">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="99"/>
+    </xs:restriction> 
+</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,79 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<mod modcreator="Tasos500" modname="TestMod">
+	<description>A test mod.</description>
+	<version>1.0</version>
+	<cards>
+		<card>
+			<number>007</number>
+			<name>Blue-Eyes White Dragon</name>
+			<dc>55</dc>
+			<attribute>LIGHT</attribute>
+			<card_type>DRAGON</card_type>
+			<level>8</level>
+			<atk>3000</atk>
+			<def>2500</def>
+		</card>
+		<card>
+			<number>007</number>
+			<name>Red-Eyes Black Dragon</name>
+			<dc>44</dc>
+			<attribute>DARK</attribute>
+			<card_type>DRAGON</card_type>
+			<level>7</level>
+			<atk>2400</atk>
+			<def>2000</def>
+		</card>
+		<card>
+			<number>009</number>
+			<name>Black Skull Dragon</name>
+			<dc>57</dc>
+			<attribute>DARK</attribute>
+			<card_type>DRAGON</card_type>
+			<level>9</level>
+			<atk>3200</atk>
+			<def>2500</def>
+		</card>
+		<card>
+			<number>294</number>
+			<name>Summoned Skull</name>
+			<dc>37</dc>
+			<attribute>DARK</attribute>
+			<card_type>FIEND</card_type>
+			<level>6</level>
+			<atk>2500</atk>
+			<def>1200</def>
+		</card>
+		<card>
+			<number>417</number>
+			<name>Man-Eater Bug</name>
+			<dc>16</dc>
+			<attribute>EARTH</attribute>
+			<card_type>INSECT</card_type>
+			<level>2</level>
+			<atk>450</atk>
+			<def>600</def>
+			<effect trigger="FLIP" type="destroy_opponent"/>
+		</card>
+		<card>
+			<number>707</number>
+			<name>Dian Keto the Cure Master</name>
+			<dc>60</dc>
+			<card_type>SPELL</card_type>
+			<effect type="heal_to" attribute1="4000"/>
+		</card>
+		<card>
+			<number>801</number>
+			<name>Spellbinding Circle</name>
+			<dc>30</dc>
+			<card_type>TRAP_LIMITED</card_type>
+			<effect type="spellbind" attribute1="3"/>
+		</card>
+	</cards>
+	<fusions>
+		<fusion>
+			<material1>007</material1>
+			<material2>294</material2>
+			<product>009</product>
+		</fusion>
+	</fusions>
+</mod>
