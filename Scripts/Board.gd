@@ -52,6 +52,7 @@ func move_card(x1, y1, x2, y2):
 		return
 	elif get_card(x1, y1) == get_card(x2, y2):
 		return
+	# Target tile is neither empty nor the starting tile, so it's another card.
 	var card1 = get_node(get_card(x1, y1))
 	var card2 = get_node(get_card(x2, y2))
 	if card1.team == card2.team:
@@ -60,25 +61,25 @@ func move_card(x1, y1, x2, y2):
 			move_card_to_empty(x1, y1, x2, y2)
 	else:
 		if card2.is_leader:
-			atk_to_atk(card1.atk, 0, card2.team) # Leaders are treated as having 0 ATK, and being in Attack Position at all times.
+			calculate_damage(card1.atk, 0, card2.team) # Leaders are treated as having 0 ATK, and being in Attack Position at all times.
 		else:
-			if card2.in_attack_pos:
+			if card2.in_attack_position:
 				if card1.atk > card2.atk:
-					atk_to_atk(card1.atk, card2.atk, card2.team)
+					calculate_damage(card1.atk, card2.atk, card2.team)
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
 				elif card1.atk == card2.atk:
 					destroy_card_at(x1, y1)
 					destroy_card_at(x2, y2)
 				else:
-					atk_to_atk(card1.atk, card2.atk, card1.team)
+					calculate_damage(card1.atk, card2.atk, card1.team)
 					destroy_card_at(x1, y1)
 			else:
 				if card1.atk > card2.def:
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
 				elif card1.atk < card2.def:
-					atk_to_atk(card1.atk, card2.def, card1.team)
+					calculate_damage(card1.atk, card2.def, card1.team)
 
 func get_card(x, y):
 	if not((x<1 or x>7) or (y<1 or y>7)):
@@ -97,7 +98,7 @@ func destroy_card_at(x, y):
 func destroy_card_name(_name):
 	pass
 
-func atk_to_atk(atk1, atk2, team):
+func calculate_damage(atk1, atk2, team):
 	if team == 0:
 		lp_red -= abs(atk1 - atk2)
 	else:
