@@ -44,7 +44,7 @@
                         "enum": ["LIGHT", "DARK", "FIRE", "EARTH", "WATER", "WIND"]
                     },
                     "card_type": {
-                        "enum": ["DRAGON", "SPELLCASTER", "ZOMBIE", "WARRIOR", "BEAST_WARRIOR", "BEAST", "WINGED_BEAST", "FIEND", "FAIRY", "INSECT", "DINOSAUR", "REPTILE", "FISH", "SEA_SERPENT", "MACHINE", "THUNDER", "AQUA", "PYRO", "ROCK", "PLANT", "IMMORTAL", "SPELL", "POWER_UP", "TRAP_LIMITED", "TRAP_FULL", "RITUAL"]
+                        "enum": ["DRAGON", "SPELLCASTER", "ZOMBIE", "WARRIOR", "BEAST_WARRIOR", "BEAST", "WINGED_BEAST", "FIEND", "FAIRY", "INSECT", "DINOSAUR", "REPTILE", "FISH", "SEA_SERPENT", "MACHINE", "THUNDER", "AQUA", "PYRO", "ROCK", "PLANT", "IMMORTAL", "MAGIC", "POWER_UP", "TRAP_LIMITED", "TRAP_FULL", "RITUAL"]
                     },
                     "level": {
                         "type": "integer",
@@ -82,7 +82,7 @@
                 "required": ["number", "name", "dc", "card_type"],
                 "if": {
                     "anyOf": [
-                        {"properties": {"card_type": {"const": "SPELL"}}},
+                        {"properties": {"card_type": {"const": "MAGIC"}}},
                         {"properties": {"card_type": {"const": "TRAP_FULL"}}},
                         {"properties": {"card_type": {"const": "TRAP_LIMITED"}}},
                         {"properties": {"card_type": {"const": "RITUAL"}}}
@@ -94,8 +94,7 @@
                 "else": {
                     "required": ["level", "atk", "def"]
                 }
-            },
-            
+            }
           },
         "fusions": {
             "type": "array",

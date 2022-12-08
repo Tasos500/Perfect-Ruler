@@ -73,6 +73,10 @@ ui_start={
  ]
 }
 
+[mono]
+
+project/assembly_name="Perfect Ruler"
+
 [physics]
 
 common/enable_pause_aware_picking=true

@@ -67,7 +67,7 @@
 				"number":"707",
 				"name":"Dian Keto the Cure Master",
 				"dc":60,
-				"card_type":"SPELL",
+				"card_type":"MAGIC",
                 "effect":{
                     "$":{
                         "effect_type":"heal_controller_to",
