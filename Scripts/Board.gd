@@ -17,6 +17,8 @@ var graveyard_red = []
 var graveyard_white = []
 
 var load_card = load("res://Scenes/Card_Placeholder.tscn")
+var json_validator_script = load("res://Scripts/JSON_Validator.cs")
+var json_validator = json_validator_script.new()
 
 func create_map(w, h):
 	var map = []
@@ -110,11 +112,27 @@ func create_card(w, h):
 	add_to_matrix(new_card, w, h)
 	card_age.append(get_card(w, h))
 
+func get_addons():
+	var files = []
+	var dir = Directory.new()
+	dir.open("user://addons")
+	dir.list_dir_begin()
+	while true:
+		var file = dir.get_next()
+		if file == "":
+			break
+		elif not file.begins_with("."):
+			files.append(file)
+	dir.list_dir_end()
+	return files
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	matrix = create_map(7,7)
-	print(matrix)
-
+	var addons = get_addons()
+	for i in addons:
+		print(json_validator.ValidateJson("user://addons/" + i))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):

@@ -92,7 +92,7 @@
                     "required": ["effect"]
                 },
                 "else": {
-                    "required": ["level", "atk", "def"]
+                    "required": ["attribute", "level", "atk", "def"]
                 }
             }
           },
