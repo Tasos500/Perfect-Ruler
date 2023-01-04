@@ -25,7 +25,13 @@
 				"card_type":"DRAGON",
 				"level":7,
 				"atk":2400,
-				"def":2000
+				"def":2000,
+				"fusions":[
+					{
+						"product":"009",
+						"material":1
+					}
+				]
 			},
             {
 				"number":"009",
@@ -45,7 +51,13 @@
 				"card_type":"FIEND",
 				"level":6,
 				"atk":2500,
-				"def":1200
+				"def":1200,
+				"fusions":[
+					{
+						"product":"009",
+						"material":2
+					}
+				]
 			},
             {
 				"number":"417",
@@ -90,9 +102,15 @@
 		],
 		"fusions":[
 			{
-                "product":"009",
-                "material1":["007"],
-                "material2":["294"]
+                "product": {
+					"number": "009"
+				},
+                "material1":[{
+					"number": "007"
+				}],
+                "material2":[{
+					"number": "294"
+				}]
             }
 		]
 	}

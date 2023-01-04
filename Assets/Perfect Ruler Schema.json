@@ -77,6 +77,32 @@
                                 "required": ["effect_type"]
                             }
                         }
+                    },
+                    "fusions": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "product": {
+                                    "type": "string",
+                                    "pattern": "^([0-9]{3})$"
+                                },
+                                "material": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 2
+                                }
+                            }
+                        }
+                    },
+                    "externals": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
                     }
                 },
                 "required": ["number", "name", "dc", "card_type"],
@@ -102,21 +128,51 @@
                 "type": "object",
                 "properties": {
                     "product": {
-                        "type": "string",
-                        "pattern": "^([0-9]{3})$"
+                        "type": "object",
+                        "properties": {
+                            "number": {
+                                "type": "string",
+                                "pattern": "^([0-9]{3})$"
+                            },
+                            "set": {
+                                "type": "string",
+                                "pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+                            }
+                        },
+                        "required": ["number"]
                     },
                     "material1": {
                         "type": "array",
                         "items": {
-                            "type": "string",
-                            "pattern": "^([0-9]{3})$"
+                            "type": "object",
+                            "properties": {
+                                "number": {
+                                    "type": "string",
+                                    "pattern": "^([0-9]{3})$"
+                                },
+                                "set": {
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+                                }
+                            },
+                            "required": ["number"]
                         }
                     },
                     "material2": {
                         "type": "array",
                         "items": {
-                            "type": "string",
-                            "pattern": "^([0-9]{3})$"
+                            "type": "object",
+                            "properties": {
+                                "number": {
+                                    "type": "string",
+                                    "pattern": "^([0-9]{3})$"
+                                },
+                                "set": {
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+                                }
+                            },
+                            "required": ["number"]
                         }
                     }
                 },
