@@ -41,7 +41,7 @@ func add_to_matrix(card, w, h):
 	if is_empty(w, h):
 		matrix[w-1][h-1] = card.name
 		card_age.append(card.name)
-		print(matrix)
+		#print(matrix)
 
 func move_card_to_empty(x1, y1, x2, y2):
 	print(matrix[x1-1][y1-1])
@@ -111,6 +111,7 @@ func create_card(w, h):
 	add_child(new_card, true)
 	add_to_matrix(new_card, w, h)
 	card_age.append(get_card(w, h))
+	get_node(get_card(w,h)).position = Vector2(75 + 150*w, 75 + 150*h)
 
 func get_addons():
 	var files = []
@@ -126,13 +127,37 @@ func get_addons():
 	dir.list_dir_end()
 	return files
 
+func validate_addons(addons):
+	for i in addons:
+		print(json_validator.ValidateJson("user://addons/" + i))
+
+func set_leader(x, y):
+	var card = get_node(get_card(x, y))
+	card.is_leader = true
+
+func change_team(x, y):
+	var card = get_node(get_card(x, y))
+	if card.team == 0:
+		card.team+= 1
+		card.rotation_degrees += 180
+	else:
+		card.team-= 1
+		card.rotation_degrees -= 180
+	
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	matrix = create_map(7,7)
-	var addons = get_addons()
-	for i in addons:
-		print(json_validator.ValidateJson("user://addons/" + i))
+	validate_addons(get_addons())
+	
+	# Create Red Leader (Goes first)
+	create_card(4,7)
+	set_leader(4,7)
+	
+	# Create White Leader (Goes second)
+	create_card(4,1)
+	change_team(4,1)
+	set_leader(4,1)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):

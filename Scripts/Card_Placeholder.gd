@@ -93,11 +93,19 @@ func _process(delta):
 	else:
 		is_moving = false
 	if in_attack_position:
-		if rotation_degrees > 5:
-			rotation_degrees -= 5
+		if team == color.RED:
+			if rotation_degrees > 5:
+				rotation_degrees -= 5
+		else:
+			if rotation_degrees > 185:
+				rotation_degrees -= 5
 	else:
-		if rotation_degrees < 90:
-			rotation_degrees += 5
+		if team == color.RED:
+			if rotation_degrees < 90:
+				rotation_degrees += 5
+		else:
+			if rotation_degrees < 270:
+				rotation_degrees += 5
 	
 	if face_up != last_face_up:
 		if !face_up:
@@ -120,6 +128,8 @@ func _process(delta):
 				$Card_Front_Frame/ATK.show()
 				$Card_Front_Frame/DEF.show()
 		last_face_up = face_up
+	
+	
 	
 	# Commented out until upgraded to Godot 4.0
 	# Turns spellbound cards inverted
