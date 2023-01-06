@@ -123,12 +123,14 @@ func grab_card():
 		grid_x_move = grid_x
 		grid_y_move = grid_y
 		holding_card = true
-		card_held = board.matrix[grid_x-1][grid_y-1]
+		card_held = get_parent().get_card(grid_x, grid_y)
+		get_parent().show_move_tiles(get_parent().get_node(card_held).tile_speed, grid_x, grid_y)
 
 func release_card():
 	if holding_card:
 		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)): # Speed check
 			card_is_moving = true
+			get_parent().clear_move_tiles()
 
 
 func card_movement():

@@ -1,6 +1,7 @@
 extends Node2D
 
-var matrix
+var matrix # Matrix for cards
+var matrix_indicator # Matrix for indicators
 
 # Ensures effects that trigger at start of turn occur by the oldest card first, and can be used as a general array for checking every card. Cards are popped when destroyed.
 var card_age = []
@@ -17,6 +18,7 @@ var graveyard_red = []
 var graveyard_white = []
 
 var load_card = load("res://Scenes/Card_Placeholder.tscn")
+var load_tile = preload("res://Scenes/Tile_Indicator.tscn")
 var json_validator_script = load("res://Scripts/JSON_Validator.cs")
 var json_validator = json_validator_script.new()
 
@@ -143,11 +145,57 @@ func change_team(x, y):
 	else:
 		card.team-= 1
 		card.rotation_degrees -= 180
-	
+
+func show_move_tiles(tile_speed, x, y):
+	# loop through the possible x and y positions
+	for i in range (max(1, x - tile_speed), min(x + tile_speed + 1, 8)):
+		for j in range (max(1, y - tile_speed), min(y + tile_speed + 1, 8)):
+		  # check if the distance from the starting position is less than or equal to tile_speed
+			if (abs(i - x) + abs(j - y)) <= tile_speed:
+				if check_if_passable(i, j):
+						# create a new move tile at the current position
+						var new_move_tile = load_tile.instance()
+						add_child(new_move_tile, true)
+						matrix_indicator[i-1][j-1] = new_move_tile.name
+						new_move_tile.position = Vector2(75 + 150*i, 75 + 150*j)
+
+
+
+func clear_move_tiles():
+	for i in range(0,7):
+		for j in range(0,7):
+			if matrix_indicator[i][j] != null:
+				get_node(matrix_indicator[i][j]).despawning = true
+				matrix_indicator[i][j] = null
+
+func check_if_passable(x, y):
+	var card_held = get_node($Cursor.card_held)
+	# Double check  on coords to prevent crashes
+	if (x >= 1 and x <= 7) and (y >= 1 and y <= 7):
+		# If tile is a Labyrinth (Add check for labyrinth crossing after effects are implemented)
+		if $TileMap.get_cell(x, y) != 8:
+			# If tile is not empty
+			if get_card(x, y) != null:
+				# If card in tile is friendly
+				if card_held.is_leader and get_node(get_card(x,y)).team == card_held.team:
+					return true
+				# If both held card and card in tile are leaders
+				elif card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
+					return false
+				# If card checked is own leader
+				elif !card_held.is_leader and get_node(get_card(x,y)).team == card_held.team and get_node(get_card(x,y)).is_leader:
+					return false
+				# If card checked is enemy leader
+				elif !card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
+					return true
+			else:
+				return true
+	return false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	matrix = create_map(7,7)
+	matrix_indicator = create_map(8,8)
 	validate_addons(get_addons())
 	
 	# Create Red Leader (Goes first)

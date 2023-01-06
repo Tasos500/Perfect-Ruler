@@ -151,6 +151,7 @@ font_data = ExtResource( 4 )
 
 [node name="Card" type="Node2D"]
 material = SubResource( 20 )
+z_index = 5
 script = ExtResource( 2 )
 
 [node name="Monster" type="AnimatedSprite" parent="."]
