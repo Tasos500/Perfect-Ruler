@@ -46,6 +46,7 @@ var card_moving_destroyed = false
 # Summoning variables
 var summoning = false
 var last_summoning = false
+var has_summoned = false
 
 # Turn End variable
 var turn_ending = false
@@ -89,7 +90,7 @@ func _process(delta):
 func process_button_input():
 	if Input.is_action_just_pressed("ui_accept"):
 		if !holding_card:
-			if !summoning:
+			if !summoning and !has_summoned:
 				if get_parent().get_card(grid_x, grid_y) != null:
 					if get_node("../" + get_parent().get_card(grid_x, grid_y)).is_leader == true:
 						summoning = true
@@ -104,6 +105,7 @@ func process_button_input():
 			else:
 				release_card()
 	elif Input.is_action_just_pressed("ui_start"):
+		has_summoned = false
 		initial_position = position
 		fake_tile = load_tile.instance()
 		get_parent().add_child(fake_tile, true)
@@ -160,11 +162,12 @@ func update_grid_y():
 
 func grab_card():
 	if !get_parent().is_empty(grid_x, grid_y) and !holding_card:
-		grid_x_move = grid_x
-		grid_y_move = grid_y
-		holding_card = true
-		card_held = get_parent().get_card(grid_x, grid_y)
-		get_parent().show_move_tiles(get_parent().get_node(card_held).tile_speed, grid_x, grid_y)
+		if !board.get_node(get_parent().get_card(grid_x, grid_y)).has_moved:
+			grid_x_move = grid_x
+			grid_y_move = grid_y
+			holding_card = true
+			card_held = get_parent().get_card(grid_x, grid_y)
+			get_parent().show_move_tiles(get_parent().get_node(card_held).tile_speed, grid_x, grid_y)
 
 func release_card():
 	if holding_card:
@@ -184,17 +187,12 @@ func card_movement():
 			grid_y_move += card_direction.y
 	elif movement_stack.size() == 0:
 		if get_parent().get_node_or_null(card_held) != null:
-			if !board.get_node(card_held).is_moving:
+			if !board.get_node(card_held).is_moving or card_moving_destroyed:
 				card_is_moving = false
 				holding_card = false
+				board.get_node(card_held).has_moved = true
 				card_held = null
 				movement_stack = []
-		elif card_moving_destroyed:
-			card_is_moving = false
-			holding_card = false
-			card_held = null
-			movement_stack = []
-			card_moving_destroyed = false
 
 func process_movement_stack():
 	movement_stack.append(tile_to_move_next())
@@ -298,6 +296,7 @@ func process_summon():
 			else:
 				summoning = true
 	can_move = true
+	has_summoned = true
 
 func calculate_end_turn_distance(): # Calculates distance between current and other player's last position
 	if team == color.RED:
@@ -328,6 +327,7 @@ func end_turn(delta):
 			team = color.RED
 			grid_x = grid_x_red
 			grid_y = grid_y_red
+		upkeep()
 	
 
 func move(delta):
@@ -363,3 +363,9 @@ func reappear(delta):
 		if get_node("Sprite").modulate.a8 >= 255:
 			get_node("Sprite").modulate.a8 = 255
 			reappearing = false
+
+func upkeep():
+	for card in board.card_age:
+		if card != null:
+			if board.get_node(card).team == team:
+				board.get_node(card).has_moved = false

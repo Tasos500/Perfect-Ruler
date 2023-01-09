@@ -45,6 +45,7 @@ const tile_size = 150
 var initial_position = Vector2(0,0)
 var input_direction = Vector2(0,0)
 var is_moving = false
+var has_moved = false
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -57,6 +58,8 @@ func _ready():
 	grid_y = cursor.grid_y
 	position = cursor.position
 	team = cursor.team
+	if team == color.WHITE:
+		rotation_degrees = 180
 	
 	get_node("Card_Back").modulate.a8 = 0
 	get_node("Card_Front_Frame").modulate.a8 = 0

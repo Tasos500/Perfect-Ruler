@@ -1,5 +1,7 @@
 extends Node2D
 
+enum color {RED, WHITE}
+
 var matrix # Matrix for cards
 var matrix_indicator # Matrix for indicators
 
@@ -98,7 +100,7 @@ func get_card(x, y):
 func destroy_card_at(x, y):
 	var card_destroyed = get_node(get_card(x, y))
 	card_destroyed.can_move = false
-	card_age.erase(card_destroyed)
+	card_age.erase(get_card(x, y))
 	if card_destroyed.team == 0:
 		graveyard_red.append(card_destroyed.card_id)
 	else:
@@ -117,10 +119,12 @@ func calculate_damage(atk1, atk2, team):
 
 func create_card(w, h):
 	var new_card = load_card.instance()
+	if $Cursor.team == color.WHITE: # If White
+		new_card.team = color.WHITE
 	add_child(new_card, true)
 	add_to_matrix(new_card, w, h)
-	card_age.append(get_card(w, h))
 	get_node(get_card(w,h)).position = Vector2(75 + 150*w, 75 + 150*h)
+	
 
 func get_addons():
 	var files = []
@@ -140,9 +144,12 @@ func validate_addons(addons):
 	for i in addons:
 		print(json_validator.ValidateJson("user://addons/" + i))
 
-func set_leader(x, y):
+func set_leader(x, y, team):
 	var card = get_node(get_card(x, y))
 	card.is_leader = true
+	card.team = team
+	if team == color.WHITE:
+		card.rotation_degrees += 180
 
 func change_team(x, y):
 	var card = get_node(get_card(x, y))
@@ -242,12 +249,11 @@ func _ready():
 	
 	# Create Red Leader (Goes first)
 	create_card(4,7)
-	set_leader(4,7)
+	set_leader(4,7, color.RED)
 	
 	# Create White Leader (Goes second)
 	create_card(4,1)
-	change_team(4,1)
-	set_leader(4,1)
+	set_leader(4,1, color.WHITE)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
