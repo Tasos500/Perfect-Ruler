@@ -2,7 +2,9 @@ extends Node2D
 
 enum color {RED, WHITE}
 const cursor_red = preload("res://Assets/Cursor/Cursor_Red.png")
-const cursor_white = preload("res://Assets/Cursor/Cursor_White.png") 
+const cursor_white = preload("res://Assets/Cursor/Cursor_White.png")
+const load_tile = preload("res://Scenes/Tile_Indicator.tscn")
+var fake_tile
 
 # Hardcoded
 export var team = color.RED
@@ -45,6 +47,12 @@ var card_moving_destroyed = false
 var summoning = false
 var last_summoning = false
 
+# Turn End variable
+var turn_ending = false
+var end_turn_distance
+var end_turn_direction = Vector2(0,0)
+var reappearing = false
+
 onready var board = $".."
 onready var tilemap = $"../TileMap"
 
@@ -58,7 +66,11 @@ func _ready():
 	initial_position = position
 
 func _process(delta):
-	if card_is_moving:
+	if reappearing:
+		reappear(delta)
+	if turn_ending:
+		end_turn(delta)
+	elif card_is_moving:
 		card_movement()
 	else:
 		if !is_moving and can_move:
@@ -91,18 +103,32 @@ func process_button_input():
 				grab_card()
 			else:
 				release_card()
+	elif Input.is_action_just_pressed("ui_start"):
+		initial_position = position
+		fake_tile = load_tile.instance()
+		get_parent().add_child(fake_tile, true)
+		fake_tile.position = position
+		fake_tile.clone_cursor = true
+		$Sprite.modulate.a8 = 0
+		end_turn_distance = calculate_end_turn_distance()
+		end_turn_direction = calculate_end_turn_direction()
+		turn_ending = true
 
 func process_cursor_input():
 	if !can_move and is_moving:
 		return
 	if input_direction.y == 0:
 		input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+		if team == color.WHITE: # Controls reverse when playing White
+			input_direction.x = -input_direction.x
 		grid_x_next = grid_x + input_direction.x
 		grid_y_next = grid_y
 		if (input_direction.x == -1 and grid_x == 1) or (input_direction.x == 1 and grid_x == 7):
 			input_direction.x = 0
 	if input_direction.x == 0:
 		input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+		if team == color.WHITE: # Controls reverse when playing White
+			input_direction.y = -input_direction.y
 		grid_x_next = grid_x
 		grid_y_next = grid_y + input_direction.y
 		if (input_direction.y == -1 and grid_y == 1) or (input_direction.y == 1 and grid_y == 7):
@@ -273,6 +299,37 @@ func process_summon():
 				summoning = true
 	can_move = true
 
+func calculate_end_turn_distance(): # Calculates distance between current and other player's last position
+	if team == color.RED:
+		return position.distance_to(Vector2(75 + 150*grid_x_white, 75 + 150*grid_y_white))
+	elif team == color.WHITE:
+		return position.distance_to(Vector2(75 + 150*grid_x_red, 75 + 150*grid_y_red))
+
+func calculate_end_turn_direction():
+	if team == color.RED:
+		return position.direction_to(Vector2(75 + 150*grid_x_white, 75 + 150*grid_y_white))
+	elif team == color.WHITE:
+		return position.direction_to(Vector2(75 + 150*grid_x_red, 75 + 150*grid_y_red))
+
+func calculate_end_turn_position():
+	if team == color.RED:
+		return Vector2(75 + 150*grid_x_white, 75 + 150*grid_y_white)
+	elif team == color.WHITE:
+		return Vector2(75 + 150*grid_x_red, 75 + 150*grid_y_red)
+
+func end_turn(delta):
+	move_turn_end(delta)
+	if !turn_ending:
+		if team == color.RED:
+			team = color.WHITE
+			grid_x = grid_x_white
+			grid_y = grid_y_white
+		else:
+			team = color.RED
+			grid_x = grid_x_red
+			grid_y = grid_y_red
+	
+
 func move(delta):
 	movement_percentage += move_speed * delta
 	if movement_percentage >= 1.0:
@@ -285,3 +342,24 @@ func move(delta):
 		update_grid_y()
 	else:
 		position = initial_position + (tile_size * input_direction * movement_percentage)
+
+func move_turn_end(delta):
+	movement_percentage += 1.2 * delta
+	if movement_percentage >= 1.0:
+		position = calculate_end_turn_position()
+		get_parent().rotation_degrees = 180 * (team - 1)
+		movement_percentage = 0.0
+		can_move = true
+		turn_ending = false
+		reappearing = true
+		fake_tile.despawning = true
+	else:
+		position = initial_position + (end_turn_distance * end_turn_direction * movement_percentage)
+		get_parent().rotation_degrees += 180 * delta * 1.2
+
+func reappear(delta):
+	if get_node("Sprite").modulate.a8 <= 255:
+		get_node("Sprite").modulate.a8 += 300 * delta
+		if get_node("Sprite").modulate.a8 >= 255:
+			get_node("Sprite").modulate.a8 = 255
+			reappearing = false
