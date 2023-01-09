@@ -22,6 +22,10 @@ var load_tile = preload("res://Scenes/Tile_Indicator.tscn")
 var json_validator_script = load("res://Scripts/JSON_Validator.cs")
 var json_validator = json_validator_script.new()
 
+# Used to only allow summoning within the summoning range
+var summon_x_range
+var summon_y_range
+
 func create_map(w, h):
 	var map = []
 
@@ -73,10 +77,12 @@ func move_card(x1, y1, x2, y2):
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
 				elif card1.atk == card2.atk:
+					$Cursor.card_moving_destroyed = true
 					destroy_card_at(x1, y1)
 					destroy_card_at(x2, y2)
 				else:
 					calculate_damage(card1.atk, card2.atk, card1.team)
+					$Cursor.card_moving_destroyed = true
 					destroy_card_at(x1, y1)
 			else:
 				if card1.atk > card2.def:
@@ -91,12 +97,13 @@ func get_card(x, y):
 
 func destroy_card_at(x, y):
 	var card_destroyed = get_node(get_card(x, y))
+	card_destroyed.can_move = false
 	card_age.erase(card_destroyed)
 	if card_destroyed.team == 0:
 		graveyard_red.append(card_destroyed.card_id)
 	else:
 		graveyard_white.append(card_destroyed.card_id)
-	card_destroyed.queue_free()
+	card_destroyed.despawning = true
 	matrix[x-1][y-1] = null
 
 func destroy_card_name(_name):
@@ -160,7 +167,6 @@ func show_move_tiles(tile_speed, x, y):
 						new_move_tile.position = Vector2(75 + 150*i, 75 + 150*j)
 
 
-
 func clear_move_tiles():
 	for i in range(0,7):
 		for j in range(0,7):
@@ -168,14 +174,47 @@ func clear_move_tiles():
 				get_node(matrix_indicator[i][j]).despawning = true
 				matrix_indicator[i][j] = null
 
+func show_summon_tiles(x, y):
+	# loop through the possible x and y positions
+	summon_x_range = range(max(1, x - 1), min(x + 1 + 1, 8))
+	summon_y_range = range(max(1, y - 1), min(y + 1 + 1, 8))
+	for i in summon_x_range:
+		for j in summon_y_range:
+		  # check if the distance from the starting position is equal to 1 in each axis (Square)
+			if abs(i - x) == 1 or abs(j - y) == 1:
+				if check_if_summonable(i, j):
+						# create a new move tile at the current position
+						var new_move_tile = load_tile.instance()
+						add_child(new_move_tile, true)
+						new_move_tile.summon_tile = true
+						matrix_indicator[i-1][j-1] = new_move_tile.name
+						new_move_tile.position = Vector2(75 + 150*i, 75 + 150*j)
+
+func check_if_summonable(x, y):
+	# Double check on coords to prevent crashes
+	if (x in summon_x_range) and (y in summon_y_range):
+		# If tile is a Labyrinth (Add check for labyrinth crossing after effects are implemented)
+		if $TileMap.get_cell(x, y) != 8:
+			# If tile is not empty
+			if get_card(x, y) != null:
+				# If card in tile is friendly and NOT a leader
+				if get_node(get_card(x,y)).team == $Cursor.team and !get_node(get_card(x,y)).is_leader:
+					return true
+			else:
+				return true
+	return false
+
 func check_if_passable(x, y):
 	var card_held = get_node($Cursor.card_held)
-	# Double check  on coords to prevent crashes
+	# Double check on coords to prevent crashes
 	if (x >= 1 and x <= 7) and (y >= 1 and y <= 7):
 		# If tile is a Labyrinth (Add check for labyrinth crossing after effects are implemented)
 		if $TileMap.get_cell(x, y) != 8:
 			# If tile is not empty
 			if get_card(x, y) != null:
+				# If card is self
+				if card_held == get_node(get_card(x,y)):
+					return true
 				# If card in tile is friendly
 				if card_held.is_leader and get_node(get_card(x,y)).team == card_held.team:
 					return true
@@ -187,6 +226,9 @@ func check_if_passable(x, y):
 					return false
 				# If card checked is enemy leader
 				elif !card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
+					return true
+				# If both cards are not leaders, and of different teams
+				elif get_node(get_card(x,y)).team != card_held.team:
 					return true
 			else:
 				return true

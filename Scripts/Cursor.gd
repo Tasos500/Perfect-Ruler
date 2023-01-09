@@ -39,6 +39,11 @@ var holding_card = false
 var card_held
 var card_direction
 var card_is_moving = false
+var card_moving_destroyed = false
+
+# Summoning variables
+var summoning = false
+var last_summoning = false
 
 onready var board = $".."
 onready var tilemap = $"../TileMap"
@@ -71,12 +76,21 @@ func _process(delta):
 
 func process_button_input():
 	if Input.is_action_just_pressed("ui_accept"):
-		get_parent().create_card(grid_x, grid_y)
-	elif Input.is_action_just_pressed("ui_cancel"):
 		if !holding_card:
-			grab_card()
-		else:
-			release_card()
+			if !summoning:
+				if get_parent().get_card(grid_x, grid_y) != null:
+					if get_node("../" + get_parent().get_card(grid_x, grid_y)).is_leader == true:
+						summoning = true
+						process_summon()
+			else:
+				summoning = false
+				process_summon()
+	elif Input.is_action_just_pressed("ui_cancel"):
+		if !summoning:
+			if !holding_card:
+				grab_card()
+			else:
+				release_card()
 
 func process_cursor_input():
 	if !can_move and is_moving:
@@ -142,11 +156,19 @@ func card_movement():
 			board.get_node(card_held).is_moving = true
 			grid_x_move += card_direction.x
 			grid_y_move += card_direction.y
-	elif movement_stack.size() == 0 and !board.get_node(card_held).is_moving:
-		card_is_moving = false
-		holding_card = false
-		card_held = null
-		movement_stack = []
+	elif movement_stack.size() == 0:
+		if get_parent().get_node_or_null(card_held) != null:
+			if !board.get_node(card_held).is_moving:
+				card_is_moving = false
+				holding_card = false
+				card_held = null
+				movement_stack = []
+		elif card_moving_destroyed:
+			card_is_moving = false
+			holding_card = false
+			card_held = null
+			movement_stack = []
+			card_moving_destroyed = false
 
 func process_movement_stack():
 	movement_stack.append(tile_to_move_next())
@@ -233,6 +255,23 @@ func move_is_valid():
 	if tilemap.get_cell(grid_x_next, grid_y_next) == 8:
 		return false
 	return true
+
+func process_summon():
+	can_move = false
+	if last_summoning != summoning:
+		if summoning == true:
+			get_parent().show_summon_tiles(grid_x, grid_y)
+			last_summoning = true
+		else:
+			if get_parent().check_if_summonable(grid_x, grid_y):
+				get_parent().clear_move_tiles()
+				if get_parent().get_card(grid_x, grid_y) != null:
+					get_parent().destroy_card_at(grid_x, grid_y) # Temporary until fusions are implemented
+				get_parent().create_card(grid_x, grid_y)
+				last_summoning = false
+			else:
+				summoning = true
+	can_move = true
 
 func move(delta):
 	movement_percentage += move_speed * delta

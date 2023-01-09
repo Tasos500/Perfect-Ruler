@@ -18,7 +18,7 @@ var tile_speed = 1
 # Team based variables
 var team
 var is_leader = false
-var can_move
+var can_move = true
 var card_name
 var card_id # The ID used to pull data from the database.
 var in_attack_position = true
@@ -46,6 +46,9 @@ var initial_position = Vector2(0,0)
 var input_direction = Vector2(0,0)
 var is_moving = false
 
+# Spawning variables (Porting Tile Indicator code)
+var spawning = true
+var despawning = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -54,17 +57,20 @@ func _ready():
 	grid_y = cursor.grid_y
 	position = cursor.position
 	team = cursor.team
-	pass
+	
+	get_node("Card_Back").modulate.a8 = 0
+	get_node("Card_Front_Frame").modulate.a8 = 0
 	
 func move(delta):
-	movement_percentage += move_speed * delta
-	if movement_percentage >= 1.0:
-		position = initial_position + (tile_size * input_direction)
-		movement_percentage = 0.0
-		is_moving = false
-		initial_position = position
-	else:
-		position = initial_position + (tile_size * input_direction * movement_percentage)
+	if can_move:
+		movement_percentage += move_speed * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (tile_size * input_direction)
+			movement_percentage = 0.0
+			is_moving = false
+			initial_position = position
+		else:
+			position = initial_position + (tile_size * input_direction * movement_percentage)
 
 
 func spellbind(turns):
@@ -128,6 +134,21 @@ func _process(delta):
 				$Card_Front_Frame/ATK.show()
 				$Card_Front_Frame/DEF.show()
 		last_face_up = face_up
+	
+	if spawning:
+		if get_node("Card_Back").modulate.a8 <= 255:
+			get_node("Card_Back").modulate.a8 += 400 * delta
+			get_node("Card_Front_Frame").modulate.a8 += 400 * delta
+			if get_node("Card_Back").modulate.a8 >= 255:
+				 spawning = false
+	
+	if despawning and !spawning:
+		can_move = false
+		if get_node("Card_Back").modulate.a8 >= 0:
+			get_node("Card_Back").modulate.a8 -= 400 * delta
+			get_node("Card_Front_Frame").modulate.a8 -= 400 * delta
+			if get_node("Card_Back").modulate.a8 <= 0:
+				queue_free()
 	
 	
 	
