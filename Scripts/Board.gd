@@ -23,6 +23,9 @@ var load_card = load("res://Scenes/Card_Placeholder.tscn")
 var load_tile = preload("res://Scenes/Tile_Indicator.tscn")
 var json_validator_script = load("res://Scripts/JSON_Validator.cs")
 var json_validator = json_validator_script.new()
+var valid_addons = []
+var addons_file = File.new()
+var addons_id = []
 
 # Used to only allow summoning within the summoning range
 var summon_x_range
@@ -135,14 +138,19 @@ func get_addons():
 		var file = dir.get_next()
 		if file == "":
 			break
-		elif not file.begins_with("."):
+		elif not file.begins_with(".") and file.ends_with(".json"):
 			files.append(file)
 	dir.list_dir_end()
 	return files
 
 func validate_addons(addons):
 	for i in addons:
-		print(json_validator.ValidateJson("user://addons/" + i))
+		if json_validator.ValidateJson("user://addons/" + i): # If addon is valid
+			addons_file.open("user://addons/" + i, File.READ)
+			var addons_text = addons_file.get_as_text()
+			addons_file.close()
+			valid_addons.append(JSON.parse(addons_text).result)
+			addons_id.append(valid_addons[addons_id.size()].mod_creator + "." + valid_addons[addons_id.size()].mod_name)
 
 func set_leader(x, y, team):
 	var card = get_node(get_card(x, y))
@@ -249,6 +257,7 @@ func _ready():
 	matrix = create_map(7,7)
 	matrix_indicator = create_map(8,8)
 	validate_addons(get_addons())
+	print("This mod has the ID " + addons_id[0])
 	
 	# Create Red Leader (Goes first)
 	create_card(4,7)

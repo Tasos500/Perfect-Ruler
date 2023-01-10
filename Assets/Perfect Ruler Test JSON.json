@@ -1,117 +1,117 @@
 {
-	"mod":{
-		"$":{
-			"mod_creator":"Tasos500",
-			"mod_name":"TestMod"
+	"mod_creator":"Tasos500",
+	"mod_name":"TestMod",
+	"description":"A test mod.",
+	"version":"1.0",
+	"cards":[
+		{
+			"number":"000",
+			"name":"Blue-Eyes White Dragon",
+			"dc":55,
+			"attribute":"LIGHT",
+			"card_type":"DRAGON",
+			"level":8,
+			"atk":3000,
+			"def":2500
 		},
-		"description":"A test mod.",
-		"version":"1.0",
-		"cards":[
-			{
-				"number":"000",
-				"name":"Blue-Eyes White Dragon",
-				"dc":55,
-				"attribute":"LIGHT",
-				"card_type":"DRAGON",
-				"level":8,
-				"atk":3000,
-				"def":2500
-			},
-			{
-				"number":"007",
-				"name":"Red-Eyes Black Dragon",
-				"dc":44,
-				"attribute":"DARK",
-				"card_type":"DRAGON",
-				"level":7,
-				"atk":2400,
-				"def":2000,
-				"fusions":[
-					{
-						"product":"009",
-						"material":1
-					}
-				]
-			},
-            {
-				"number":"009",
-				"name":"Black Skull Dragon",
-				"dc":57,
-				"attribute":"DARK",
-				"card_type":"DRAGON",
-				"level":9,
-				"atk":3200,
-				"def":2500
-			},
-            {
-				"number":"294",
-				"name":"Summoned Skull",
-				"dc":37,
-				"attribute":"DARK",
-				"card_type":"FIEND",
-				"level":6,
-				"atk":2500,
-				"def":1200,
-				"fusions":[
-					{
-						"product":"009",
-						"material":2
-					}
-				]
-			},
-            {
-				"number":"417",
-				"name":"Man-Eater Bug",
-				"dc":16,
-				"attribute":"EARTH",
-				"card_type":"INSECT",
-				"level":2,
-				"atk":450,
-				"def":600,
-                "effect":{
-                    "$":{
-                        "trigger":"FLIP",
-                        "effect_type":"destroy_opponent"
-                    }
-                }
-			},
-            {
-				"number":"707",
-				"name":"Dian Keto the Cure Master",
-				"dc":60,
-				"card_type":"MAGIC",
-                "effect":{
-                    "$":{
-                        "effect_type":"heal_controller_to",
-                        "attribute1":4000
-                    }
-                }
-			},
-            {
-				"number":"801",
-				"name":"Spellbinding Circle",
-				"dc":30,
-				"card_type":"TRAP_LIMITED",
-                "effect":{
-                    "$":{
-                        "effect_type":"spellbind",
-                        "attribute1":3
-                    }
-                }
+		{
+			"number":"007",
+			"name":"Red-Eyes Black Dragon",
+			"dc":44,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2400,
+			"def":2000,
+			"fusions":[
+				{
+					"product":"009",
+					"material":1
+				}
+			]
+		},
+		{
+			"number":"009",
+			"name":"Black Skull Dragon",
+			"dc":57,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":9,
+			"atk":3200,
+			"def":2500
+		},
+		{
+			"number":"294",
+			"name":"Summoned Skull",
+			"dc":37,
+			"attribute":"DARK",
+			"card_type":"FIEND",
+			"level":6,
+			"atk":2500,
+			"def":1200,
+			"fusions":[
+				{
+					"product":"009",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"417",
+			"name":"Man-Eater Bug",
+			"dc":16,
+			"attribute":"EARTH",
+			"card_type":"INSECT",
+			"level":2,
+			"atk":450,
+			"def":600,
+			"effect":{
+				"effect_properties":{
+					"trigger":"FLIP",
+					"effect_type":"destroy_opponent"
+				}
 			}
-		],
-		"fusions":[
-			{
-                "product": {
-					"number": "009"
-				},
-                "material1":[{
-					"number": "007"
-				}],
-                "material2":[{
-					"number": "294"
-				}]
-            }
-		]
-	}
+		},
+		{
+			"number":"707",
+			"name":"Dian Keto the Cure Master",
+			"dc":60,
+			"card_type":"MAGIC",
+			"effect":{
+				"effect_properties":{
+					"effect_type":"heal_controller_to",
+					"attribute1":4000
+				}
+			}
+		},
+		{
+			"number":"801",
+			"name":"Spellbinding Circle",
+			"dc":30,
+			"card_type":"TRAP_LIMITED",
+			"effect":{
+				"effect_properties":{
+					"effect_type":"spellbind",
+					"attribute1":3
+				}
+			}
+		}
+	],
+	"fusions":[
+		{
+			"product":{
+				"number":"009"
+			},
+			"material1":[
+				{
+					"number":"007"
+				}
+			],
+			"material2":[
+				{
+					"number":"294"
+				}
+			]
+		}
+	]
 }
