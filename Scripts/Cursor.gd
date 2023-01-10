@@ -70,6 +70,7 @@ func _process(delta):
 	if reappearing:
 		reappear(delta)
 	if turn_ending:
+		$Sprite.modulate.a8 = 0
 		end_turn(delta)
 	elif card_is_moving:
 		card_movement()
@@ -92,7 +93,7 @@ func process_button_input():
 		if !holding_card:
 			if !summoning and !has_summoned:
 				if get_parent().get_card(grid_x, grid_y) != null:
-					if get_node("../" + get_parent().get_card(grid_x, grid_y)).is_leader == true:
+					if board.get_node(board.get_card(grid_x, grid_y)).is_leader == true and board.get_node(board.get_card(grid_x, grid_y)).team == team:
 						summoning = true
 						process_summon()
 			else:
@@ -105,16 +106,17 @@ func process_button_input():
 			else:
 				release_card()
 	elif Input.is_action_just_pressed("ui_start"):
-		has_summoned = false
-		initial_position = position
-		fake_tile = load_tile.instance()
-		get_parent().add_child(fake_tile, true)
-		fake_tile.position = position
-		fake_tile.clone_cursor = true
-		$Sprite.modulate.a8 = 0
-		end_turn_distance = calculate_end_turn_distance()
-		end_turn_direction = calculate_end_turn_direction()
-		turn_ending = true
+		if !holding_card and !summoning:
+			has_summoned = false
+			initial_position = position
+			fake_tile = load_tile.instance()
+			get_parent().add_child(fake_tile, true)
+			fake_tile.position = position
+			fake_tile.clone_cursor = true
+			end_turn_distance = calculate_end_turn_distance()
+			end_turn_direction = calculate_end_turn_direction()
+			turn_ending = true
+			check_spellbound_cards()
 
 func process_cursor_input():
 	if !can_move and is_moving:
@@ -162,7 +164,7 @@ func update_grid_y():
 
 func grab_card():
 	if !get_parent().is_empty(grid_x, grid_y) and !holding_card:
-		if !board.get_node(get_parent().get_card(grid_x, grid_y)).has_moved:
+		if !board.get_node(board.get_card(grid_x, grid_y)).has_moved and board.get_node(get_parent().get_card(grid_x, grid_y)).team == team and !board.get_node(board.get_card(grid_x, grid_y)).is_spellbound():
 			grid_x_move = grid_x
 			grid_y_move = grid_y
 			holding_card = true
@@ -368,4 +370,11 @@ func upkeep():
 	for card in board.card_age:
 		if card != null:
 			if board.get_node(card).team == team:
-				board.get_node(card).has_moved = false
+				if !board.get_node(card).is_spellbound():
+					board.get_node(card).has_moved = false
+
+func check_spellbound_cards():
+	for card in board.card_age:
+		if card != null:
+			if board.get_node(card).team == team and board.get_node(card).is_spellbound():
+				board.get_node(card).spellbind_decrement()

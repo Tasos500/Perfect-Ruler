@@ -27,6 +27,7 @@ var last_face_up = false
 var revealed = false
 var turns_spellbound = 0
 var eternally_spellbound = false
+var just_spellbound = false
 
 # Monster based variables
 # Ignored if is_leader == true
@@ -77,17 +78,25 @@ func move(delta):
 
 
 func spellbind(turns):
+	has_moved = true
 	if turns == -1:
 		eternally_spellbound = true
 		turns_spellbound = 99
 	else:
 		turns_spellbound = turns
+	just_spellbound = true
 
 func spellbind_decrement():
 	if !eternally_spellbound:
-		turns_spellbound -= 1
-		if turns_spellbound == 0:
-			spellbind_cure()
+		if !just_spellbound:
+			turns_spellbound -= 1
+			if turns_spellbound <= 0:
+				spellbind_cure()
+		else:
+			just_spellbound = false
+
+func is_spellbound():
+	return(eternally_spellbound or turns_spellbound != 0)
 
 func spellbind_cure():
 	eternally_spellbound = false

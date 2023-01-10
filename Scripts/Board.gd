@@ -228,6 +228,9 @@ func check_if_passable(x, y):
 				# If both held card and card in tile are leaders
 				elif card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
 					return false
+				# If holding leader, and card checked is enemy
+				elif card_held.is_leader and get_node(get_card(x,y)).team != card_held.team:
+					return false
 				# If card checked is own leader
 				elif !card_held.is_leader and get_node(get_card(x,y)).team == card_held.team and get_node(get_card(x,y)).is_leader:
 					return false
