@@ -92,8 +92,6 @@ func spellbind_decrement():
 			turns_spellbound -= 1
 			if turns_spellbound <= 0:
 				spellbind_cure()
-		else:
-			just_spellbound = false
 
 func is_spellbound():
 	return(eternally_spellbound or turns_spellbound != 0)

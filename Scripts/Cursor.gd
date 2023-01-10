@@ -376,5 +376,7 @@ func upkeep():
 func check_spellbound_cards():
 	for card in board.card_age:
 		if card != null:
-			if board.get_node(card).team == team and board.get_node(card).is_spellbound():
+			if board.get_node(card).just_spellbound:
+				board.get_node(card).just_spellbound = false
+			elif board.get_node(card).team == team and board.get_node(card).is_spellbound():
 				board.get_node(card).spellbind_decrement()
