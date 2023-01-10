@@ -48,11 +48,18 @@ var summoning = false
 var last_summoning = false
 var has_summoned = false
 
-# Turn End variable
+# Turn End variables
 var turn_ending = false
 var end_turn_distance
 var end_turn_direction = Vector2(0,0)
 var reappearing = false
+
+# Action Cancel variables
+var cancelling = false
+var grid_x_cancel
+var grid_y_cancel
+var cancel_distance
+var cancel_direction = Vector2(0,0)
 
 onready var board = $".."
 onready var tilemap = $"../TileMap"
@@ -69,6 +76,9 @@ func _ready():
 func _process(delta):
 	if reappearing:
 		reappear(delta)
+	if cancelling:
+		$Sprite.modulate.a8 = 0
+		move_cancel(delta)
 	if turn_ending:
 		$Sprite.modulate.a8 = 0
 		end_turn(delta)
@@ -89,28 +99,47 @@ func _process(delta):
 			get_node("Sprite").texture = cursor_white
 
 func process_button_input():
-	if Input.is_action_just_pressed("ui_accept"):
-		if !holding_card:
+	if Input.is_action_just_pressed("ui_summon"):
+		if !holding_card and !cancelling and !turn_ending:
 			if !summoning and !has_summoned:
-				if get_parent().get_card(grid_x, grid_y) != null:
+				if board.get_card(grid_x, grid_y) != null:
 					if board.get_node(board.get_card(grid_x, grid_y)).is_leader == true and board.get_node(board.get_card(grid_x, grid_y)).team == team:
 						summoning = true
 						process_summon()
 			else:
 				summoning = false
 				process_summon()
-	elif Input.is_action_just_pressed("ui_cancel"):
-		if !summoning:
+	elif Input.is_action_just_pressed("ui_accept"):
+		if !summoning and !cancelling and !turn_ending:
 			if !holding_card:
 				grab_card()
 			else:
 				release_card()
+		elif summoning:
+			summoning =false
+			process_summon()
+	elif Input.is_action_just_pressed("ui_cancel"):
+		if (summoning or holding_card) and !cancelling:
+			holding_card = false
+			last_summoning = false
+			summoning = false
+			can_move = false
+			movement_stack = []
+			initial_position = position
+			fake_tile = load_tile.instance()
+			board.add_child(fake_tile, true)
+			fake_tile.position = position
+			fake_tile.clone_cursor = true
+			cancel_distance = calculate_cancel_distance()
+			cancel_direction = calculate_cancel_direction()
+			board.clear_move_tiles()
+			cancelling = true
 	elif Input.is_action_just_pressed("ui_start"):
-		if !holding_card and !summoning:
+		if !holding_card and !summoning and !cancelling:
 			has_summoned = false
 			initial_position = position
 			fake_tile = load_tile.instance()
-			get_parent().add_child(fake_tile, true)
+			board.add_child(fake_tile, true)
 			fake_tile.position = position
 			fake_tile.clone_cursor = true
 			end_turn_distance = calculate_end_turn_distance()
@@ -163,19 +192,21 @@ func update_grid_y():
 		grid_y_white = grid_y
 
 func grab_card():
-	if !get_parent().is_empty(grid_x, grid_y) and !holding_card:
-		if !board.get_node(board.get_card(grid_x, grid_y)).has_moved and board.get_node(get_parent().get_card(grid_x, grid_y)).team == team and !board.get_node(board.get_card(grid_x, grid_y)).is_spellbound():
+	if !board.is_empty(grid_x, grid_y) and !holding_card:
+		if !board.get_node(board.get_card(grid_x, grid_y)).has_moved and board.get_node(board.get_card(grid_x, grid_y)).team == team and !board.get_node(board.get_card(grid_x, grid_y)).is_spellbound():
 			grid_x_move = grid_x
 			grid_y_move = grid_y
+			grid_x_cancel = grid_x
+			grid_y_cancel = grid_y
 			holding_card = true
-			card_held = get_parent().get_card(grid_x, grid_y)
-			get_parent().show_move_tiles(get_parent().get_node(card_held).tile_speed, grid_x, grid_y)
+			card_held = board.get_card(grid_x, grid_y)
+			board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
 
 func release_card():
 	if holding_card:
 		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)): # Speed check
 			card_is_moving = true
-			get_parent().clear_move_tiles()
+			board.clear_move_tiles()
 
 
 func card_movement():
@@ -188,7 +219,7 @@ func card_movement():
 			grid_x_move += card_direction.x
 			grid_y_move += card_direction.y
 	elif movement_stack.size() == 0:
-		if get_parent().get_node_or_null(card_held) != null:
+		if board.get_node_or_null(card_held) != null:
 			if !board.get_node(card_held).is_moving or card_moving_destroyed:
 				card_is_moving = false
 				holding_card = false
@@ -286,19 +317,22 @@ func process_summon():
 	can_move = false
 	if last_summoning != summoning:
 		if summoning == true:
-			get_parent().show_summon_tiles(grid_x, grid_y)
+			board.show_summon_tiles(grid_x, grid_y)
+			grid_x_cancel = grid_x
+			grid_y_cancel = grid_y
 			last_summoning = true
 		else:
-			if get_parent().check_if_summonable(grid_x, grid_y):
-				get_parent().clear_move_tiles()
-				if get_parent().get_card(grid_x, grid_y) != null:
-					get_parent().destroy_card_at(grid_x, grid_y) # Temporary until fusions are implemented
-				get_parent().create_card(grid_x, grid_y)
+			if board.check_if_summonable(grid_x, grid_y):
+				board.clear_move_tiles()
+				if board.get_card(grid_x, grid_y) != null:
+					board.destroy_card_at(grid_x, grid_y) # Temporary until fusions are implemented
+				board.create_card(grid_x, grid_y)
 				last_summoning = false
+				has_summoned = true
 			else:
 				summoning = true
 	can_move = true
-	has_summoned = true
+	
 
 func calculate_end_turn_distance(): # Calculates distance between current and other player's last position
 	if team == color.RED:
@@ -317,6 +351,15 @@ func calculate_end_turn_position():
 		return Vector2(75 + 150*grid_x_white, 75 + 150*grid_y_white)
 	elif team == color.WHITE:
 		return Vector2(75 + 150*grid_x_red, 75 + 150*grid_y_red)
+
+func calculate_cancel_distance(): # Calculates distance between current and original position
+	return position.distance_to(Vector2(75 + 150*grid_x_cancel, 75 + 150*grid_y_cancel))
+
+func calculate_cancel_direction():
+	return position.direction_to(Vector2(75 + 150*grid_x_cancel, 75 + 150*grid_y_cancel))
+
+func calculate_cancel_position():
+	return Vector2(75 + 150*grid_x_cancel, 75 + 150*grid_y_cancel)
 
 func end_turn(delta):
 	move_turn_end(delta)
@@ -349,7 +392,7 @@ func move_turn_end(delta):
 	movement_percentage += 1.2 * delta
 	if movement_percentage >= 1.0:
 		position = calculate_end_turn_position()
-		get_parent().rotation_degrees = 180 * (team - 1)
+		board.rotation_degrees = 180 * (team - 1)
 		movement_percentage = 0.0
 		can_move = true
 		turn_ending = false
@@ -357,7 +400,21 @@ func move_turn_end(delta):
 		fake_tile.despawning = true
 	else:
 		position = initial_position + (end_turn_distance * end_turn_direction * movement_percentage)
-		get_parent().rotation_degrees += 180 * delta * 1.2
+		board.rotation_degrees += 180 * delta * 1.2
+
+func move_cancel(delta):
+	movement_percentage += 2 * delta
+	if movement_percentage >= 1.0:
+		position = calculate_cancel_position()
+		movement_percentage = 0.0
+		can_move = true
+		cancelling = false
+		reappearing = true
+		fake_tile.despawning = true
+		grid_x = grid_x_cancel
+		grid_y = grid_y_cancel
+	else:
+		position = initial_position + (cancel_distance * cancel_direction * movement_percentage)
 
 func reappear(delta):
 	if get_node("Sprite").modulate.a8 <= 255:

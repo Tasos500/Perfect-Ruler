@@ -150,7 +150,7 @@ func validate_addons(addons):
 			var addons_text = addons_file.get_as_text()
 			addons_file.close()
 			valid_addons.append(JSON.parse(addons_text).result)
-			addons_id.append(valid_addons[addons_id.size()].mod_creator + "." + valid_addons[addons_id.size()].mod_name)
+			addons_id.append(str(valid_addons[addons_id.size()].mod_creator + "." + valid_addons[addons_id.size()].mod_name))
 
 func set_leader(x, y, team):
 	var card = get_node(get_card(x, y))
@@ -251,6 +251,13 @@ func check_if_passable(x, y):
 			else:
 				return true
 	return false
+	
+func get_card_data(card_id):
+	var mod_id = card_id.split(".")
+	if addons_id.find(str(mod_id[0] + "." + mod_id[1])) != -1:
+		for card in valid_addons[0].cards:
+			if card["number"] == str(mod_id[2]):
+				return card
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -258,6 +265,7 @@ func _ready():
 	matrix_indicator = create_map(8,8)
 	validate_addons(get_addons())
 	print("This mod has the ID " + addons_id[0])
+	print(get_card_data("Tasos500.TestMod.000"))
 	
 	# Create Red Leader (Goes first)
 	create_card(4,7)
