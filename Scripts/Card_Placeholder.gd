@@ -19,8 +19,8 @@ var tile_speed = 1
 var team
 var is_leader = false
 var can_move = true
-var card_name
-var card_id # The ID used to pull data from the database.
+var card_name = "Dummy"
+var card_id = null # The ID used to pull data from the database.
 var in_attack_position = true
 var face_up = false
 var last_face_up = false
@@ -51,6 +51,9 @@ var has_moved = false
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
 var despawning = false
+var last_card_id = null
+
+onready var board = $".."
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -123,7 +126,7 @@ func _process(delta):
 			if rotation_degrees < 270:
 				rotation_degrees += 5
 	
-	if face_up != last_face_up:
+	if face_up != last_face_up and !is_leader:
 		if !face_up:
 			$Card_Front_Frame.hide()
 			$Card_Back.show()
@@ -144,6 +147,7 @@ func _process(delta):
 				$Card_Front_Frame/ATK.show()
 				$Card_Front_Frame/DEF.show()
 		last_face_up = face_up
+		
 	
 	if spawning:
 		if get_node("Card_Back").modulate.a8 <= 255:
@@ -159,6 +163,26 @@ func _process(delta):
 			get_node("Card_Front_Frame").modulate.a8 -= 400 * delta
 			if get_node("Card_Back").modulate.a8 <= 0:
 				queue_free()
+	
+	if card_id != last_card_id:
+		card_name = board.get_card_data(card_id)["name"]
+		atk = board.get_card_data(card_id)["atk"]
+		def = board.get_card_data(card_id)["def"]
+		level = board.get_card_data(card_id)["level"]
+		dc = board.get_card_data(card_id)["dc"]
+		attribute = attributes.get(board.get_card_data(card_id)["attribute"])
+		card_type = card_types.get(board.get_card_data(card_id)["card_type"])
+		last_card_id = card_id
+	
+	if is_leader:
+		face_up = true
+		revealed = true
+		if team == color.RED:
+			$Card_Back.texture = load("res://Assets/Card/Leader_Red.png")
+			card_id = "Tasos500.TestMod.000"
+		else:
+			$Card_Back.texture = load("res://Assets/Card/Leader_White.png")
+		$Card_Back.scale = Vector2(150/128, 150/128) # Scaled for 150x150 tiles, as cards are normally shrunk to 25%
 	
 	
 	

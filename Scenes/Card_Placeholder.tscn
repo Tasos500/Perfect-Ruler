@@ -178,6 +178,7 @@ animation = "Level_Scale"
 frame = 3
 
 [node name="Card_Name" type="Label" parent="Card_Front_Frame"]
+modulate = Color( 0, 0, 0, 1 )
 use_parent_material = true
 margin_left = -168.0
 margin_top = -268.0
@@ -186,6 +187,7 @@ margin_bottom = -224.0
 size_flags_vertical = 1
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
+custom_constants/line_spacing = 0
 custom_constants/shadow_offset_y = 2
 custom_constants/shadow_as_outline = 0
 custom_fonts/font = SubResource( 15 )
@@ -198,13 +200,13 @@ position = Vector2( 148, -244 )
 frames = SubResource( 17 )
 
 [node name="ATK" type="Label" parent="Card_Front_Frame"]
+modulate = Color( 0, 0, 0, 1 )
 use_parent_material = true
 margin_left = 4.0
 margin_top = 160.0
 margin_right = 163.0
 margin_bottom = 216.0
 size_flags_vertical = 1
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
 custom_constants/shadow_offset_y = 2
 custom_constants/shadow_as_outline = 0
@@ -214,13 +216,13 @@ align = 1
 max_lines_visible = 1
 
 [node name="DEF" type="Label" parent="Card_Front_Frame"]
+modulate = Color( 0, 0, 0, 1 )
 use_parent_material = true
 margin_left = 4.0
 margin_top = 204.0
 margin_right = 163.0
 margin_bottom = 260.0
 size_flags_vertical = 1
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
 custom_constants/shadow_offset_y = 2
 custom_constants/shadow_as_outline = 0
