@@ -232,8 +232,8 @@ func process_movement_stack():
 	
 	simplify_stack()
 	
-	print(movement_stack)
-	print("Stack size: ", movement_stack.size())
+	#print(movement_stack)
+	#print("Stack size: ", movement_stack.size())
 	return
 
 func tile_to_move_next():

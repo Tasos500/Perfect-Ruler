@@ -194,7 +194,7 @@ custom_fonts/font = SubResource( 15 )
 text = "Obelisk The Tormentor"
 valign = 1
 
-[node name="Type" type="AnimatedSprite" parent="Card_Front_Frame"]
+[node name="Attribute" type="AnimatedSprite" parent="Card_Front_Frame"]
 use_parent_material = true
 position = Vector2( 148, -244 )
 frames = SubResource( 17 )

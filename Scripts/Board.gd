@@ -55,7 +55,7 @@ func add_to_matrix(card, w, h):
 		#print(matrix)
 
 func move_card_to_empty(x1, y1, x2, y2):
-	print(matrix[x1-1][y1-1])
+	#print(matrix[x1-1][y1-1])
 	matrix[x2-1][y2-1] = matrix[x1-1][y1-1]
 	matrix[x1-1][y1-1] = null
 

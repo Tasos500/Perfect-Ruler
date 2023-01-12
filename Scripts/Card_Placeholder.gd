@@ -67,6 +67,7 @@ func _ready():
 	
 	get_node("Card_Back").modulate.a8 = 0
 	get_node("Card_Front_Frame").modulate.a8 = 0
+	card_id = "Tasos500.TestMod.294"
 	
 func move(delta):
 	if can_move:
@@ -134,11 +135,11 @@ func _process(delta):
 			$Card_Front_Frame.show()
 			$Card_Back.hide()
 			# Checks to display correct type of card
-			if card_type == (card_types.MAGIC or card_types.POWER_UP or card_types.RITUAL):
+			if (card_type == card_types.MAGIC) or (card_type == card_types.POWER_UP) or (card_type == card_types.RITUAL):
 				$Card_Front_Frame.animation = "Spell"
 				$Card_Front_Frame/ATK.hide()
 				$Card_Front_Frame/DEF.hide()
-			elif card_type == (card_types.TRAP_FULL or card_types.TRAP_LIMITED):
+			elif card_type == (card_types.TRAP_FULL) or (card_type == card_types.TRAP_LIMITED):
 				$Card_Front_Frame.animation = "Trap"
 				$Card_Front_Frame/ATK.hide()
 				$Card_Front_Frame/DEF.hide()
@@ -166,11 +167,16 @@ func _process(delta):
 	
 	if card_id != last_card_id:
 		card_name = board.get_card_data(card_id)["name"]
+		$Card_Front_Frame/Card_Name.text = str(card_name)
 		atk = board.get_card_data(card_id)["atk"]
+		$Card_Front_Frame/ATK.text = str(atk)
 		def = board.get_card_data(card_id)["def"]
+		$Card_Front_Frame/DEF.text = str(def)
 		level = board.get_card_data(card_id)["level"]
+		$Card_Front_Frame/Level.frame = level
 		dc = board.get_card_data(card_id)["dc"]
 		attribute = attributes.get(board.get_card_data(card_id)["attribute"])
+		$Card_Front_Frame/Attribute.frame = attribute
 		card_type = card_types.get(board.get_card_data(card_id)["card_type"])
 		last_card_id = card_id
 	
@@ -179,7 +185,7 @@ func _process(delta):
 		revealed = true
 		if team == color.RED:
 			$Card_Back.texture = load("res://Assets/Card/Leader_Red.png")
-			card_id = "Tasos500.TestMod.000"
+			#card_id = "Tasos500.TestMod.294"
 		else:
 			$Card_Back.texture = load("res://Assets/Card/Leader_White.png")
 		$Card_Back.scale = Vector2(150/128, 150/128) # Scaled for 150x150 tiles, as cards are normally shrunk to 25%
