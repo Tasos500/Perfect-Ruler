@@ -168,17 +168,59 @@ func _process(delta):
 	if card_id != last_card_id:
 		card_name = board.get_card_data(card_id)["name"]
 		$Card_Front_Frame/Card_Name.text = str(card_name)
-		atk = board.get_card_data(card_id)["atk"]
-		$Card_Front_Frame/ATK.text = str(atk)
-		def = board.get_card_data(card_id)["def"]
-		$Card_Front_Frame/DEF.text = str(def)
-		level = board.get_card_data(card_id)["level"]
-		$Card_Front_Frame/Level.frame = level
-		dc = board.get_card_data(card_id)["dc"]
-		attribute = attributes.get(board.get_card_data(card_id)["attribute"])
-		$Card_Front_Frame/Attribute.frame = attribute
 		card_type = card_types.get(board.get_card_data(card_id)["card_type"])
+		if card_type != card_types.MAGIC and \
+		card_type != card_types.TRAP_FULL and \
+		card_type != card_types.TRAP_LIMITED and \
+		card_type != card_types.RITUAL:
+			atk = board.get_card_data(card_id)["atk"]
+			$Card_Front_Frame/ATK.text = str(atk)
+			def = board.get_card_data(card_id)["def"]
+			$Card_Front_Frame/DEF.text = str(def)
+			level = board.get_card_data(card_id)["level"]
+			$Card_Front_Frame/Level.frame = level
+		dc = board.get_card_data(card_id)["dc"]
+		if "attribute" in board.get_card_data(card_id):
+			attribute = attributes.get(board.get_card_data(card_id)["attribute"])
+			$Card_Front_Frame/Attribute.frame = attribute
+		else:
+			get_node("%Attribute").hide()
+		get_node("%ATK").hide()
+		get_node("%DEF").hide()
+		get_node("%Level").hide()
+		if card_type == card_types.MAGIC or card_type == card_types.RITUAL:
+			get_node("%Card_Front_Frame").animation = "Spell"
+		elif card_type == card_types.TRAP_FULL or card_type == card_types.TRAP_LIMITED:
+			get_node("%Card_Front_Frame").animation = "Trap"
+		elif "effect" in board.get_card_data(card_id):
+			get_node("%Card_Front_Frame").animation = "Monster_Effect"
+		else:
+			get_node("%Card_Front_Frame").animation = "Monster_Normal"
+			get_node("%ATK").show()
+			get_node("%DEF").show()
+			get_node("%Level").show()
 		last_card_id = card_id
+		
+		#Grabbing card art texture
+		var split_id = card_id.split(".")
+		var file_png = "user://addons/" + split_id[0] + "/" + split_id[1] + "/cards/" + split_id[2] + ".png"
+		var file_jpg = "user://addons/" + split_id[0] + "/" + split_id[1] + "/cards/" + split_id[2] + ".jpg"
+		var file_jpeg = "user://addons/" + split_id[0] + "/" + split_id[1] + "/cards/" + split_id[2] + ".jpeg"
+		var file = File.new()
+		var file_location
+		if file.file_exists(file_png):
+			file_location = file_png
+		elif file.file_exists(file_jpg):
+			file_location = file_jpg
+		elif file.file_exists(file_jpeg):
+			file_location = file_jpeg
+		else:
+			return
+		file = Image.new()
+		file.load(file_location)
+		var new_texture = ImageTexture.new()
+		new_texture.create_from_image(file)
+		get_node("%Card_Art").texture = new_texture
 	
 	if is_leader:
 		face_up = true
