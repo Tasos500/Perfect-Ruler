@@ -15,6 +15,96 @@
 			"def":2500
 		},
 		{
+			"number":"001",
+			"name":"Seiyaryu",
+			"dc":53,
+			"attribute":"LIGHT",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2500,
+			"def":2300
+		},
+		{
+			"number":"002",
+			"name":"Blue-Eyes Ultimate Dragon",
+			"dc":83,
+			"attribute":"LIGHT",
+			"card_type":"DRAGON",
+			"level":12,
+			"atk":4500,
+			"def":3800
+		},
+		{
+			"number":"003",
+			"name":"Kaiser Dragon",
+			"dc":43,
+			"attribute":"LIGHT",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2300,
+			"def":2000
+		},
+		{
+			"number":"004",
+			"name":"Blackland Fire Dragon",
+			"dc":23,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":4,
+			"atk":1500,
+			"def":800,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"005",
+			"name":"Koumori Dragon",
+			"dc":27,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":4,
+			"atk":1500,
+			"def":1200,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"006",
+			"name":"Curse of Dragon",
+			"dc":40,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":5,
+			"atk":2000,
+			"def":1500,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
 			"number":"007",
 			"name":"Red-Eyes Black Dragon",
 			"dc":44,
@@ -31,6 +121,26 @@
 			]
 		},
 		{
+			"number":"008",
+			"name":"Darkfire Dragon",
+			"dc":28,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":4,
+			"atk":1500,
+			"def":1250,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
 			"number":"009",
 			"name":"Black Skull Dragon",
 			"dc":57,
@@ -39,6 +149,190 @@
 			"level":9,
 			"atk":3200,
 			"def":2500
+		},
+		{
+			"number":"010",
+			"name":"Tri-Horned Dragon",
+			"dc":52,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":8,
+			"atk":2850,
+			"def":2350
+		},
+		{
+			"number":"011",
+			"name":"Serpent Night Dragon",
+			"dc":53,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2350,
+			"def":2400,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"012",
+			"name":"Mikazukinoyaiba",
+			"dc":46,
+			"attribute":"DARK",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2200,
+			"def":2350,
+			"fusions":[
+				{
+					"product":"007",
+					"material":2
+				},
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"013",
+			"name":"Yamadragon",
+			"dc":44,
+			"attribute":"FIRE",
+			"card_type":"DRAGON",
+			"level":5,
+			"atk":1600,
+			"def":1800,
+			"fusions":[
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"014",
+			"name":"Meteor B. Dragon",
+			"dc":55,
+			"attribute":"FIRE",
+			"card_type":"DRAGON",
+			"level":8,
+			"atk":3500,
+			"def":2000,
+			"fusions":[
+				{
+					"product":"024",
+					"material":2
+				}
+			]
+		},
+		{
+			"number":"015",
+			"name":"Tyhone #2",
+			"dc":36,
+			"attribute":"FIRE",
+			"card_type":"DRAGON",
+			"level":6,
+			"atk":1700,
+			"def":1900,
+			"fusions":[
+				{
+					"product":"006",
+					"material":1
+				},
+				{
+					"product":"007",
+					"material":1
+				},
+				{
+					"product":"020",
+					"material":1
+				},
+				{
+					"product":"024",
+					"material":2
+				},
+				{
+					"product":"030",
+					"material":2
+				},
+				{
+					"product":"476",
+					"material":2
+				},
+				{
+					"product":"479",
+					"material":2
+				},
+				{
+					"product":"529",
+					"material":1
+				},
+				{
+					"product":"632",
+					"material":1
+				}
+			]
+		},
+		{
+			"number":"024",
+			"name":"Thousand Dragon",
+			"dc":44,
+			"attribute":"WIND",
+			"card_type":"DRAGON",
+			"level":7,
+			"atk":2400,
+			"def":2000
+		},
+		{
+			"number":"036",
+			"name":"Time Wizard",
+			"dc":14,
+			"attribute":"LIGHT",
+			"card_type":"SPELLCASTER",
+			"level":2,
+			"atk":500,
+			"def":400,
+			"fusions":[
+				{
+					"product":"024",
+					"material":1
+				},
+				{
+					"product":"035",
+					"material":2
+				},
+				{
+					"product":"124",
+					"material":2
+				},
+				{
+					"product":"312",
+					"material":2
+				},
+				{
+					"product":"339",
+					"material":2
+				},
+				{
+					"product":"536",
+					"material":2
+				},
+				{
+					"product":"544",
+					"material":2
+				},
+				{
+					"product":"584",
+					"material":1
+				}
+			]
 		},
 		{
 			"number":"294",

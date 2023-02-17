@@ -2,15 +2,25 @@ extends Node2D
 
 enum color {RED, WHITE}
 
+# Enums on all possible variables a card can have
+enum attributes {LIGHT, DARK, FIRE, EARTH, WATER, WIND}
+enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
+
 var matrix # Matrix for cards
 var matrix_indicator # Matrix for indicators
 
 # Ensures effects that trigger at start of turn occur by the oldest card first, and can be used as a general array for checking every card. Cards are popped when destroyed.
 var card_age = []
 
-#Decks have exactly 40 cards. These will contain pointers to the databases.
+# Decks have exactly 40 cards. These will contain pointers to the databases.
 var deck_red = []
 var deck_white = []
+
+# Hands can have up to five cards, which are drawn immediately when the hand is opened for a summon.
+var hand_red = []
+var hand_red_num = 0
+var hand_white = []
+var hand_white_num = 0
 
 var lp_red = 4000
 var lp_white = 4000
@@ -72,10 +82,19 @@ func move_card(x1, y1, x2, y2):
 		if card1.is_leader:
 			destroy_card_at(x2, y2)
 			move_card_to_empty(x1, y1, x2, y2)
+		else:
+			pass
 	else:
 		if card2.is_leader:
 			calculate_damage(card1.atk, 0, card2.team) # Leaders are treated as having 0 ATK, and being in Attack Position at all times.
 		else:
+			if card2.card_type == card_types.MAGIC or \
+			card2.card_type == card_types.RITUAL or \
+			card2.card_type == card_types.TRAP_FULL or \
+			card2.card_type == card_types.TRAP_LIMITED:
+				destroy_card_at(x2, y2)
+				move_card_to_empty(x1, y1, x2, y2)
+				return
 			if card2.in_attack_position:
 				if card1.atk > card2.atk:
 					calculate_damage(card1.atk, card2.atk, card2.team)
@@ -261,6 +280,7 @@ func get_card_data(card_id):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	randomize()
 	matrix = create_map(7,7)
 	matrix_indicator = create_map(8,8)
 	validate_addons(get_addons())
@@ -274,8 +294,14 @@ func _ready():
 	# Create White Leader (Goes second)
 	create_card(4,1)
 	set_leader(4,1, color.WHITE)
+	
+	#Autoload DeckData, and shuffle (Duplicate copies the data instead of referencing it)
+	deck_red = DeckData.deck_red.duplicate()
+	deck_white = DeckData.deck_white.duplicate()
+	deck_red.shuffle()
+	deck_white.shuffle()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	get_node("HUD/CanvasLayer/LP_Red").text=str(lp_red)
-	get_node("HUD/CanvasLayer/LP_White").text=str(lp_white)
+	get_node("HUD/%LP_Red").text=str(lp_red)
+	get_node("HUD/%LP_White").text=str(lp_white)
