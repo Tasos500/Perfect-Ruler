@@ -17,6 +17,7 @@ var input_direction = Vector2(0,0)
 var is_moving = false
 var movement_percentage = 0.0
 var can_move = true
+var in_menu = false
 
 # Current position
 var grid_x = 4
@@ -79,24 +80,25 @@ func _process(delta):
 	if cancelling:
 		$Sprite.modulate.a8 = 0
 		move_cancel(delta)
-	if turn_ending:
-		$Sprite.modulate.a8 = 0
-		end_turn(delta)
-	elif card_is_moving:
-		card_movement()
-	else:
-		if !is_moving and can_move:
-			process_cursor_input()
-		elif input_direction != Vector2.ZERO:
-			move(delta)
+	if !in_menu:
+		if turn_ending:
+			$Sprite.modulate.a8 = 0
+			end_turn(delta)
+		elif card_is_moving:
+			card_movement()
 		else:
-			is_moving = false
-		if !is_moving:
-			process_button_input()
-		if team == color.RED:
-			get_node("Sprite").texture = cursor_red
-		elif team == color.WHITE:
-			get_node("Sprite").texture = cursor_white
+			if !is_moving and can_move:
+				process_cursor_input()
+			elif input_direction != Vector2.ZERO:
+				move(delta)
+			else:
+				is_moving = false
+			if !is_moving and !in_menu:
+				process_button_input()
+			if team == color.RED:
+				get_node("Sprite").texture = cursor_red
+			elif team == color.WHITE:
+				get_node("Sprite").texture = cursor_white
 
 func process_button_input():
 	if Input.is_action_just_pressed("ui_summon"):
@@ -324,9 +326,13 @@ func process_summon():
 		else:
 			if board.check_if_summonable(grid_x, grid_y):
 				board.clear_move_tiles()
+				in_menu = true
+				get_node("../HUD/Hand").move_hand()
+				"""
 				if board.get_card(grid_x, grid_y) != null:
 					board.destroy_card_at(grid_x, grid_y) # Temporary until fusions are implemented
 				board.create_card(grid_x, grid_y)
+				"""
 				last_summoning = false
 				has_summoned = true
 			else:
