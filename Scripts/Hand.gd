@@ -7,6 +7,7 @@ var hand_active = false
 var current_hand
 var current_deck
 var fusion_queue = []
+var fusion_queue_confirm = []
 
 var movement_percentage = 0.0
 var move_speed = 1000
@@ -103,6 +104,8 @@ func process_button_input():
 		if fusion_queue.size() != 0:
 			fusion_queue.erase(hand_pos)
 			process_fusion_counters()
+	elif Input.is_action_just_pressed("ui_accept"):
+		process_fusion_queue()
 
 # Draws cards into the Cursor's hand, until it reaches 5.
 func draw():
@@ -147,6 +150,22 @@ func turn_end_update_hand():
 	for i in range (1, 6):
 		if current_hand.size() != 0:
 			get_node("Hand"+str(i)).card_id = current_hand[i - 1]
+
+func process_fusion_queue():
+	fusion_queue_confirm = []
+	if fusion_queue.size() == 0:
+		fusion_queue_confirm.push_back(get_hand_card_id(hand_pos))
+	else:
+		for i in fusion_queue:
+			fusion_queue_confirm.push_back(get_hand_card_id(i))
+	if !board.is_empty(cursor.grid_x, cursor.grid_y):
+		if !board.get_node(board.get_card(cursor.grid_x, cursor.grid_y)).is_leader:
+			fusion_queue_confirm.push_front(board.get_node(board.get_card(cursor.grid_x, cursor.grid_y).card_id))
+	print(fusion_queue_confirm)
+		
+
+func get_hand_card_id(number):
+	return get_node("Hand"+str(number)).card_id
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

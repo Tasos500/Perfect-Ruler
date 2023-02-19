@@ -149,6 +149,19 @@ func create_card(w, h):
 	get_node(get_card(w,h)).position = Vector2(75 + 150*w, 75 + 150*h)
 	
 
+func process_fusion(card_id1, card_id2):
+	var data1 = get_card_data(card_id1)
+	var data2 = get_card_data(card_id2)
+	if data1.has("fusions") and data2.has("fusions"):
+		for i in data1["fusions"]:
+			for j in data2["fusions"]:
+				pass
+				if i["product"] == j["product"] and i["material"] != j["material"]:
+					return card_id1.split(".")[0] + card_id1.split(".")[1] + i["product"]
+	else:
+		return null
+	
+
 func get_addons():
 	var files = []
 	var dir = Directory.new()
@@ -275,7 +288,7 @@ func check_if_passable(x, y):
 func get_card_data(card_id):
 	var mod_id = card_id.split(".")
 	if addons_id.find(str(mod_id[0] + "." + mod_id[1])) != -1:
-		for card in valid_addons[0].cards:
+		for card in valid_addons[addons_id.find(str(mod_id[0] + "." + mod_id[1]))].cards:
 			if card["number"] == str(mod_id[2]):
 				return card
 
