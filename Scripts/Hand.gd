@@ -162,7 +162,7 @@ func process_fusion_queue():
 		if !board.get_node(board.get_card(cursor.grid_x, cursor.grid_y)).is_leader:
 			fusion_queue_confirm.push_front(board.get_node(board.get_card(cursor.grid_x, cursor.grid_y).card_id))
 	print(fusion_queue_confirm)
-		
+
 
 func get_hand_card_id(number):
 	return get_node("Hand"+str(number)).card_id
