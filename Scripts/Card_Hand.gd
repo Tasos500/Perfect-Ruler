@@ -78,7 +78,7 @@ func move(delta):
 
 func move_to_hand(delta):
 	if can_move:
-		movement_percentage += 8 * delta
+		movement_percentage += 10 * delta
 		if movement_percentage >= 1.0:
 			#position = default_position
 			position = initial_position + (1280 * Vector2(-1,0))

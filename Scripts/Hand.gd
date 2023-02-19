@@ -25,7 +25,7 @@ onready var cursor = $"../../Cursor"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	randomize()
 
 func move_hand():
 	initial_position = offset
@@ -42,14 +42,10 @@ func move_hand():
 func place_undrawn_cards_offscreen():
 	if card_num < current_hand.size():
 		for i in range (card_num+1, current_hand.size()+1):
-			if i == 1:
-				print("Position before move is: " + str(get_node("Hand"+str(i)).position.x))
 			get_node("Hand"+str(i)).position.x = get_node("Hand"+str(i)).default_position.x + 1280 
 			get_node("Hand"+str(i)).initial_position = get_node("Hand"+str(i)).position
 			get_node("Hand"+str(i)).has_moved = false
 			get_node("Hand"+str(i)).is_moving = false
-			if i == 1:
-				print("Position after move is: " + str(get_node("Hand"+str(i)).position.x))
 		card_anim_current = card_num + 1
 
 func animate_draw_cards():
@@ -59,7 +55,6 @@ func animate_draw_cards():
 		elif get_node("Hand"+str(card_anim_current)).has_moved:
 			card_anim_current += 1
 	else:
-		print("Position after draw is: " + str(get_node("Hand1").position.x))
 		card_anim_active = false
 		can_move = true
 		card_num = 5
@@ -139,9 +134,19 @@ func process_fusion_counters():
 		get_node("Fusion_Counter"+str(i) + "/Label").text=str(i)
 
 func clear_fusion_counters():
-	for i in range (1, 5):
+	for i in range (1, 6):
 		get_node("Fusion_Counter"+str(i)).hide()
-	get_node("Fusion_Counter5").hide() # Necessary to prevent bug where Counter 5 is visible after a turn ends.
+
+func turn_end_update_hand():
+	if cursor.team == color.RED:
+		current_hand = board.hand_red
+		current_deck = board.deck_red
+	else:
+		current_hand = board.hand_white
+		current_deck = board.deck_white
+	for i in range (1, 6):
+		if current_hand.size() != 0:
+			get_node("Hand"+str(i)).card_id = current_hand[i - 1]
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
