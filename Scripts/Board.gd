@@ -5,6 +5,7 @@ enum color {RED, WHITE}
 # Enums on all possible variables a card can have
 enum attributes {LIGHT, DARK, FIRE, EARTH, WATER, WIND}
 enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
+enum terrain {NORMAL, FOREST, WASTELAND, MOUNTAIN, SEA, DARK, TOON, CRUSH, LABYRINTH}
 
 var matrix # Matrix for cards
 var matrix_indicator # Matrix for indicators
@@ -228,7 +229,7 @@ func check_if_summonable(x, y):
 	# Double check on coords to prevent crashes
 	if (x in summon_x_range) and (y in summon_y_range):
 		# If tile is a Labyrinth (Add check for labyrinth crossing after effects are implemented)
-		if $TileMap.get_cell(x, y) != 8:
+		if $TileMap.get_cell(x, y) != terrain.LABYRINTH:
 			# If tile is not empty
 			if get_card(x, y) != null:
 				# If card in tile is friendly and NOT a leader
@@ -243,7 +244,7 @@ func check_if_passable(x, y):
 	# Double check on coords to prevent crashes
 	if (x >= 1 and x <= 7) and (y >= 1 and y <= 7):
 		# If tile is a Labyrinth (Add check for labyrinth crossing after effects are implemented)
-		if $TileMap.get_cell(x, y) != 8:
+		if $TileMap.get_cell(x, y) != terrain.LABYRINTH:
 			# If tile is not empty
 			if get_card(x, y) != null:
 				# If card is self
