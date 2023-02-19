@@ -384,6 +384,7 @@ func end_turn(delta):
 		hand.hand_pos = 1
 		hand.fusion_queue = []
 		hand.clear_fusion_counters()
+		hand.reset_cards_position()
 	
 
 func move(delta):

@@ -47,6 +47,8 @@ var initial_position = Vector2(0,0)
 var input_direction = Vector2(0,0)
 var is_moving = false
 var has_moved = false
+var is_moving_to_hand = false
+var default_position
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -61,6 +63,7 @@ func _ready():
 	get_node("Card_Back").modulate.a8 = 255
 	get_node("Card_Front_Frame").modulate.a8 = 255
 	card_id = "Tasos500.TestMod.801"
+	default_position = position
 	
 func move(delta):
 	if can_move:
@@ -73,6 +76,18 @@ func move(delta):
 		else:
 			position = initial_position + (tile_size * input_direction * movement_percentage)
 
+func move_to_hand(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			#position = default_position
+			position = initial_position + (1280 * Vector2(-1,0))
+			movement_percentage = 0.0
+			is_moving_to_hand = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + (1280 * Vector2(-1,0) * movement_percentage)
 
 func spellbind(turns):
 	has_moved = true
@@ -99,11 +114,8 @@ func spellbind_cure():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if !is_moving:
-		initial_position = position
-	elif input_direction != Vector2.ZERO:
-		move(delta)
-	else:
+	if is_moving_to_hand and !has_moved and !is_moving:
+		move_to_hand(delta)
 		is_moving = false
 	if in_attack_position:
 		if team == color.RED:
