@@ -192,8 +192,12 @@ func _process(delta):
 		get_node("%Level").hide()
 		if card_type == card_types.MAGIC or card_type == card_types.RITUAL:
 			get_node("%Card_Front_Frame").animation = "Spell"
+			$Card_Front_Frame/Attribute.frame = 6
+			get_node("%Attribute").show()
 		elif card_type == card_types.TRAP_FULL or card_type == card_types.TRAP_LIMITED:
 			get_node("%Card_Front_Frame").animation = "Trap"
+			$Card_Front_Frame/Attribute.frame = 7
+			get_node("%Attribute").show()
 		elif "effect" in board.get_card_data(card_id):
 			get_node("%Card_Front_Frame").animation = "Monster_Effect"
 		else:
