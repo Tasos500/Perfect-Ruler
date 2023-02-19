@@ -16,8 +16,8 @@ var is_moving = false
 var can_move = false
 var going_down = false
 
-onready var board  = "../.."
-onready var cursor = "../../Cursor"
+onready var board  = $"../.."
+onready var cursor = $"../../Cursor"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -45,8 +45,8 @@ func move(delta):
 		if !going_down:
 			can_move = true
 		else:
-			get_node(cursor).in_menu = false
-			get_node(cursor).has_summoned = false
+			cursor.in_menu = false
+			cursor.has_summoned = false
 			hand_pos = 1
 			move_cursor()
 		going_down = !going_down
@@ -75,12 +75,12 @@ func process_button_input():
 
 # Draws cards into the Cursor's hand, until it reaches 5.
 func draw():
-	if get_node(cursor).team == color.RED:
-		current_hand = get_node(board).hand_red
-		current_deck = get_node(board).deck_red
+	if cursor.team == color.RED:
+		current_hand = board.hand_red
+		current_deck = board.deck_red
 	else:
-		current_hand = get_node(board).hand_white
-		current_deck = get_node(board).deck_white
+		current_hand = board.hand_white
+		current_deck = board.deck_white
 	card_num = current_hand.size()
 	while current_hand.size() != 5:
 		if current_deck.size() == 0:
@@ -101,6 +101,11 @@ func process_fusion_counters():
 			get_node("Fusion_Counter"+str(i)).hide()
 	for i in range (1,5):
 		get_node("Fusion_Counter"+str(i) + "/Label").text=str(i)
+
+func clear_fusion_counters():
+	for i in range (1, 5):
+		get_node("Fusion_Counter"+str(i)).hide()
+	get_node("Fusion_Counter5").hide() # Necessary to prevent bug where Counter 5 is visible after a turn ends.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

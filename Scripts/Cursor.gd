@@ -64,6 +64,7 @@ var cancel_direction = Vector2(0,0)
 
 onready var board = $".."
 onready var tilemap = $"../TileMap"
+onready var hand = $"../HUD/Hand"
 
 # Movement stack, in order to hold moves to be done by a card once confirmed.
 var movement_stack = []
@@ -325,7 +326,7 @@ func process_summon():
 			last_summoning = true
 		else:
 			if board.check_if_summonable(grid_x, grid_y):
-				board.clear_move_tiles()
+				#board.clear_move_tiles()
 				in_menu = true
 				get_node("../HUD/Hand").move_hand()
 				"""
@@ -333,8 +334,9 @@ func process_summon():
 					board.destroy_card_at(grid_x, grid_y) # Temporary until fusions are implemented
 				board.create_card(grid_x, grid_y)
 				"""
-				last_summoning = false
-				has_summoned = true
+				#last_summoning = false
+				#has_summoned = true
+				summoning = true
 			else:
 				summoning = true
 	can_move = true
@@ -379,6 +381,9 @@ func end_turn(delta):
 			grid_x = grid_x_red
 			grid_y = grid_y_red
 		upkeep()
+		hand.hand_pos = 1
+		hand.fusion_queue = []
+		hand.clear_fusion_counters()
 	
 
 func move(delta):
