@@ -49,6 +49,8 @@ var is_moving = false
 var has_moved = false
 var is_moving_to_hand = false
 var default_position
+var center_position = Vector2(1280/2, 960/2)
+var is_moving_to_center = false
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -80,7 +82,6 @@ func move_to_hand(delta):
 	if can_move:
 		movement_percentage += 10 * delta
 		if movement_percentage >= 1.0:
-			#position = default_position
 			position = initial_position + (1280 * Vector2(-1,0))
 			movement_percentage = 0.0
 			is_moving_to_hand = false
@@ -88,6 +89,18 @@ func move_to_hand(delta):
 			initial_position = position
 		else:
 			position = initial_position + (1280 * Vector2(-1,0) * movement_percentage)
+
+func move_to_center(delta):
+	if can_move:
+		movement_percentage += 10 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + ((center_position - initial_position).abs() * input_direction)
+			movement_percentage = 0.0
+			is_moving_to_center = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + ((center_position - initial_position).abs() * input_direction * movement_percentage)
 
 func spellbind(turns):
 	has_moved = true
@@ -116,6 +129,9 @@ func spellbind_cure():
 func _process(delta):
 	if is_moving_to_hand and !has_moved and !is_moving:
 		move_to_hand(delta)
+		is_moving = false
+	if is_moving_to_center and !has_moved and !is_moving:
+		move_to_center(delta)
 		is_moving = false
 	if in_attack_position:
 		if team == color.RED:
