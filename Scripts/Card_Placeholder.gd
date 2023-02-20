@@ -80,6 +80,8 @@ func move(delta):
 		else:
 			position = initial_position + (tile_size * input_direction * movement_percentage)
 
+func data_copy():
+	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move]
 
 func spellbind(turns):
 	has_moved = true

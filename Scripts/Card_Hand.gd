@@ -51,6 +51,11 @@ var is_moving_to_hand = false
 var default_position
 var center_position = Vector2(1280/2, 960/2)
 var is_moving_to_center = false
+var is_moving_down = false
+var is_moving_up = false
+var is_moving_to_default = false
+var is_moving_horizontally = false
+var horizontal_distance
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -64,7 +69,6 @@ onready var board = $"../../.."
 func _ready():
 	get_node("Card_Back").modulate.a8 = 255
 	get_node("Card_Front_Frame").modulate.a8 = 255
-	card_id = "Tasos500.TestMod.801"
 	default_position = position
 	
 func move(delta):
@@ -92,7 +96,7 @@ func move_to_hand(delta):
 
 func move_to_center(delta):
 	if can_move:
-		movement_percentage += 10 * delta
+		movement_percentage += 8 * delta
 		if movement_percentage >= 1.0:
 			position = initial_position + ((center_position - initial_position).abs() * input_direction)
 			movement_percentage = 0.0
@@ -101,6 +105,82 @@ func move_to_center(delta):
 			initial_position = position
 		else:
 			position = initial_position + ((center_position - initial_position).abs() * input_direction * movement_percentage)
+
+func move_to_default(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + ((default_position - initial_position).abs() * input_direction)
+			movement_percentage = 0.0
+			is_moving_to_default = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + ((default_position - initial_position).abs() * input_direction * movement_percentage)
+
+func move_down(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (1000 * Vector2(0,1))
+			movement_percentage = 0.0
+			is_moving_down = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + (1000 * Vector2(0,1) * movement_percentage)
+
+func move_up(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (1000 * Vector2(0,-1))
+			movement_percentage = 0.0
+			is_moving_up = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + (1000 * Vector2(0,-1) * movement_percentage)
+
+func move_horizontally(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (horizontal_distance * input_direction)
+			movement_percentage = 0.0
+			is_moving_horizontally = false
+			has_moved = true
+			initial_position = position
+		else:
+			position = initial_position + (horizontal_distance * input_direction * movement_percentage)
+
+func is_in_center():
+	if position == Vector2(1280/2, 960/2):
+		return true
+	else:
+		return false
+
+func data_copy():
+	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move]
+
+func data_paste(data):
+	team = data[0]
+	atk = data[1]
+	def = data[2]
+	dc = data[3]
+	attribute = data[4]
+	card_type = data[5]
+	level = data[6]
+	face_up = data[7]
+	last_face_up = data[8]
+	in_attack_position = data[9]
+	revealed = data[10]
+	turns_spellbound = data[11]
+	eternally_spellbound = data[12]
+	just_spellbound = data[13]
+	tile_speed = data[14]
+	has_moved = data[15]
+	can_move =  data[16]
 
 func spellbind(turns):
 	has_moved = true
@@ -130,8 +210,20 @@ func _process(delta):
 	if is_moving_to_hand and !has_moved and !is_moving:
 		move_to_hand(delta)
 		is_moving = false
-	if is_moving_to_center and !has_moved and !is_moving:
+	elif is_moving_to_center and !has_moved and !is_moving:
 		move_to_center(delta)
+		is_moving = false
+	elif is_moving_down and !has_moved and !is_moving:
+		move_down(delta)
+		is_moving = false
+	elif is_moving_up and !has_moved and !is_moving:
+		move_up(delta)
+		is_moving = false
+	elif is_moving_to_default and !has_moved and !is_moving:
+		move_to_default(delta)
+		is_moving = false
+	elif is_moving_horizontally and !has_moved and !is_moving:
+		move_horizontally(delta)
 		is_moving = false
 	if in_attack_position:
 		if team == color.RED:
