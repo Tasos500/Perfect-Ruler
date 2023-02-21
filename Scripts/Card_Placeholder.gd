@@ -52,6 +52,7 @@ var has_moved = false
 var spawning = true
 var despawning = false
 var last_card_id = null
+var default_card_art = preload("res://Assets/Card/CardArtTemplate.png")
 
 onready var board = $".."
 
@@ -67,7 +68,6 @@ func _ready():
 	
 	get_node("Card_Back").modulate.a8 = 0
 	get_node("Card_Front_Frame").modulate.a8 = 0
-	card_id = "Tasos500.TestMod.294"
 	
 func move(delta):
 	if can_move:
@@ -82,6 +82,25 @@ func move(delta):
 
 func data_copy():
 	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move]
+
+func data_paste(data):
+	team = data[0]
+	atk = data[1]
+	def = data[2]
+	dc = data[3]
+	attribute = data[4]
+	card_type = data[5]
+	level = data[6]
+	face_up = data[7]
+	last_face_up = data[8]
+	in_attack_position = data[9]
+	revealed = data[10]
+	turns_spellbound = data[11]
+	eternally_spellbound = data[12]
+	just_spellbound = data[13]
+	tile_speed = data[14]
+	has_moved = data[15]
+	can_move =  data[16]
 
 func spellbind(turns):
 	has_moved = true
@@ -224,6 +243,7 @@ func _process(delta):
 		elif file.file_exists(file_jpeg):
 			file_location = file_jpeg
 		else:
+			get_node("%Card_Art").texture = default_card_art
 			return
 		file = Image.new()
 		file.load(file_location)

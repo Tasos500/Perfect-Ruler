@@ -11,7 +11,6 @@ enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WIN
 # Position
 var grid_x
 var grid_y
-var cursor
 # Can be boosted through terrain boosts
 var tile_speed = 1
 
@@ -56,13 +55,24 @@ var is_moving_up = false
 var is_moving_to_default = false
 var is_moving_horizontally = false
 var horizontal_distance
+var position_confirm
+var is_knocked_offscreen = false
+var is_first_in_queue = false
+var is_second_in_queue = false
+var touching_final = false
+var is_moving_to_first = false
+var is_moving_to_field = false
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
 var despawning = false
 var last_card_id = null
+var default_card_art = preload("res://Assets/Card/CardArtTemplate.png")
 
 onready var board = $"../../.."
+onready var hand = $".."
+onready var hud = $"../.."
+onready var cursor = board.get_node("Cursor")
 #HUD is always a child of Board, so this will always point to the Board for Hand Cards.
 
 # Called when the node enters the scene tree for the first time.
@@ -151,8 +161,63 @@ func move_horizontally(delta):
 			is_moving_horizontally = false
 			has_moved = true
 			initial_position = position
+			position_confirm = position
 		else:
 			position = initial_position + (horizontal_distance * input_direction * movement_percentage)
+
+func knock_offscreen(delta):
+	if can_move:
+		movement_percentage += 5* delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (500 * Vector2(-1, -0.8))
+			rotation_degrees = -80
+			movement_percentage = 0.0
+			is_knocked_offscreen = false
+			has_moved = true
+			initial_position = position
+			position_confirm = position
+			board.add_to_graveyard(card_id)
+			despawning = true
+		else:
+			position = initial_position + (500 * Vector2(-1, -0.8) * movement_percentage)
+			rotation_degrees =  0 - 80 * movement_percentage
+
+func move_to_first(delta):
+	if can_move:
+		movement_percentage += 8 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (1280/4 * Vector2(-1, 0))
+			movement_percentage = 0.0
+			is_moving_to_first = false
+			has_moved = true
+			initial_position = position
+		elif movement_percentage >= 0.8 and !touching_final and !hand.valid_fusion:
+			touching_final = true
+			hand.fusion1.is_knocked_offscreen = true
+			hand.fusion1.has_moved = false
+		else:
+			position = initial_position + (1280/4 * Vector2(-1, 0) * movement_percentage)
+
+func move_to_field(delta):
+	if can_move:
+		movement_percentage += 4 * delta
+		if movement_percentage >= 1.0:
+			position = initial_position + (1280/4 * Vector2(1, 0))
+			scale = Vector2(1, 1)
+			movement_percentage = 0.0
+			is_moving_to_field = false
+			initial_position = position
+			team = cursor.team
+			board.create_card(cursor.grid_x, cursor.grid_y)
+			board.get_node(board.get_card(cursor.grid_x, cursor.grid_y)).card_id = card_id
+			hand.final_card = data_copy()
+			despawning = true
+			hand.reset_start = true
+			hand.remove_child(self)
+			hud.add_child(self)
+		else:
+			position = initial_position + (1280/4 * Vector2(1, 0) * movement_percentage)
+			scale = Vector2(2, 2) + (Vector2(-1, -1) * movement_percentage)
 
 func is_in_center():
 	if position == Vector2(1280/2, 960/2):
@@ -179,8 +244,6 @@ func data_paste(data):
 	eternally_spellbound = data[12]
 	just_spellbound = data[13]
 	tile_speed = data[14]
-	has_moved = data[15]
-	can_move =  data[16]
 
 func spellbind(turns):
 	has_moved = true
@@ -224,6 +287,15 @@ func _process(delta):
 		is_moving = false
 	elif is_moving_horizontally and !has_moved and !is_moving:
 		move_horizontally(delta)
+		is_moving = false
+	elif is_knocked_offscreen and !has_moved and !is_moving:
+		knock_offscreen(delta)
+		is_moving = false
+	elif is_moving_to_first and !has_moved and !is_moving:
+		move_to_first(delta)
+		is_moving = false
+	elif is_moving_to_field and !has_moved and !is_moving:
+		move_to_field(delta)
 		is_moving = false
 	if in_attack_position:
 		if team == color.RED:
@@ -330,6 +402,7 @@ func _process(delta):
 		elif file.file_exists(file_jpeg):
 			file_location = file_jpeg
 		else:
+			get_node("%Card_Art").texture = default_card_art
 			return
 		file = Image.new()
 		file.load(file_location)
@@ -355,3 +428,6 @@ func _process(delta):
 	#material.set_shader_param("spellbound", turns_spellbound)
 	
 	
+
+
+

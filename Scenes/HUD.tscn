@@ -1,10 +1,8 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://Scenes/Card_Hand.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Assets/Card/Hand_Cursor.png" type="Texture" id=3]
 [ext_resource path="res://Scripts/Hand.gd" type="Script" id=4]
-[ext_resource path="res://Scenes/Fusion_Counter.tscn" type="PackedScene" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
@@ -27,41 +25,6 @@ script = ExtResource( 4 )
 position = Vector2( 180, 480 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
-
-[node name="Hand1" parent="Hand" instance=ExtResource( 2 )]
-position = Vector2( 180, 480 )
-scale = Vector2( 2, 2 )
-
-[node name="Hand2" parent="Hand" instance=ExtResource( 2 )]
-position = Vector2( 410, 480 )
-scale = Vector2( 2, 2 )
-
-[node name="Hand3" parent="Hand" instance=ExtResource( 2 )]
-position = Vector2( 640, 480 )
-scale = Vector2( 2, 2 )
-
-[node name="Hand4" parent="Hand" instance=ExtResource( 2 )]
-position = Vector2( 870, 480 )
-scale = Vector2( 2, 2 )
-
-[node name="Hand5" parent="Hand" instance=ExtResource( 2 )]
-position = Vector2( 1100, 480 )
-scale = Vector2( 2, 2 )
-
-[node name="Fusion_Counter1" parent="Hand" instance=ExtResource( 5 )]
-visible = false
-
-[node name="Fusion_Counter2" parent="Hand" instance=ExtResource( 5 )]
-visible = false
-
-[node name="Fusion_Counter3" parent="Hand" instance=ExtResource( 5 )]
-visible = false
-
-[node name="Fusion_Counter4" parent="Hand" instance=ExtResource( 5 )]
-visible = false
-
-[node name="Fusion_Counter5" parent="Hand" instance=ExtResource( 5 )]
-visible = false
 
 [node name="HUD_Layer" type="CanvasLayer" parent="."]
 

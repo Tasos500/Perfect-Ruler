@@ -131,8 +131,21 @@ func destroy_card_at(x, y):
 	card_destroyed.despawning = true
 	matrix[x-1][y-1] = null
 
+func banish_at(x,y):
+	var card_destroyed = get_node(get_card(x, y))
+	card_destroyed.can_move = false
+	card_age.erase(get_card(x, y))
+	card_destroyed.queue_free()
+	matrix[x-1][y-1] = null
+
 func destroy_card_name(_name):
 	pass
+
+func add_to_graveyard(card_id):
+	if $"Cursor".team == 0:
+		graveyard_red.append(card_id)
+	else:
+		graveyard_white.append(card_id)
 
 func calculate_damage(atk1, atk2, team):
 	if team == 0:
@@ -144,6 +157,8 @@ func create_card(w, h):
 	var new_card = load_card.instance()
 	if $Cursor.team == color.WHITE: # If White
 		new_card.team = color.WHITE
+	else:
+		new_card.team = color.RED
 	add_child(new_card, true)
 	add_to_matrix(new_card, w, h)
 	get_node(get_card(w,h)).position = Vector2(75 + 150*w, 75 + 150*h)
@@ -157,7 +172,7 @@ func process_fusion(card_id1, card_id2):
 			for j in data2["fusions"]:
 				pass
 				if i["product"] == j["product"] and i["material"] != j["material"]:
-					return card_id1.split(".")[0] + card_id1.split(".")[1] + i["product"]
+					return str(card_id1.split(".")[0] + "." + card_id1.split(".")[1] + "." + i["product"])
 	else:
 		return null
 	
