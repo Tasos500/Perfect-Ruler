@@ -214,7 +214,10 @@ func move_to_field(delta):
 			despawning = true
 			hand.reset_start = true
 			hand.remove_child(self)
-			hud.add_child(self)
+			board.add_child(self)
+			position = $"../Cursor".position
+			if $"../Cursor".team == 1:
+				rotation_degrees = 180
 		else:
 			position = initial_position + (1280/4 * Vector2(1, 0) * movement_percentage)
 			scale = Vector2(2, 2) + (Vector2(-1, -1) * movement_percentage)

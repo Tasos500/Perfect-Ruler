@@ -318,6 +318,13 @@ func move_is_valid():
 
 func process_summon():
 	can_move = false
+	if board.get_card(grid_x, grid_y) != null:
+		if has_summoned and board.get_node_or_null(board.get_card(grid_x, grid_y)).is_leader:
+			in_menu = true
+			get_node("../HUD/Hand").move_hand()
+			hand.can_move = true
+			can_move = true
+			return
 	if last_summoning != summoning:
 		if summoning == true:
 			board.show_summon_tiles(grid_x, grid_y)

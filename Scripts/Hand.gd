@@ -53,7 +53,10 @@ func move_hand():
 		input_direction = Vector2(0,1)
 	else:
 		input_direction = Vector2(0,-1)
-		draw()
+		if cursor.has_summoned:
+			draw_post_summon()
+		else:
+			draw()
 	is_moving = true
 	can_move = false
 	hand_active = false
@@ -94,10 +97,10 @@ func move(delta):
 		is_moving = false
 		if !going_down:
 			hand_active = true
-			card_anim_active = true
+			if !cursor.has_summoned:
+				card_anim_active = true
 		else:
 			cursor.in_menu = false
-			cursor.has_summoned = false
 		going_down = !going_down
 	else:
 		offset = initial_position + (1000 * input_direction * movement_percentage)
@@ -109,7 +112,7 @@ func process_button_input():
 		elif confirm_step and !mid_animation:
 			reverse_fusion_queue()
 	elif Input.is_action_just_pressed("ui_right") and !confirm_step and !mid_animation:
-		if hand_pos != 5:
+		if hand_pos != 5 and hand_pos < card_num:
 			hand_pos += 1
 		move_cursor()
 	elif Input.is_action_just_pressed("ui_left") and !confirm_step and !mid_animation:
@@ -145,6 +148,22 @@ func draw():
 			break
 		current_hand.push_back(str(current_deck.pop_front()))
 		get_node("Hand"+str(current_hand.size())).card_id = current_hand[current_hand.size() - 1]
+	for i in range (1, 6):
+			get_node("Hand"+str(i)).show()
+
+func draw_post_summon():
+	if cursor.team == color.RED:
+		current_hand = board.hand_red
+		current_deck = board.deck_red
+	else:
+		current_hand = board.hand_white
+		current_deck = board.deck_white
+	card_num = current_hand.size()
+	if card_num != 0:
+		for i in range (1, current_hand.size()+1):
+			get_node("Hand"+str(i)).card_id = current_hand[i - 1]
+		for i in range (current_hand.size()+1, 6):
+			get_node("Hand"+str(i)).hide()
 
 func process_fusion_counters():
 	if fusion_queue.size() > 0:
@@ -213,6 +232,7 @@ func process_fusion_queue():
 func reverse_fusion_queue():
 	cancelling = true
 	mid_animation = true
+	first_is_board = false
 	var fusion_card
 	final_nodes = []
 	for i in range (1, fusion_queue_confirm.size()+1):
@@ -284,6 +304,7 @@ func prepare_confirm_screen():
 	mid_animation = false
 
 func process_final():
+	cursor.has_summoned = true
 	if fusion_queue_confirm.size() > 1:
 		if get_node_or_null(final_nodes[0]) == null:
 			final_nodes.pop_front()
@@ -366,6 +387,8 @@ func reset_hand():
 	
 	board.get_node(board.get_card(cursor.grid_x, cursor.grid_y)).data_paste(final_card)
 	final_card = null
+	
+	cursor.has_summoned = true
 
 func setup_hand():
 	var hand
@@ -383,7 +406,7 @@ func setup_hand():
 		add_child(fusion_counter, false)
 	show()
 	board_card = null
-	
+	draw_post_summon()
 	for i in range (1, 6):
 		get_node("Hand"+str(i)).show()
 	$"Hand_Cursor".show()
@@ -429,7 +452,7 @@ func _process(delta):
 	if !mid_animation:
 		if can_move and hand_active:
 			process_button_input()
-		elif hand_active and card_anim_active:
+		elif hand_active and card_anim_active and !cursor.has_summoned:
 			animate_draw_cards()
 	if fusion_queue.size() != 0:
 		if !cancelling and ready_to_split and mid_animation and ((fusion_queue.back() == 3 and check_ready_to_split()) or (fusion_queue.back() != 3 and get_node("Hand"+str(fusion_queue.back())).is_in_center())):
