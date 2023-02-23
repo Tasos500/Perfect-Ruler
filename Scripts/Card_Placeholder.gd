@@ -94,10 +94,10 @@ func data_paste(data):
 	attribute = data[4]
 	card_type = data[5]
 	level = data[6]
-	face_up = data[7]
-	last_face_up = data[8]
+	face_up = false
+	last_face_up = false
 	in_attack_position = data[9]
-	revealed = data[10]
+	revealed = false
 	turns_spellbound = data[11]
 	eternally_spellbound = data[12]
 	just_spellbound = data[13]
