@@ -48,6 +48,7 @@ func _ready():
 	setup_hand()
 
 func move_hand():
+	move_cursor()
 	initial_position = offset
 	if going_down:
 		input_direction = Vector2(0,1)
@@ -276,7 +277,7 @@ func return_to_hand():
 
 func prepare_confirm_screen():
 	confirm_step = true
-	if board_card != null:
+	if board_card != null and first_is_board:
 		board_card.hide()
 	var fusion_card
 	for i in range (1, fusion_queue_confirm.size()+1):
@@ -421,9 +422,7 @@ func setup_hand():
 
 func check_ready_to_split():
 	if fusion_queue.back() == 3:
-		for i in range (1, 6):
-			if i == 3:
-				continue
+		for i in range (1, 6, 4):
 			if get_node("Hand" + str(i)).position.y == 1480 or get_node("Hand" + str(i)).is_in_center():
 				return true
 	return false
