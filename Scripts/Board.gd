@@ -79,6 +79,10 @@ func move_card(x1, y1, x2, y2):
 	# Target tile is neither empty nor the starting tile, so it's another card.
 	var card1 = get_node(get_card(x1, y1))
 	var card2 = get_node(get_card(x2, y2))
+	card1.face_up = true
+	card1.revealed = true
+	card2.face_up = true
+	card2.revealed = true
 	if card1.team == card2.team:
 		if card1.is_leader:
 			destroy_card_at(x2, y2)
