@@ -47,6 +47,10 @@ var initial_position = Vector2(0,0)
 var input_direction = Vector2(0,0)
 var is_moving = false
 var has_moved = false
+var flipping = false
+var rotating = false
+var original_face_up = false
+var original_attack_position = false
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -65,8 +69,7 @@ func _ready():
 	team = cursor.team
 	if team == color.WHITE:
 		rotation_degrees = 180
-	
-	get_node("Card_Back").modulate.a8 = 0
+	modulate.a8 = 8
 	get_node("Card_Front_Frame").modulate.a8 = 0
 	
 func move(delta):
@@ -125,6 +128,19 @@ func spellbind_cure():
 	eternally_spellbound = false
 	turns_spellbound = 0
 
+func flip():
+	if face_up: 
+		if get_node("%Card_Front_Frame").modulate.a8 != 255:
+			get_node("%Card_Front_Frame").modulate.a8 += 17
+		else:
+			flipping = false
+	else:
+		if get_node("%Card_Front_Frame").modulate.a8 != 0:
+			get_node("%Card_Front_Frame").modulate.a8 -= 17
+		else:
+			flipping = false
+	
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !is_moving:
@@ -133,28 +149,39 @@ func _process(delta):
 		move(delta)
 	else:
 		is_moving = false
-	if in_attack_position:
-		if team == color.RED:
-			if rotation_degrees > 5:
-				rotation_degrees -= 5
+	if rotating and!is_leader:
+		if in_attack_position:
+			if team == color.RED:
+				if rotation_degrees >= 5:
+					rotation_degrees -= 5
+				else:
+					rotation_degrees = 0
+			else:
+				if rotation_degrees >= 185:
+					rotation_degrees -= 5
+				else:
+					rotation_degrees = 180
+			if (rotation_degrees == 0 and team == color.RED) or (rotation_degrees == 180 and team == color.WHITE):
+				rotating = false
 		else:
-			if rotation_degrees > 185:
-				rotation_degrees -= 5
-	else:
-		if team == color.RED:
-			if rotation_degrees < 90:
-				rotation_degrees += 5
-		else:
-			if rotation_degrees < 270:
-				rotation_degrees += 5
+			if team == color.RED:
+				if rotation_degrees <= 90:
+					rotation_degrees += 5
+				else:
+					rotation_degrees = 90
+			else:
+				if rotation_degrees <= 270:
+					rotation_degrees += 5
+				else:
+					rotation_degrees = 270
+			if (rotation_degrees == 90 and team == color.RED) or (rotation_degrees == 270 and team == color.WHITE):
+				rotating = false
+	
+	if flipping and !is_leader:
+		flip()
 	
 	if face_up != last_face_up and !is_leader:
-		if !face_up:
-			$Card_Front_Frame.hide()
-			$Card_Back.show()
-		else:
-			$Card_Front_Frame.show()
-			$Card_Back.hide()
+		if face_up:
 			# Checks to display correct type of card
 			if (card_type == card_types.MAGIC) or (card_type == card_types.POWER_UP) or (card_type == card_types.RITUAL):
 				$Card_Front_Frame.animation = "Spell"
@@ -172,18 +199,18 @@ func _process(delta):
 		
 	
 	if spawning:
-		if get_node("Card_Back").modulate.a8 <= 255:
-			get_node("Card_Back").modulate.a8 += 400 * delta
-			get_node("Card_Front_Frame").modulate.a8 += 400 * delta
-			if get_node("Card_Back").modulate.a8 >= 255:
+		if modulate.a8 <= 255:
+			modulate.a8 += 450 * delta
+			#get_node("Card_Front_Frame").modulate.a8 += 400 * delta
+			if modulate.a8 >= 255:
 				 spawning = false
 	
 	if despawning and !spawning:
 		can_move = false
-		if get_node("Card_Back").modulate.a8 >= 0:
-			get_node("Card_Back").modulate.a8 -= 400 * delta
-			get_node("Card_Front_Frame").modulate.a8 -= 400 * delta
-			if get_node("Card_Back").modulate.a8 <= 0:
+		if modulate.a8 >= 0:
+			modulate.a8 -= 450 * delta
+			get_node("Card_Front_Frame").modulate.a8 -= 450 * delta
+			if modulate.a8 <= 0:
 				queue_free()
 	
 	if card_id != last_card_id:

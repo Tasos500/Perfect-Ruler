@@ -123,6 +123,13 @@ func process_button_input():
 			process_summon()
 	elif Input.is_action_just_pressed("ui_cancel"):
 		if (summoning or holding_card) and !cancelling:
+			if holding_card:
+				if board.get_node(card_held).original_face_up != board.get_node(card_held).face_up:
+					board.get_node(card_held).face_up = board.get_node(card_held).original_face_up
+					board.get_node(card_held).flipping = true
+				if board.get_node(card_held).original_attack_position != board.get_node(card_held).in_attack_position:
+					board.get_node(card_held).in_attack_position = board.get_node(card_held).original_attack_position
+					board.get_node(card_held).rotating = true
 			holding_card = false
 			last_summoning = false
 			summoning = false
@@ -149,6 +156,23 @@ func process_button_input():
 			end_turn_direction = calculate_end_turn_direction()
 			turn_ending = true
 			check_spellbound_cards()
+	elif holding_card and movement_stack.size() == 0:
+		if Input.is_action_just_pressed("ui_l1"):
+			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
+				board.get_node(card_held).in_attack_position = true
+				board.get_node(card_held).rotating = true
+		elif Input. is_action_just_pressed("ui_r1"):
+			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
+				board.get_node(card_held).in_attack_position = false
+				board.get_node(card_held).rotating = true
+		elif Input.is_action_just_pressed("ui_l2"):
+			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping) and !board.get_node(card_held).revealed:
+				board.get_node(card_held).face_up = false
+				board.get_node(card_held).flipping = true
+		elif Input.is_action_just_pressed("ui_r2"):
+			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
+				board.get_node(card_held).face_up = true
+				board.get_node(card_held).flipping = true
 
 func process_cursor_input():
 	if !can_move and is_moving:
@@ -204,12 +228,16 @@ func grab_card():
 			holding_card = true
 			card_held = board.get_card(grid_x, grid_y)
 			board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
+			board.get_node(card_held).original_face_up = board.get_node(card_held).face_up
+			board.get_node(card_held).original_attack_position = board.get_node(card_held).in_attack_position
 
 func release_card():
 	if holding_card:
 		if board.get_node(card_held).tile_speed >= (abs(grid_x_move-grid_x)+abs(grid_y_move-grid_y)): # Speed check
 			card_is_moving = true
 			board.clear_move_tiles()
+		if board.get_node(card_held).face_up:
+			board.get_node(card_held).revealed = true
 
 
 func card_movement():
@@ -235,6 +263,9 @@ func process_movement_stack():
 	
 	simplify_stack()
 	
+	if movement_stack.size() != 0 and !board.get_node(card_held).in_attack_position:
+		board.get_node(card_held).in_attack_position = true
+		board.get_node(card_held).rotating = true
 	#print(movement_stack)
 	#print("Stack size: ", movement_stack.size())
 	return
