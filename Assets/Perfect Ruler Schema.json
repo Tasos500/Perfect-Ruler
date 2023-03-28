@@ -1,269 +1,434 @@
 {
-	"$schema":"https://json-schema.org/draft/2020-12/schema",
-	"type":"object",
-	"properties":{
-		"mod_creator":{
-			"type":"string"
-		},
-		"mod_name":{
-			"type":"string"
-		},
-		"description":{
-			"type":"string"
-		},
-		"version":{
-			"type":"string"
-		},
-		"cards":{
-			"type":"array",
-			"minItems":1,
-			"items":{
-				"type":"object",
-				"properties":{
-					"number":{
-						"type":"string",
-						"pattern":"^([0-9]{3})$"
-					},
-					"name":{
-						"type":"string"
-					},
-					"dc":{
-						"type":"integer",
-						"minimum":0,
-						"maximum":99
-					},
-					"attribute":{
-						"enum":[
-							"LIGHT",
-							"DARK",
-							"FIRE",
-							"EARTH",
-							"WATER",
-							"WIND"
-						]
-					},
-					"card_type":{
-						"enum":[
-							"DRAGON",
-							"SPELLCASTER",
-							"ZOMBIE",
-							"WARRIOR",
-							"BEAST_WARRIOR",
-							"BEAST",
-							"WINGED_BEAST",
-							"FIEND",
-							"FAIRY",
-							"INSECT",
-							"DINOSAUR",
-							"REPTILE",
-							"FISH",
-							"SEA_SERPENT",
-							"MACHINE",
-							"THUNDER",
-							"AQUA",
-							"PYRO",
-							"ROCK",
-							"PLANT",
-							"IMMORTAL",
-							"MAGIC",
-							"POWER_UP",
-							"TRAP_LIMITED",
-							"TRAP_FULL",
-							"RITUAL"
-						]
-					},
-					"level":{
-						"type":"integer",
-						"minimum":1,
-						"maximum":12
-					},
-					"atk":{
-						"type":"integer",
-						"minimum":0,
-						"maximum":9999
-					},
-					"def":{
-						"type":"integer",
-						"minimum":0,
-						"maximum":9999
-					},
-					"effect":{
-						"type":"object",
-						"properties":{
-							"effect_properties":{
-								"type":"object",
-								"properties":{
-									"effect_type":{
-										"enum":[
-											"spellbind",
-											"destroy_opponent",
-											"heal_controller_to"
-										]
-									},
-									"attribute1":{
-										"type":[
-											"string",
-											"integer"
-										]
-									}
-								},
-								"required":[
-									"effect_type"
-								]
-							}
-						}
-					},
-					"fusions":{
-						"type":"array",
-						"minItems":1,
-						"items":{
-							"type":"object",
-							"properties":{
-								"product":{
-									"type":"string",
-									"pattern":"^([0-9]{3})$"
-								},
-								"material":{
-									"type":"integer",
-									"minimum":1,
-									"maximum":2
-								}
-							}
-						}
-					},
-					"externals":{
-						"type":"array",
-						"minItems":1,
-						"items":{
-							"type":"integer",
-							"minimum":0
-						}
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"type": "object",
+	"properties": {
+	  "mod_creator": {
+		"type": "string"
+	  },
+	  "mod_name": {
+		"type": "string"
+	  },
+	  "description": {
+		"type": "string"
+	  },
+	  "version": {
+		"type": "string"
+	  },
+	  "cards": {
+		"type": "array",
+		"minItems": 1,
+		"items": {
+		  "type": "object",
+		  "properties": {
+			"number": {
+			  "type": "string",
+			  "pattern": "^([0-9]{3})$"
+			},
+			"name": {
+			  "type": "string"
+			},
+			"dc": {
+			  "type": "integer",
+			  "minimum": 0,
+			  "maximum": 99
+			},
+			"attribute": {
+			  "enum": [
+				"LIGHT",
+				"DARK",
+				"FIRE",
+				"EARTH",
+				"WATER",
+				"WIND"
+			  ]
+			},
+			"card_type": {
+			  "enum": [
+				"DRAGON",
+				"SPELLCASTER",
+				"ZOMBIE",
+				"WARRIOR",
+				"BEAST_WARRIOR",
+				"BEAST",
+				"WINGED_BEAST",
+				"FIEND",
+				"FAIRY",
+				"INSECT",
+				"DINOSAUR",
+				"REPTILE",
+				"FISH",
+				"SEA_SERPENT",
+				"MACHINE",
+				"THUNDER",
+				"AQUA",
+				"PYRO",
+				"ROCK",
+				"PLANT",
+				"IMMORTAL",
+				"MAGIC",
+				"POWER_UP",
+				"TRAP_LIMITED",
+				"TRAP_FULL",
+				"RITUAL"
+			  ]
+			},
+			"level": {
+			  "type": "integer",
+			  "minimum": 1,
+			  "maximum": 12
+			},
+			"atk": {
+			  "type": "integer",
+			  "minimum": 0,
+			  "maximum": 9999
+			},
+			"def": {
+			  "type": "integer",
+			  "minimum": 0,
+			  "maximum": 9999
+			},
+			"effects": {
+			  "type": "array",
+			  "items": {
+				"type": "object",
+				"properties": {
+				  "trigger": {
+					"type": "array",
+					"items": {
+					  "enum": [
+						"passive",
+						"battle_engagement",
+						"flipped_face_up",
+						"flipped_face_up_battle",
+						"standby_face_up_defense",
+						"movement_triggers_limited_trap",
+						"damage_received",
+						"battle_flipped_face_up",
+						"flipped_face_up_voluntarily",
+						"destroyed_battle",
+						"destroyed",
+						"opponent_is_x",
+						"standby_counter_x",
+						"moves_terrain_x",
+						"moves_tile",
+						"moves_per_turn",
+						"opponent_destroyed",
+						"standby_face_up",
+						"flipped_face_up_card_played",
+						"lp_over_x",
+						"lp_equal_to_x",
+						"lp_under_x",
+						"leader_is_x",
+						"adjacent_x",
+						"turn_controller"
+					  ]
 					}
+				  },
+				  "effect": {
+					"enum": [
+					  "battle_bonus_temporary",
+					  "battle_bonus_temporary_atk",
+					  "battle_bonus_temporary_def",
+					  "transform_terrain_current",
+					  "transform_terrain_range_x_distance",
+					  "transform_terrain_range_x_square",
+					  "terrain_immunity",
+					  "transform_to_x",
+					  "stat_change_x",
+					  "stat_change_x_atk",
+					  "stat_change_x_def",
+					  "stat_change_highest",
+					  "stat_change_highest_atk",
+					  "stat_change_highest_def",
+					  "stat_set_x_atk",
+					  "stat_set_x_def",
+					  "stat_set_x_to_y_times_num_z_graveyards",
+					  "spellbind",
+					  "spellbind_eternal",
+					  "effect_prevent_activation",
+					  "destroy",
+					  "battle_one_sided_destruction",
+					  "lp_own_change_x",
+					  "lp_own_set_x",
+					  "lp_own_set_up_to_x",
+					  "lp_own_multiply_x",
+					  "lp_own_divide_x",
+					  "lp_enemy_change_x",
+					  "lp_enemy_set_x",
+					  "lp_enemy_multiply_x",
+					  "lp_enemy_divide_x",
+					  "lp_enemy_set_up_to_x",
+					  "revive_type_x",
+					  "teleport_summoning_area",
+					  "power_up_effect_change_x",
+					  "power_up_effect_multiply_x",
+					  "power_up_effect_divide_x",
+					  "flip_face_up",
+					  "flip_face_down",
+					  "game_win",
+					  "game_lose",
+					  "battle_damage_set_x",
+					  "summon_power_change_x",
+					  "summon_power_set_x",
+					  "stat_change_nullify",
+					  "move_labyrinth",
+					  "summon_x",
+					  "prevent_revival",
+					  "banish_x_deck",
+					  "banish_x_hand",
+					  "banish_x_graveyard",
+					  "return_x_deck",
+					  "allow_card_play",
+					  "reveal_x_card_y_stat",
+					  "cannot_move",
+					  "movement_bonus_cancel",
+					  "change_controller",
+					  "change_controller_temporary"
+					]
+				  },
+				  "target": {
+					"type": "array",
+					"items": {
+					  "enum": [
+						"self",
+						"opponent",
+						"cards_all",
+						"cards_own",
+						"cards_enemy",
+						"controller",
+						"enemy",
+						"leader_own",
+						"leader_enemy",
+						"range_x",
+						"row_current",
+						"row_x",
+						"line_current",
+						"line_x",
+						"monsters",
+						"magics",
+						"powerups",
+						"rituals",
+						"traps",
+						"traps_limited",
+						"traps_full",
+						"trap_activator"
+					  ]
+					}
+				  },
+				  "attribute_trigger": {
+					"type": "array",
+					"items": {
+					  "type": [
+						"string",
+						"integer"
+					  ]
+					}
+				  },
+				  "attribute_effect": {
+					"type": "array",
+					"items": {
+					  "type": [
+						"string",
+						"integer"
+					  ]
+					}
+				  },
+				  "target_effect": {
+					"type": "array",
+					"items": {
+					  "type": [
+						"string",
+						"integer"
+					  ]
+					}
+				  }
 				},
-				"required":[
-					"number",
-					"name",
-					"dc",
-					"card_type"
+				"required": [
+				  "effect"
 				],
-				"if":{
-					"anyOf":[
-						{
-							"properties":{
-								"card_type":{
-									"const":"MAGIC"
-								}
-							}
-						},
-						{
-							"properties":{
-								"card_type":{
-									"const":"TRAP_FULL"
-								}
-							}
-						},
-						{
-							"properties":{
-								"card_type":{
-									"const":"TRAP_LIMITED"
-								}
-							}
-						},
-						{
-							"properties":{
-								"card_type":{
-									"const":"RITUAL"
-								}
-							}
+				"if": {
+					"not":{
+				  "anyOf": [
+					{
+					  "properties": {
+						"card_type": {
+						  "const": "TRAP_LIMITED"
 						}
-					]
-				},
-				"then":{
-					"required":[
-						"effect"
-					]
-				},
-				"else":{
-					"required":[
-						"attribute",
-						"level",
-						"atk",
-						"def"
-					]
-				}
-			}
-		},
-		"fusions":{
-			"type":"array",
-			"items":{
-				"type":"object",
-				"properties":{
-					"product":{
-						"type":"object",
-						"properties":{
-							"number":{
-								"type":"string",
-								"pattern":"^([0-9]{3})$"
-							},
-							"set":{
-								"type":"string",
-								"pattern":"^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
-							}
-						},
-						"required":[
-							"number"
-						]
+					  }
 					},
-					"material1":{
-						"type":"array",
-						"items":{
-							"type":"object",
-							"properties":{
-								"number":{
-									"type":"string",
-									"pattern":"^([0-9]{3})$"
-								},
-								"set":{
-									"type":"string",
-									"pattern":"^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
-								}
-							},
-							"required":[
-								"number"
-							]
+					{
+					  "properties": {
+						"card_type": {
+						  "const": "MAGIC"
 						}
+					  }
 					},
-					"material2":{
-						"type":"array",
-						"items":{
-							"type":"object",
-							"properties":{
-								"number":{
-									"type":"string",
-									"pattern":"^([0-9]{3})$"
-								},
-								"set":{
-									"type":"string",
-									"pattern":"^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
-								}
-							},
-							"required":[
-								"number"
-							]
+					{
+					  "properties": {
+						"card_type": {
+						  "const": "POWER_UP"
 						}
+					  }
 					}
+				  ]
+				}
 				},
-				"required":[
-					"product",
-					"material1",
-					"material2"
-				]
+				"then": {
+					"required": ["trigger"]
+				}
+			  }
+			},
+			"fusions": {
+			  "type": "array",
+			  "minItems": 1,
+			  "items": {
+				"type": "object",
+				"properties": {
+				  "product": {
+					"type": "string",
+					"pattern": "^([0-9]{3})$"
+				  },
+				  "material": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 2
+				  }
+				}
+			  }
+			},
+			"externals": {
+			  "type": "array",
+			  "minItems": 1,
+			  "items": {
+				"type": "integer",
+				"minimum": 0
+			  }
 			}
+		  },
+		  "required": [
+			"number",
+			"name",
+			"dc",
+			"card_type"
+		  ],
+		  "if": {
+			"anyOf": [
+			  {
+				"properties": {
+				  "card_type": {
+					"const": "MAGIC"
+				  }
+				}
+			  },
+			  {
+				"properties": {
+				  "card_type": {
+					"const": "TRAP_FULL"
+				  }
+				}
+			  },
+			  {
+				"properties": {
+				  "card_type": {
+					"const": "TRAP_LIMITED"
+				  }
+				}
+			  },
+			  {
+				"properties": {
+				  "card_type": {
+					"const": "RITUAL"
+				  }
+				}
+			  }
+			]
+		  },
+		  "then": {
+			"required": [
+			  "effects"
+			]
+		  },
+		  "else": {
+			"required": [
+			  "attribute",
+			  "level",
+			  "atk",
+			  "def"
+			]
+		  }
 		}
+	  },
+	  "fusions": {
+		"type": "array",
+		"items": {
+		  "type": "object",
+		  "properties": {
+			"product": {
+			  "type": "object",
+			  "properties": {
+				"number": {
+				  "type": "string",
+				  "pattern": "^([0-9]{3})$"
+				},
+				"set": {
+				  "type": "string",
+				  "pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+				}
+			  },
+			  "required": [
+				"number"
+			  ]
+			},
+			"material1": {
+			  "type": "array",
+			  "items": {
+				"type": "object",
+				"properties": {
+				  "number": {
+					"type": "string",
+					"pattern": "^([0-9]{3})$"
+				  },
+				  "set": {
+					"type": "string",
+					"pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+				  }
+				},
+				"required": [
+				  "number"
+				]
+			  }
+			},
+			"material2": {
+			  "type": "array",
+			  "items": {
+				"type": "object",
+				"properties": {
+				  "number": {
+					"type": "string",
+					"pattern": "^([0-9]{3})$"
+				  },
+				  "set": {
+					"type": "string",
+					"pattern": "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$"
+				  }
+				},
+				"required": [
+				  "number"
+				]
+			  }
+			}
+		  },
+		  "required": [
+			"product",
+			"material1",
+			"material2"
+		  ]
+		}
+	  }
 	},
-	"required":[
-		"mod_creator",
-		"mod_name",
-		"cards"
+	"required": [
+	  "mod_creator",
+	  "mod_name",
+	  "cards"
 	]
-}
+  }

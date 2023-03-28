@@ -359,36 +359,38 @@
 			"level":2,
 			"atk":450,
 			"def":600,
-			"effect":{
-				"effect_properties":{
-					"trigger":"FLIP",
-					"effect_type":"destroy_opponent"
+			"effects":[
+				{
+					"trigger":["flipped_face_up_battle"],
+					"effect":"destroy",
+					"target":["opponent"]
 				}
-			}
+			]
 		},
 		{
 			"number":"707",
 			"name":"Dian Keto the Cure Master",
 			"dc":60,
 			"card_type":"MAGIC",
-			"effect":{
-				"effect_properties":{
-					"effect_type":"heal_controller_to",
-					"attribute1":4000
+			"effects":[
+				{
+					"effect":"lp_enemy_set_up_to_x",
+					"attribute_effect":[4000]
 				}
-			}
+			]
 		},
 		{
 			"number":"801",
 			"name":"Spellbinding Circle",
 			"dc":30,
 			"card_type":"TRAP_LIMITED",
-			"effect":{
-				"effect_properties":{
-					"effect_type":"spellbind",
-					"attribute1":3
+			"effects":[
+				{
+					"effect":"spellbind",
+					"target":["trap_activator"],
+					"attribute_effect":[3]
 				}
-			}
+			]
 		}
 	],
 	"fusions":[
