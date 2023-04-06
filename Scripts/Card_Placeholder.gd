@@ -7,6 +7,9 @@ enum color {RED, WHITE}
 # Enums on all possible variables a card can have
 enum attributes {LIGHT, DARK, FIRE, EARTH, WATER, WIND}
 enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
+const triggers = ["passive", "battle_engagement", "flipped_face_up", "flipped_face_up_battle", "standby_face_up_defense", "movement_triggers_limited_trap", "damage_received", "battle_flipped_face_up", "flipped_face_up_voluntarily", "destroyed_battle", "destroyed", "opponent_is_x", "standby_counter_x", "moves_terrain_x", "moves_tile", "moves_per_turn", "opponent_destroyed", "standby_face_up", "flipped_face_up_card_played", "lp_over_x", "lp_equal_to_x", "lp_under_x", "leader_is_x", "adjacent_x", "turn_controller"]
+const effects = ["battle_bonus_temporary", "battle_bonus_temporary_atk", "battle_bonus_temporary_def", "transform_terrain_current", "transform_terrain_range_x_distance", "transform_terrain_range_x_square", "terrain_immunity", "transform_to_x", "stat_change_x", "stat_change_x_atk", "stat_change_x_def", "stat_change_highest", "stat_change_highest_atk", "stat_change_highest_def", "stat_set_x_atk", "stat_set_x_def", "stat_set_x_to_y_times_num_z_graveyards", "spellbind", "spellbind_eternal", "effect_prevent_activation", "destroy", "battle_one_sided_destruction", "lp_own_change_x", "lp_own_set_x", "lp_own_set_up_to_x", "lp_own_multiply_x", "lp_own_divide_x", "lp_enemy_change_x", "lp_enemy_set_x", "lp_enemy_multiply_x", "lp_enemy_divide_x", "lp_enemy_set_up_to_x", "revive_type_x", "teleport_summoning_area", "power_up_effect_change_x", "power_up_effect_multiply_x", "power_up_effect_divide_x", "flip_face_up", "flip_face_down", "game_win", "game_lose", "battle_damage_set_x", "summon_power_change_x", "summon_power_set_x", "stat_change_nullify", "move_labyrinth", "summon_x", "prevent_revival", "banish_x_deck", "banish_x_hand", "banish_x_graveyard", "return_x_deck", "allow_card_play", "reveal_x_card_y_stat", "cannot_move", "movement_bonus_cancel", "change_controller", "change_controller_temporary"]
+const targets = ["card_self", "opponent", "cards_all", "cards_own", "cards_enemy", "controller", "enemy", "leader_own", "leader_enemy", "range_x", "row_current", "row_x", "line_current", "line_x", "monsters", "magics", "powerups", "rituals", "traps", "traps_limited", "traps_full", "trap_activator"]
 
 # Position
 var grid_x
@@ -32,11 +35,19 @@ var just_spellbound = false
 # Monster based variables
 # Ignored if is_leader == true
 var atk = 0
+var atk_base = 0
 var def = 0
+var def_base = 0
 var dc
 var attribute
 var card_type
 var level
+var toon = false
+var effect_list = []
+var modifier_stat = 0
+var modifier_atk = 0
+var modifier_def = 0
+var modifier_terrain = 0
 
 # Movement based arrays
 # Basically the same as in the cursor
@@ -80,6 +91,8 @@ func move(delta):
 			movement_percentage = 0.0
 			is_moving = false
 			initial_position = position
+			grid_x += input_direction.x
+			grid_y += input_direction.y
 		else:
 			position = initial_position + (tile_size * input_direction * movement_percentage)
 
@@ -140,6 +153,13 @@ func flip():
 		else:
 			flipping = false
 	
+
+func update_stats():
+	if !is_leader:
+		atk = atk_base + 300*modifier_terrain + modifier_atk
+		$Card_Front_Frame/ATK.text = str(atk)
+		def = def_base + 300*modifier_terrain + modifier_def
+		$Card_Front_Frame/DEF.text = str(def)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -222,12 +242,15 @@ func _process(delta):
 		card_type != card_types.TRAP_FULL and \
 		card_type != card_types.TRAP_LIMITED and \
 		card_type != card_types.RITUAL:
-			atk = board.get_card_data(card_id)["atk"]
+			atk_base = board.get_card_data(card_id)["atk"]
+			atk = atk_base
 			$Card_Front_Frame/ATK.text = str(atk)
-			def = board.get_card_data(card_id)["def"]
+			def_base = board.get_card_data(card_id)["def"]
+			def = def_base
 			$Card_Front_Frame/DEF.text = str(def)
 			level = board.get_card_data(card_id)["level"]
 			$Card_Front_Frame/Level.frame = level
+			toon = board.get_card_data(card_id)["toon"]
 		else:
 			level = 0
 		dc = board.get_card_data(card_id)["dc"]
@@ -254,6 +277,9 @@ func _process(delta):
 			get_node("%ATK").show()
 			get_node("%DEF").show()
 			get_node("%Level").show()
+		if "effects" in board.get_card_data(card_id):
+			effect_list = board.get_card_data(card_id)["effects"]
+		cursor.process_card_terrain(name)
 		last_card_id = card_id
 		
 		#Grabbing card art texture
@@ -277,6 +303,8 @@ func _process(delta):
 		var new_texture = ImageTexture.new()
 		new_texture.create_from_image(file)
 		get_node("%Card_Art").texture = new_texture
+	
+	update_stats()
 	
 	if is_leader:
 		face_up = true

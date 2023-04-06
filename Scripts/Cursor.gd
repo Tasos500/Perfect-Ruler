@@ -1,6 +1,8 @@
 extends Node2D
 
 enum color {RED, WHITE}
+enum terrain {NORMAL, FOREST, WASTELAND, MOUNTAIN, SEA, DARK, TOON, CRUSH, LABYRINTH, MEADOW}
+enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
 const cursor_red = preload("res://Assets/Cursor/Cursor_Red.png")
 const cursor_white = preload("res://Assets/Cursor/Cursor_White.png")
 const load_tile = preload("res://Scenes/Tile_Indicator.tscn")
@@ -252,11 +254,84 @@ func card_movement():
 	elif movement_stack.size() == 0:
 		if board.get_node_or_null(card_held) != null:
 			if !board.get_node(card_held).is_moving or card_moving_destroyed:
+				process_card_terrain(card_held)
 				card_is_moving = false
 				holding_card = false
 				board.get_node(card_held).has_moved = true
 				card_held = null
 				movement_stack = []
+
+func process_card_terrain(card):
+	var terrain_current = tilemap.get_cell(board.get_node(card).grid_x, board.get_node(card).grid_y)
+	var card_type = board.get_node(card).card_type
+	if terrain_current == terrain.NORMAL or terrain_current == terrain.LABYRINTH:
+		board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.MEADOW:
+		if card_type == card_types.WARRIOR or card_type == card_types.BEAST_WARRIOR:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.SPELLCASTER:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.FOREST:
+		if card_type == card_types.PLANT or card_type == card_types.BEAST or\
+		card_type == card_types.BEAST_WARRIOR or card_type == card_types.INSECT or card_type == card_types.PYRO:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.FIEND:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.WASTELAND:
+		if card_type == card_types.ROCK or card_type == card_types.DINOSAUR or\
+		card_type == card_types.ZOMBIE or card_type == card_types.MACHINE:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.AQUA or card_type == card_types.PLANT or\
+		 card_type == card_types.SEA_SERPENT or card_type == card_types.FISH:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.MOUNTAIN:
+		if card_type == card_types.FAIRY or card_type == card_types.DRAGON or\
+		card_type == card_types.THUNDER or card_type == card_types.WINGED_BEAST:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.ZOMBIE:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.SEA:
+		if card_type == card_types.AQUA or card_type == card_types.THUNDER or\
+		card_type == card_types.SEA_SERPENT:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.PYRO or card_type == card_types.MACHINE:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.DARK:
+		if card_type == card_types.SPELLCASTER or card_type == card_types.FIEND or\
+		card_type == card_types.ZOMBIE:
+			board.get_node(card).modifier_terrain = 1
+		elif card_type == card_types.FAIRY:
+			board.get_node(card).modifier_terrain = -1
+		else:
+			board.get_node(card).modifier_terrain = 0
+	elif terrain_current == terrain.CRUSH:
+		if card_type == card_types.IMMORTAL:
+			board.get_node(card).modifier_terrain = 1
+		elif board.get_node(card).atk >= 1500:
+			board.destroy_card_at(board.get_node(card).grid_x, board.get_node(card).grid_y)
+	elif terrain_current == terrain.CRUSH:
+		if card_type == card_types.IMMORTAL:
+			board.get_node(card).modifier_terrain = 1
+		else:
+			board.get_node(card).modifier_terrain = 0
+			board.get_node(card).update_stats()
+			if board.get_node(card).atk >= 1500:
+				board.destroy_card_at(board.get_node(card).grid_x, board.get_node(card).grid_y)
+	elif terrain_current == terrain.TOON:
+		if board.get_node(card).toon:
+			board.get_node(card).modifier_terrain = 1
+		else:
+			board.get_node(card).modifier_terrain = -1
 
 func process_movement_stack():
 	movement_stack.append(tile_to_move_next())
