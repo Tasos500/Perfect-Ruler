@@ -213,7 +213,8 @@
 						"traps",
 						"traps_limited",
 						"traps_full",
-						"trap_activator"
+						"trap_activator",
+						"card_type"
 					  ]
 					}
 				  },
@@ -235,7 +236,7 @@
 					  ]
 					}
 				  },
-				  "target_effect": {
+				  "attribute_target": {
 					"type": "array",
 					"items": {
 					  "type": [

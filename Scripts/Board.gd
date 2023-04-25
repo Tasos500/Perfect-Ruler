@@ -9,7 +9,7 @@ enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WIN
 enum terrain {NORMAL, FOREST, WASTELAND, MOUNTAIN, SEA, DARK, TOON, CRUSH, LABYRINTH}
 const triggers = ["passive", "battle_engagement", "flipped_face_up", "flipped_face_up_battle", "standby_face_up_defense", "movement_triggers_limited_trap", "damage_received", "battle_flipped_face_up", "flipped_face_up_voluntarily", "destroyed_battle", "destroyed", "opponent_is_x", "standby_counter_x", "moves_terrain_x", "moves_tile", "moves_per_turn", "opponent_destroyed", "standby_face_up", "flipped_face_up_card_played", "lp_over_x", "lp_equal_to_x", "lp_under_x", "leader_is_x", "adjacent_x", "turn_controller"]
 const effects = ["battle_bonus_temporary", "battle_bonus_temporary_atk", "battle_bonus_temporary_def", "transform_terrain_current", "transform_terrain_range_x_distance", "transform_terrain_range_x_square", "terrain_immunity", "transform_to_x", "stat_change_x", "stat_change_x_atk", "stat_change_x_def", "stat_change_highest", "stat_change_highest_atk", "stat_change_highest_def", "stat_set_x_atk", "stat_set_x_def", "stat_set_x_to_y_times_num_z_graveyards", "spellbind", "spellbind_eternal", "effect_prevent_activation", "destroy", "battle_one_sided_destruction", "lp_own_change_x", "lp_own_set_x", "lp_own_set_up_to_x", "lp_own_multiply_x", "lp_own_divide_x", "lp_enemy_change_x", "lp_enemy_set_x", "lp_enemy_multiply_x", "lp_enemy_divide_x", "lp_enemy_set_up_to_x", "revive_type_x", "teleport_summoning_area", "power_up_effect_change_x", "power_up_effect_multiply_x", "power_up_effect_divide_x", "flip_face_up", "flip_face_down", "game_win", "game_lose", "battle_damage_set_x", "summon_power_change_x", "summon_power_set_x", "stat_change_nullify", "move_labyrinth", "summon_x", "prevent_revival", "banish_x_deck", "banish_x_hand", "banish_x_graveyard", "return_x_deck", "allow_card_play", "reveal_x_card_y_stat", "cannot_move", "movement_bonus_cancel", "change_controller", "change_controller_temporary"]
-const targets = ["card_self", "opponent", "cards_all", "cards_own", "cards_enemy", "controller", "enemy", "leader_own", "leader_enemy", "range_x", "row_current", "row_x", "line_current", "line_x", "monsters", "magics", "powerups", "rituals", "traps", "traps_limited", "traps_full", "trap_activator"]
+const targets = ["card_self", "opponent", "cards_all", "cards_own", "cards_enemy", "controller", "enemy", "leader_own", "leader_enemy", "range_x", "row_current", "row_x", "line_current", "line_x", "monsters", "magics", "powerups", "rituals", "traps", "traps_limited", "traps_full", "trap_activator", "card_type"]
 var effects_active = []
 
 var matrix # Matrix for cards
@@ -318,7 +318,7 @@ func get_card_data(card_id):
 			if card["number"] == str(mod_id[2]):
 				return card
 
-func search(criteria):
+func search(criteria, attributes):
 	var results = []
 	for card in card_age:
 		var card_found = true
@@ -350,37 +350,42 @@ func search(criteria):
 				get_node(card).card_type != card_types.POWER_UP and \
 				get_node(card).card_type != card_types.TRAP_FULL and \
 				get_node(card).card_type != card_types.TRAP_LIMITED and \
-				get_node(card).card_type != card_types.RITUAL:
+				get_node(card).card_type != card_types.RITUAL and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "magics":
-				if get_node(card).card_type == card_types.MAGIC:
+				if get_node(card).card_type == card_types.MAGIC and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "powerups":
-				if get_node(card).card_type == card_types.POWER_UP:
+				if get_node(card).card_type == card_types.POWER_UP and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "rituals":
-				if get_node(card).card_type == card_types.RITUAL:
+				if get_node(card).card_type == card_types.RITUAL and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "traps":
-				if get_node(card).card_type == card_types.TRAP_FULL or get_node(card).card_type == card_types.TRAP_LIMITED:
+				if (get_node(card).card_type == card_types.TRAP_FULL or get_node(card).card_type == card_types.TRAP_LIMITED) and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "traps_limited":
-				if get_node(card).card_type == card_types.TRAP_LIMITED:
+				if get_node(card).card_type == card_types.TRAP_LIMITED and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "traps_full":
-				if get_node(card).card_type == card_types.TRAP_FULL:
+				if get_node(card).card_type == card_types.TRAP_FULL and !get_node(card).is_leader:
+					continue
+				else:
+					card_found = false
+			elif item == "card_type":
+				if get_node(card).card_type == card_types.get(attributes[criteria.find(item)]) and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
