@@ -228,6 +228,13 @@
 					"product":"024",
 					"material":2
 				}
+			],
+			"effects":[
+				{
+					"trigger":"flipped_face_up",
+					"effect":"transform_terrain_range_x_distance",
+					"attribute_effect":[1, "NORMAL"]
+				}
 			]
 		},
 		{
@@ -370,6 +377,25 @@
 			]
 		},
 		{
+			"number":"326",
+			"name":"Candle of Fate",
+			"dc":16,
+			"attribute":"DARK",
+			"card_type":"FIEND",
+			"level":2,
+			"atk":600,
+			"def":600,
+			"toon":false,
+			"effects":[
+				{
+					"trigger":"standby_face_up_defense",
+					"effect":"stat_change_x",
+					"target":["cards_enemy"],
+					"attribute_effect":[-100]
+				}
+			]
+		},
+		{
 			"number":"417",
 			"name":"Man-Eater Bug",
 			"dc":16,
@@ -381,7 +407,7 @@
 			"toon":false,
 			"effects":[
 				{
-					"trigger":["flipped_face_up_battle"],
+					"trigger":"flipped_face_up_battle",
 					"effect":"destroy",
 					"target":["opponent"]
 				}

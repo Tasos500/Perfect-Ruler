@@ -31,6 +31,7 @@ var revealed = false
 var turns_spellbound = 0
 var eternally_spellbound = false
 var just_spellbound = false
+var just_flipped = false
 
 # Monster based variables
 # Ignored if is_leader == true
@@ -48,6 +49,8 @@ var modifier_stat = 0
 var modifier_atk = 0
 var modifier_def = 0
 var modifier_terrain = 0
+var battle_atk = 0
+var battle_def = 0
 
 # Movement based arrays
 # Basically the same as in the cursor
@@ -156,9 +159,9 @@ func flip():
 
 func update_stats():
 	if !is_leader:
-		atk = atk_base + 300*modifier_terrain + modifier_atk
+		atk = atk_base + 300*modifier_terrain + modifier_atk + modifier_stat
 		$Card_Front_Frame/ATK.text = str(atk)
-		def = def_base + 300*modifier_terrain + modifier_def
+		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat
 		$Card_Front_Frame/DEF.text = str(def)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -169,7 +172,7 @@ func _process(delta):
 		move(delta)
 	else:
 		is_moving = false
-	if rotating and!is_leader:
+	if rotating and !is_leader:
 		if in_attack_position:
 			if team == color.RED:
 				if rotation_degrees >= 5:

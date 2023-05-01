@@ -2,6 +2,7 @@ extends Node2D
 
 enum color {RED, WHITE}
 onready var cursor = $Cursor
+onready var tilemap = $TileMap
 
 # Enums on all possible variables a card can have
 enum attributes {LIGHT, DARK, FIRE, EARTH, WATER, WIND}
@@ -406,7 +407,53 @@ func search(criteria, attributes):
 	return results
 				
 				
-			
+func process_trigger(card, triggers):
+	var effects_list = get_node(card).effect_list
+	var triggered = false
+	for item in effects_list:
+		if triggers.find(item.get("trigger")) != -1:
+			if item.get("trigger") == "standby_face_up_defense":
+				if get_node(card).face_up and !get_node(card).in_attack_position:
+					triggered = true
+			elif item.get("trigger") == "flipped_face_up":
+				if get_node(card).just_flipped:
+					triggered = true
+		if triggered:
+			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
+
+
+func process_effect(effect, target, attribute_effect, attribute_target, card):
+	var effect_targets
+	if target != null:
+		effect_targets = search(target, attribute_target)
+	if effect == "destroy":
+		for card in effect_targets:
+			destroy_card_name(effect_targets)
+	elif effect == "stat_change_x":
+		for card in effect_targets:
+			get_node(card).modifier_stat += attribute_effect[0]
+	elif effect == "stat_change_x_atk":
+		for card in effect_targets:
+			get_node(card).modifier_atk += attribute_effect[0]
+	elif effect == "stat_change_x_def":
+		for card in effect_targets:
+			get_node(card).modifier_def += attribute_effect[0]
+	elif effect == "spellbind":
+		for card in effect_targets:
+			get_node(card).spellbind(attribute_effect[0])
+	elif effect == "spellbind_eternal":
+		for card in effect_targets:
+			get_node(card).spellbind(-1)
+	elif effect == "transform_terrain_current":
+		var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+		tilemap.set_cell(center.x, center.y, terrain[attribute_effect[0]])
+	elif effect == "transform_terrain_range_x_distance":
+		var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+		for i in range (max(1, center.x - attribute_effect[0]), min(center.x + attribute_effect[0] + 1, 8)):
+			for j in range (max(1, center.y - attribute_effect[0]), min(center.y + attribute_effect[0] + 1, 8)):
+				if (abs(i - center.x) + abs(j - center.y)) <= attribute_effect[0]:
+					if tilemap.get_cell(i, j) != terrain.LABYRINTH:
+						tilemap.set_cell(i, j, terrain[attribute_effect[1]])
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -416,7 +463,7 @@ func _ready():
 	validate_addons(get_addons())
 	print("This mod has the ID " + addons_id[0])
 	print(get_card_data("Tasos500.TestMod.417"))
-	if get_card_data("Tasos500.TestMod.417")["effects"][0].get("trigger")[0] == "flipped_face_up_battle":
+	if get_card_data("Tasos500.TestMod.417")["effects"][0].get("trigger") == "flipped_face_up_battle" and cursor.debug:
 		print("Effect triggers when card flipped in battle.")
 	
 	# Create Red Leader (Goes first)

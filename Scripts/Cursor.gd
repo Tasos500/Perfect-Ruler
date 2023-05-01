@@ -161,6 +161,11 @@ func process_button_input():
 			check_spellbound_cards()
 	elif Input.is_action_just_pressed("debug_search") and debug:
 		print(board.search(["card_type"],["DRAGON"]))
+	elif Input.is_action_just_pressed("debug_effects") and debug:
+		if board.get_card(grid_x, grid_y) != null:
+			print(board.get_node(board.get_card(grid_x, grid_y)).effect_list)
+		else:
+			tilemap.set_cell(grid_x, grid_y, terrain["TOON"])
 	elif holding_card and movement_stack.size() == 0:
 		if Input.is_action_just_pressed("ui_l1"):
 			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
@@ -243,6 +248,8 @@ func release_card():
 			board.clear_move_tiles()
 		if board.get_node(card_held).face_up:
 			board.get_node(card_held).revealed = true
+		if board.get_node(card_held).original_face_up != board.get_node(card_held).face_up:
+			board.get_node(card_held).just_flipped = true
 
 
 func card_movement():
@@ -257,6 +264,8 @@ func card_movement():
 	elif movement_stack.size() == 0:
 		if board.get_node_or_null(card_held) != null:
 			if !board.get_node(card_held).is_moving or card_moving_destroyed:
+				board.process_trigger(card_held, ["flipped_face_up", "flipped_face_up_voluntarily"])
+				board.get_node(card_held).just_flipped = false
 				process_card_terrain(card_held)
 				card_is_moving = false
 				holding_card = false
@@ -553,11 +562,15 @@ func reappear(delta):
 			reappearing = false
 
 func upkeep():
-	for card in board.card_age:
+	for card in board.card_age: # Spellbound decrementation loop
 		if card != null:
 			if board.get_node(card).team == team:
 				if !board.get_node(card).is_spellbound():
 					board.get_node(card).has_moved = false
+	
+	for card in board.card_age: # Standby face-up defense trigger check
+		if card != null and !board.get_node(card).is_leader and board.get_node(card).team == team:
+			board.process_trigger(card, ["standby_face_up_defense"])
 
 func check_spellbound_cards():
 	for card in board.card_age:

@@ -95,8 +95,6 @@
 				"type": "object",
 				"properties": {
 				  "trigger": {
-					"type": "array",
-					"items": {
 					  "enum": [
 						"passive",
 						"battle_engagement",
@@ -124,7 +122,6 @@
 						"adjacent_x",
 						"turn_controller"
 					  ]
-					}
 				  },
 				  "effect": {
 					"enum": [
