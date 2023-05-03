@@ -424,36 +424,45 @@ func process_trigger(card, triggers):
 
 func process_effect(effect, target, attribute_effect, attribute_target, card):
 	var effect_targets
+	var attribute_counter = 0
 	if target != null:
 		effect_targets = search(target, attribute_target)
-	if effect == "destroy":
-		for card in effect_targets:
-			destroy_card_name(effect_targets)
-	elif effect == "stat_change_x":
-		for card in effect_targets:
-			get_node(card).modifier_stat += attribute_effect[0]
-	elif effect == "stat_change_x_atk":
-		for card in effect_targets:
-			get_node(card).modifier_atk += attribute_effect[0]
-	elif effect == "stat_change_x_def":
-		for card in effect_targets:
-			get_node(card).modifier_def += attribute_effect[0]
-	elif effect == "spellbind":
-		for card in effect_targets:
-			get_node(card).spellbind(attribute_effect[0])
-	elif effect == "spellbind_eternal":
-		for card in effect_targets:
-			get_node(card).spellbind(-1)
-	elif effect == "transform_terrain_current":
-		var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
-		tilemap.set_cell(center.x, center.y, terrain[attribute_effect[0]])
-	elif effect == "transform_terrain_range_x_distance":
-		var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
-		for i in range (max(1, center.x - attribute_effect[0]), min(center.x + attribute_effect[0] + 1, 8)):
-			for j in range (max(1, center.y - attribute_effect[0]), min(center.y + attribute_effect[0] + 1, 8)):
-				if (abs(i - center.x) + abs(j - center.y)) <= attribute_effect[0]:
-					if tilemap.get_cell(i, j) != terrain.LABYRINTH:
-						tilemap.set_cell(i, j, terrain[attribute_effect[1]])
+	for item in effect:
+		if item == "destroy":
+			for card in effect_targets:
+				destroy_card_name(effect_targets)
+		elif item == "stat_change_x":
+			for card in effect_targets:
+				get_node(card).modifier_stat += attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "stat_change_x_atk":
+			for card in effect_targets:
+				get_node(card).modifier_atk += attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "stat_change_x_def":
+			for card in effect_targets:
+				get_node(card).modifier_def += attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "spellbind":
+			for card in effect_targets:
+				get_node(card).spellbind(attribute_effect[attribute_counter])
+			attribute_counter += 1
+		elif item == "spellbind_eternal":
+			for card in effect_targets:
+				get_node(card).spellbind(-1)
+			attribute_counter += 1
+		elif item == "transform_terrain_current":
+			var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+			tilemap.set_cell(center.x, center.y, terrain[attribute_effect[attribute_counter]])
+			attribute_counter += 1
+		elif item == "transform_terrain_range_x_distance":
+			var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+			for i in range (max(1, center.x - attribute_effect[attribute_counter]), min(center.x + attribute_effect[attribute_counter] + 1, 8)):
+				for j in range (max(1, center.y - attribute_effect[attribute_counter]), min(center.y + attribute_effect[attribute_counter] + 1, 8)):
+					if (abs(i - center.x) + abs(j - center.y)) <= attribute_effect[attribute_counter]:
+						if tilemap.get_cell(i, j) != terrain.LABYRINTH:
+							tilemap.set_cell(i, j, terrain[attribute_effect[attribute_counter + 1]])
+			attribute_counter += 2
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

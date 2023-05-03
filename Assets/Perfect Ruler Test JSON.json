@@ -215,7 +215,7 @@
 		},
 		{
 			"number":"013",
-			"name":"Yamadragon",
+			"name":"Yamadron",
 			"dc":44,
 			"attribute":"FIRE",
 			"card_type":"DRAGON",
@@ -232,7 +232,7 @@
 			"effects":[
 				{
 					"trigger":"flipped_face_up",
-					"effect":"transform_terrain_range_x_distance",
+					"effect":["transform_terrain_range_x_distance"],
 					"attribute_effect":[1, "NORMAL"]
 				}
 			]
@@ -389,7 +389,7 @@
 			"effects":[
 				{
 					"trigger":"standby_face_up_defense",
-					"effect":"stat_change_x",
+					"effect":["stat_change_x"],
 					"target":["cards_enemy"],
 					"attribute_effect":[-100]
 				}
@@ -408,7 +408,7 @@
 			"effects":[
 				{
 					"trigger":"flipped_face_up_battle",
-					"effect":"destroy",
+					"effect":["destroy"],
 					"target":["opponent"]
 				}
 			]
@@ -420,7 +420,7 @@
 			"card_type":"MAGIC",
 			"effects":[
 				{
-					"effect":"lp_enemy_set_up_to_x",
+					"effect":["lp_enemy_set_up_to_x"],
 					"attribute_effect":[4000]
 				}
 			]
@@ -432,7 +432,7 @@
 			"card_type":"TRAP_LIMITED",
 			"effects":[
 				{
-					"effect":"spellbind",
+					"effect":["spellbind"],
 					"target":["trap_activator"],
 					"attribute_effect":[3]
 				}
