@@ -49,6 +49,7 @@ var summon_x_range
 var summon_y_range
 
 var trap_activator = null
+var opponent = null
 
 func create_map(w, h):
 	var map = []
@@ -87,19 +88,45 @@ func move_card(x1, y1, x2, y2):
 	# Target tile is neither empty nor the starting tile, so it's another card.
 	var card1 = get_node(get_card(x1, y1))
 	var card2 = get_node(get_card(x2, y2))
-	card1.face_up = true
-	card1.revealed = true
-	card1.flipping = true
-	card2.face_up = true
-	card2.revealed = true
-	card2.flipping = true
+	if card1.team != card2.team:
+		if !card1.face_up:
+			card1.just_flipped = true
+		card1.face_up = true
+		card1.revealed = true
+		card1.flipping = true
+		opponent = card2.name
+		process_trigger(card1.name, ["flipped_face_up_battle"])
+		if !card2.despawning:
+			if !card2.face_up:
+				card2.just_flipped = true
+			card2.face_up = true
+			card2.revealed = true
+			card2.flipping = true
+			opponent = card1.name
+			process_trigger(card2.name, ["flipped_face_up_battle"])
+	opponent = null
 	if card1.team == card2.team:
 		if card1.is_leader:
 			destroy_card_at(x2, y2)
 			move_card_to_empty(x1, y1, x2, y2)
 		else:
-			pass
+			# Placeholder for power-up functionality
+			var fusion_result = process_fusion(card1.card_id, card2.card_id)
+			if fusion_result != null:
+				destroy_card_name(card1.name)
+				destroy_card_name(card2.name)
+				create_card(x2, y2)
+				get_node(get_card(x2, y2)).card_id = fusion_result
+			else:
+				destroy_card_name(card2.name)
+				move_card_to_empty(x1, y1, x2, y2)
+			
 	else:
+		if get_card(x1, y1) == null:
+			return
+		if get_card(x2, y2) == null:
+			move_card_to_empty(x1, y1, x2, y2)
+			return
 		if card2.is_leader:
 			calculate_damage(card1.atk, 0, card2.team) # Leaders are treated as having 0 ATK, and being in Attack Position at all times.
 		else:
@@ -423,6 +450,9 @@ func search(criteria, attributes, triggered):
 			elif item == "card_self":
 				if card != triggered.name:
 					card_found = false
+			elif item == "opponent":
+				if card != opponent:
+					card_found = false
 		if card_found:
 			results.append(card)
 	return results
@@ -439,6 +469,11 @@ func process_trigger(card, triggers):
 			elif item.get("trigger") == "flipped_face_up":
 				if get_node(card).just_flipped:
 					triggered = true
+					get_node(card).just_flipped = false
+			elif item.get("trigger") == "flipped_face_up_battle":
+				if get_node(card).just_flipped:
+					triggered = true
+					get_node(card).just_flipped = false
 		if triggered:
 			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
 
@@ -506,7 +541,6 @@ func check_adjacent_tiles_for_limited_trap(x, y):
 									oldest_name = card.name
 	if lim_trap_found:
 		print("Limited trap found at " + str(get_node(card_age[oldest]).grid_x) + "," + str(get_node(card_age[oldest]).grid_y))
-		trap_activator = get_card(x,y)
 		var effects_list = card.effect_list
 		destroy_card_name(oldest_name)
 		for item in effects_list:

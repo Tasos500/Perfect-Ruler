@@ -98,6 +98,7 @@ func move(delta):
 			grid_x += input_direction.x
 			grid_y += input_direction.y
 			input_direction = Vector2.ZERO
+			board.trap_activator = name
 			board.check_adjacent_tiles_for_limited_trap(grid_x, grid_y)
 		else:
 			position = initial_position + (tile_size * input_direction * movement_percentage)

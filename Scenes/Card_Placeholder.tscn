@@ -275,6 +275,7 @@ valign = 1
 
 [node name="Spellbound Counter Back" type="Label" parent="."]
 unique_name_in_owner = true
+visible = false
 margin_left = -46.0
 margin_top = 19.0
 margin_bottom = 85.0
