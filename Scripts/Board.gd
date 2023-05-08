@@ -166,7 +166,7 @@ func banish_at(x,y):
 	matrix[x-1][y-1] = null
 
 func destroy_card_name(_name):
-	pass
+	destroy_card_at(get_node(_name).grid_x, get_node(_name).grid_y)
 
 func add_to_graveyard(card_id):
 	if $"Cursor".team == 0:
@@ -451,7 +451,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 	for item in effect:
 		if item == "destroy":
 			for card in effect_targets:
-				destroy_card_name(effect_targets)
+				destroy_card_name(card)
 		elif item == "stat_change_x":
 			for card in effect_targets:
 				get_node(card).modifier_stat += attribute_effect[attribute_counter]
@@ -489,28 +489,28 @@ func check_adjacent_tiles_for_limited_trap(x, y):
 	var lim_trap_found = false
 	var coords = Vector2(0,0)
 	var card
+	var oldest_name
 	var oldest = card_age.size()
-	for i in range (-1, 2):
-		if i==0: continue
-		for j in range (-1, 2):
-			if j==0: continue
-			coords = Vector2(x+i, y+j)
+	for i in range (1, 8):
+		for j in range (1, 8):
+			coords = Vector2(i, j)
 			if (coords.x in range (1, 8) and (coords.y in range (1,8))):
-				if get_card(coords.x, coords.y) != null:
-					card = get_node(get_card(coords.x, coords.y))
-				if card != null:
-					if card.card_type == card_types.TRAP_LIMITED:
-						lim_trap_found = true
-						if oldest > card_age.find(card.name):
-							oldest = card_age.find(card.name)
+				if coords.distance_to(Vector2(x, y)) == 1:
+					if get_card(coords.x, coords.y) != null:
+						card = get_node(get_card(coords.x, coords.y))
+						if card != null:
+							if card.card_type == card_types.TRAP_LIMITED and card.team != cursor.team:
+								lim_trap_found = true
+								if oldest > card_age.find(card.name):
+									oldest = card_age.find(card.name)
+									oldest_name = card.name
 	if lim_trap_found:
+		print("Limited trap found at " + str(get_node(card_age[oldest]).grid_x) + "," + str(get_node(card_age[oldest]).grid_y))
 		trap_activator = get_card(x,y)
 		var effects_list = card.effect_list
+		destroy_card_name(oldest_name)
 		for item in effects_list:
 			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
-		if get_card(x, y) != null:
-			if get_card(x,y) == card.name:
-				destroy_card_at(x, y)
 	trap_activator = null
 			
 

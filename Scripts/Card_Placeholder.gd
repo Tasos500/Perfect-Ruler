@@ -32,6 +32,7 @@ var turns_spellbound = 0
 var eternally_spellbound = false
 var just_spellbound = false
 var just_flipped = false
+var spellbound_counter
 
 # Monster based variables
 # Ignored if is_leader == true
@@ -96,6 +97,8 @@ func move(delta):
 			initial_position = position
 			grid_x += input_direction.x
 			grid_y += input_direction.y
+			input_direction = Vector2.ZERO
+			board.check_adjacent_tiles_for_limited_trap(grid_x, grid_y)
 		else:
 			position = initial_position + (tile_size * input_direction * movement_percentage)
 
@@ -325,7 +328,21 @@ func _process(delta):
 			$Card_Back.texture = load("res://Assets/Card/Leader_White.png")
 		$Card_Back.scale = Vector2(150/128, 150/128) # Scaled for 150x150 tiles, as cards are normally shrunk to 25%
 	
-	
+	if !face_up:
+		spellbound_counter = get_node("Spellbound Counter Front")
+		get_node("Spellbound Counter Back").hide()
+	else:
+		spellbound_counter = get_node("Spellbound Counter Back")
+		get_node("Spellbound Counter Front").hide()
+			
+	if turns_spellbound != 0 and !is_leader:
+			spellbound_counter.show()
+			if eternally_spellbound:
+				spellbound_counter.text = "∞"
+			else:
+				spellbound_counter.text = str(turns_spellbound)
+	else:
+		spellbound_counter.hide()
 	
 	# Commented out until upgraded to Godot 4.0
 	# Turns spellbound cards inverted

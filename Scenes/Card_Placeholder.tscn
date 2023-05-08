@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://Assets/Card/CardBack.jpg" type="Texture" id=1]
 [ext_resource path="res://Scripts/Card_Placeholder.gd" type="Script" id=2]
@@ -151,6 +151,20 @@ use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 4 )
 
+[sub_resource type="DynamicFont" id=23]
+size = 110
+outline_size = 4
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=24]
+size = 30
+outline_size = 2
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 4 )
+
 [node name="Card" type="Node2D"]
 material = SubResource( 20 )
 z_index = 5
@@ -244,3 +258,29 @@ custom_fonts/font = SubResource( 18 )
 text = "4000"
 align = 1
 max_lines_visible = 1
+
+[node name="Spellbound Counter Front" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+margin_left = -51.0
+margin_top = -75.0
+margin_right = 52.0
+margin_bottom = 75.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 23 )
+text = "∞"
+align = 1
+valign = 1
+
+[node name="Spellbound Counter Back" type="Label" parent="."]
+unique_name_in_owner = true
+margin_left = -46.0
+margin_top = 19.0
+margin_bottom = 85.0
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 24 )
+text = "5"
+align = 1
+valign = 1

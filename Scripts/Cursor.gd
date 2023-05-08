@@ -160,12 +160,13 @@ func process_button_input():
 			turn_ending = true
 			check_spellbound_cards()
 	elif Input.is_action_just_pressed("debug_search") and debug:
-		print(board.search(["card_type"],["DRAGON"]))
+		print(board.search(["card_type"],["DRAGON"], null))
 	elif Input.is_action_just_pressed("debug_effects") and debug:
 		if board.get_card(grid_x, grid_y) != null:
 			print(board.get_node(board.get_card(grid_x, grid_y)).effect_list)
 		else:
-			tilemap.set_cell(grid_x, grid_y, terrain["TOON"])
+			pass
+			#tilemap.set_cell(grid_x, grid_y, terrain["TOON"])
 	elif holding_card and movement_stack.size() == 0:
 		if Input.is_action_just_pressed("ui_l1"):
 			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
