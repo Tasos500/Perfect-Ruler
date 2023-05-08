@@ -215,7 +215,6 @@ func _process(delta):
 				$Card_Front_Frame/ATK.hide()
 				$Card_Front_Frame/DEF.hide()
 			else:
-				$Card_Front_Frame.animation = "Monster_Normal"
 				$Card_Front_Frame/ATK.show()
 				$Card_Front_Frame/DEF.show()
 		last_face_up = face_up
@@ -273,16 +272,20 @@ func _process(delta):
 			get_node("%Card_Front_Frame").animation = "Trap"
 			$Card_Front_Frame/Attribute.frame = 7
 			get_node("%Attribute").show()
-		elif "effect" in board.get_card_data(card_id):
+		elif "effects" in board.get_card_data(card_id):
 			get_node("%Card_Front_Frame").animation = "Monster_Effect"
+			get_node("%ATK").show()
+			get_node("%DEF").show()
+			get_node("%Level").show()
+			get_node("%Attribute").show()
 		else:
 			get_node("%Card_Front_Frame").animation = "Monster_Normal"
 			get_node("%ATK").show()
 			get_node("%DEF").show()
 			get_node("%Level").show()
+			get_node("%Attribute").show()
 		if "effects" in board.get_card_data(card_id):
 			effect_list = board.get_card_data(card_id)["effects"]
-		cursor.process_card_terrain(name)
 		last_card_id = card_id
 		
 		#Grabbing card art texture
@@ -308,6 +311,9 @@ func _process(delta):
 		get_node("%Card_Art").texture = new_texture
 	
 	update_stats()
+	
+	if !spawning and !despawning:
+		cursor.process_card_terrain(name)
 	
 	if is_leader:
 		face_up = true

@@ -381,8 +381,12 @@ func _process(delta):
 			get_node("%Card_Front_Frame").animation = "Trap"
 			$Card_Front_Frame/Attribute.frame = 7
 			get_node("%Attribute").show()
-		elif "effect" in board.get_card_data(card_id):
+		elif "effects" in board.get_card_data(card_id):
 			get_node("%Card_Front_Frame").animation = "Monster_Effect"
+			get_node("%ATK").show()
+			get_node("%DEF").show()
+			get_node("%Level").show()
+			get_node("%Attribute").show()
 		else:
 			get_node("%Card_Front_Frame").animation = "Monster_Normal"
 			get_node("%ATK").show()

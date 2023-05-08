@@ -48,6 +48,8 @@ var addons_id = []
 var summon_x_range
 var summon_y_range
 
+var trap_activator = null
+
 func create_map(w, h):
 	var map = []
 
@@ -134,14 +136,27 @@ func get_card(x, y):
 
 func destroy_card_at(x, y):
 	var card_destroyed = get_node(get_card(x, y))
-	card_destroyed.can_move = false
-	card_age.erase(get_card(x, y))
-	if card_destroyed.team == 0:
-		graveyard_red.append(card_destroyed.card_id)
-	else:
-		graveyard_white.append(card_destroyed.card_id)
-	card_destroyed.despawning = true
-	matrix[x-1][y-1] = null
+	if card_destroyed != null:
+		if cursor.card_held != null:
+			if card_destroyed == get_node(cursor.card_held):
+				cursor.card_moving_destroyed = true
+		card_destroyed.can_move = false
+		card_age.erase(get_card(x, y))
+		if card_destroyed.team == 0:
+			graveyard_red.append(card_destroyed.card_id)
+		else:
+			graveyard_white.append(card_destroyed.card_id)
+		card_destroyed.despawning = true
+		matrix[x-1][y-1] = null
+	
+
+func check_spawn_status():
+	var card
+	for item in card_age:
+		card = get_node(item)
+		if card.spawning or card.despawning:
+			return false
+	return true
 
 func banish_at(x,y):
 	var card_destroyed = get_node(get_card(x, y))
@@ -188,6 +203,7 @@ func process_fusion(card_id1, card_id2):
 	else:
 		return null
 	
+
 
 func get_addons():
 	var files = []
@@ -319,7 +335,7 @@ func get_card_data(card_id):
 			if card["number"] == str(mod_id[2]):
 				return card
 
-func search(criteria, attributes):
+func search(criteria, attributes, triggered):
 	var results = []
 	for card in card_age:
 		var card_found = true
@@ -390,18 +406,23 @@ func search(criteria, attributes):
 					continue
 				else:
 					card_found = false
-			elif Engine.is_instance_valid(item):
-				if item.has("row_x"):
+			elif item == "row_x":
 					if get_node(card).grid_y == item.get("row_x") and !get_node(card).is_leader:
 						continue
 					else:
 						card_found = false
-				elif item.has("line_x"):
-					if get_node(card).grid_x == item.get("line_x") and !get_node(card).is_leader:
-						continue
-					else:
-						card_found = false
+			elif item == "line_x":
+				if get_node(card).grid_x == item.get("line_x") and !get_node(card).is_leader:
+					continue
+				else:
+					card_found = false
 				#PLACEHOLDER FOR RANGE_X
+			elif item == "trap_activator":
+				if trap_activator != card:
+					card_found = false
+			elif item == "card_self":
+				if card != triggered.name:
+					card_found = false
 		if card_found:
 			results.append(card)
 	return results
@@ -426,7 +447,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 	var effect_targets
 	var attribute_counter = 0
 	if target != null:
-		effect_targets = search(target, attribute_target)
+		effect_targets = search(target, attribute_target, card)
 	for item in effect:
 		if item == "destroy":
 			for card in effect_targets:
@@ -463,6 +484,35 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 						if tilemap.get_cell(i, j) != terrain.LABYRINTH:
 							tilemap.set_cell(i, j, terrain[attribute_effect[attribute_counter + 1]])
 			attribute_counter += 2
+
+func check_adjacent_tiles_for_limited_trap(x, y):
+	var lim_trap_found = false
+	var coords = Vector2(0,0)
+	var card
+	var oldest = card_age.size()
+	for i in range (-1, 2):
+		if i==0: continue
+		for j in range (-1, 2):
+			if j==0: continue
+			coords = Vector2(x+i, y+j)
+			if (coords.x in range (1, 8) and (coords.y in range (1,8))):
+				if get_card(coords.x, coords.y) != null:
+					card = get_node(get_card(coords.x, coords.y))
+				if card != null:
+					if card.card_type == card_types.TRAP_LIMITED:
+						lim_trap_found = true
+						if oldest > card_age.find(card.name):
+							oldest = card_age.find(card.name)
+	if lim_trap_found:
+		trap_activator = get_card(x,y)
+		var effects_list = card.effect_list
+		for item in effects_list:
+			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
+		if get_card(x, y) != null:
+			if get_card(x,y) == card.name:
+				destroy_card_at(x, y)
+	trap_activator = null
+			
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

@@ -91,13 +91,13 @@ func _process(delta):
 		elif card_is_moving:
 			card_movement()
 		else:
-			if !is_moving and can_move:
+			if !is_moving and can_move and board.check_spawn_status():
 				process_cursor_input()
 			elif input_direction != Vector2.ZERO:
 				move(delta)
 			else:
 				is_moving = false
-			if !is_moving and !in_menu:
+			if !is_moving and !in_menu and board.check_spawn_status():
 				process_button_input()
 			if team == color.RED:
 				get_node("Sprite").texture = cursor_red
@@ -230,16 +230,17 @@ func update_grid_y():
 
 func grab_card():
 	if !board.is_empty(grid_x, grid_y) and !holding_card:
-		if !board.get_node(board.get_card(grid_x, grid_y)).has_moved and board.get_node(board.get_card(grid_x, grid_y)).team == team and !board.get_node(board.get_card(grid_x, grid_y)).is_spellbound():
-			grid_x_move = grid_x
-			grid_y_move = grid_y
-			grid_x_cancel = grid_x
-			grid_y_cancel = grid_y
-			holding_card = true
-			card_held = board.get_card(grid_x, grid_y)
-			board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
-			board.get_node(card_held).original_face_up = board.get_node(card_held).face_up
-			board.get_node(card_held).original_attack_position = board.get_node(card_held).in_attack_position
+		if !board.get_node(board.get_card(grid_x, grid_y)).despawning:
+			if !board.get_node(board.get_card(grid_x, grid_y)).has_moved and board.get_node(board.get_card(grid_x, grid_y)).team == team and !board.get_node(board.get_card(grid_x, grid_y)).is_spellbound():
+				grid_x_move = grid_x
+				grid_y_move = grid_y
+				grid_x_cancel = grid_x
+				grid_y_cancel = grid_y
+				holding_card = true
+				card_held = board.get_card(grid_x, grid_y)
+				board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
+				board.get_node(card_held).original_face_up = board.get_node(card_held).face_up
+				board.get_node(card_held).original_attack_position = board.get_node(card_held).in_attack_position
 
 func release_card():
 	if holding_card:
@@ -326,11 +327,6 @@ func process_card_terrain(card):
 			board.get_node(card).modifier_terrain = -1
 		else:
 			board.get_node(card).modifier_terrain = 0
-	elif terrain_current == terrain.CRUSH:
-		if card_type == card_types.IMMORTAL:
-			board.get_node(card).modifier_terrain = 1
-		elif board.get_node(card).atk >= 1500:
-			board.destroy_card_at(board.get_node(card).grid_x, board.get_node(card).grid_y)
 	elif terrain_current == terrain.CRUSH:
 		if card_type == card_types.IMMORTAL:
 			board.get_node(card).modifier_terrain = 1
