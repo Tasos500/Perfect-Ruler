@@ -127,9 +127,12 @@ func move_card(x1, y1, x2, y2):
 			
 	else:
 		if get_card(x2, y2) == null:
+			opponent = card1.name
 			process_trigger(card2.name, ["battle_engagement"])
 		if get_card(x1, y1) == null:
+			opponent = card2.name
 			process_trigger(card1.name, ["battle_engagement"])
+		opponent = null
 		card1.update_stats()
 		card2.update_stats()
 		
