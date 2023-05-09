@@ -32,6 +32,9 @@ var hand_white_num = 0
 var lp_red = 4000
 var lp_white = 4000
 
+var stars_red = 4
+var stars_white = 1
+
 # Cards popped from card_age end up here, and are public to both players.
 var graveyard_red = []
 var graveyard_white = []
@@ -89,13 +92,7 @@ func move_card(x1, y1, x2, y2):
 	var card1 = get_node(get_card(x1, y1))
 	var card2 = get_node(get_card(x2, y2))
 	if card1.team != card2.team:
-		if !card1.face_up:
-			card1.just_flipped = true
-		card1.face_up = true
-		card1.revealed = true
-		card1.flipping = true
-		opponent = card2.name
-		process_trigger(card1.name, ["flipped_face_up_battle"])
+		# Defending card flips first.
 		if !card2.despawning:
 			if !card2.face_up:
 				card2.just_flipped = true
@@ -103,7 +100,14 @@ func move_card(x1, y1, x2, y2):
 			card2.revealed = true
 			card2.flipping = true
 			opponent = card1.name
-			process_trigger(card2.name, ["flipped_face_up_battle"])
+			process_trigger(card2.name, ["flipped_face_up_battle", "flipped_face_up"])
+		if !card1.face_up:
+			card1.just_flipped = true
+		card1.face_up = true
+		card1.revealed = true
+		card1.flipping = true
+		opponent = card2.name
+		process_trigger(card1.name, ["flipped_face_up_battle", "flipped_face_up"])
 	opponent = null
 	if card1.team == card2.team:
 		if card1.is_leader:
@@ -122,6 +126,13 @@ func move_card(x1, y1, x2, y2):
 				move_card_to_empty(x1, y1, x2, y2)
 			
 	else:
+		if get_card(x2, y2) == null:
+			process_trigger(card2.name, ["battle_engagement"])
+		if get_card(x1, y1) == null:
+			process_trigger(card1.name, ["battle_engagement"])
+		card1.update_stats()
+		card2.update_stats()
+		
 		if get_card(x1, y1) == null:
 			return
 		if get_card(x2, y2) == null:
@@ -140,22 +151,33 @@ func move_card(x1, y1, x2, y2):
 			if card2.in_attack_position:
 				if card1.atk > card2.atk:
 					calculate_damage(card1.atk, card2.atk, card2.team)
+					card2.destroyed_battle = true
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
 				elif card1.atk == card2.atk:
 					$Cursor.card_moving_destroyed = true
+					card1.destroyed_battle = true
 					destroy_card_at(x1, y1)
+					card2.destroyed_battle = true
 					destroy_card_at(x2, y2)
 				else:
 					calculate_damage(card1.atk, card2.atk, card1.team)
 					$Cursor.card_moving_destroyed = true
+					card1.destroyed_battle = true
 					destroy_card_at(x1, y1)
 			else:
 				if card1.atk > card2.def:
+					card2.destroyed_battle = true
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
 				elif card1.atk < card2.def:
 					calculate_damage(card1.atk, card2.def, card1.team)
+		if get_card(x1, y1) != null:
+			card1.battle_atk = 0
+			card1.update_stats()
+		if get_card(x2, y2) != null:
+			card2.battle_atk = 0
+			card2.update_stats()
 
 func get_card(x, y):
 	if not((x<1 or x>7) or (y<1 or y>7)):
@@ -175,6 +197,7 @@ func destroy_card_at(x, y):
 			graveyard_white.append(card_destroyed.card_id)
 		card_destroyed.despawning = true
 		matrix[x-1][y-1] = null
+		process_trigger(card_destroyed, ["destroyed_battle", "destroyed"])
 	
 
 func check_spawn_status():
@@ -364,9 +387,13 @@ func get_card_data(card_id):
 
 func search(criteria, attributes, triggered):
 	var results = []
+	var attribute_counter = 0
 	for card in card_age:
+		attribute_counter = 0
 		var card_found = true
 		for item in criteria:
+			if !card_found:
+				break
 			if item == "cards_all":
 				continue
 			elif item == "cards_own":
@@ -429,21 +456,36 @@ func search(criteria, attributes, triggered):
 				else:
 					card_found = false
 			elif item == "card_type":
-				if get_node(card).card_type == card_types.get(attributes[criteria.find(item)]) and !get_node(card).is_leader:
+				if get_node(card).card_type == card_types.get(attributes[attribute_counter]) and !get_node(card).is_leader:
+					attribute_counter += 1
 					continue
 				else:
 					card_found = false
+					attribute_counter += 1
 			elif item == "row_x":
-					if get_node(card).grid_y == item.get("row_x") and !get_node(card).is_leader:
+					if get_node(card).grid_y == attributes[attribute_counter] and !get_node(card).is_leader:
+						attribute_counter += 1
 						continue
 					else:
 						card_found = false
+						attribute_counter += 1
 			elif item == "line_x":
-				if get_node(card).grid_x == item.get("line_x") and !get_node(card).is_leader:
+				if get_node(card).grid_x == attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
 					continue
 				else:
 					card_found = false
-				#PLACEHOLDER FOR RANGE_X
+					attribute_counter += 1
+			elif item == "range_x":
+				var triggered_pos = Vector2(get_node(triggered).grid_x, get_node(triggered).grid_y)
+				var checked_pos = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+				if (abs(triggered_pos.x - checked_pos.x) + abs(triggered_pos.y - checked_pos.y)) <= attributes[attribute_counter] \
+				and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
 			elif item == "trap_activator":
 				if trap_activator != card:
 					card_found = false
@@ -453,6 +495,48 @@ func search(criteria, attributes, triggered):
 			elif item == "opponent":
 				if card != opponent:
 					card_found = false
+			elif item == "atk_over_x":
+				if get_node(card).atk > attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
+			elif item == "atk_equal_to_x":
+				if get_node(card).atk == attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
+			elif item == "atk_under_x":
+				if get_node(card).atk < attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
+			elif item == "def_over_x":
+				if get_node(card).def > attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
+			elif item == "def_equal_to_x":
+				if get_node(card).def == attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
+			elif item == "def_equal_to_x":
+				if get_node(card).def == attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
 		if card_found:
 			results.append(card)
 	return results
@@ -474,6 +558,13 @@ func process_trigger(card, triggers):
 				if get_node(card).just_flipped:
 					triggered = true
 					get_node(card).just_flipped = false
+			elif item.get("trigger") == "destroyed":
+				triggered = true
+			elif item.get("trigger") == "destroyed_battle":
+				if get_node(card).destroyed_battle:
+					triggered = true
+			elif item.get("trigger") == "battle_engagement":
+				triggered = true
 		if triggered:
 			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
 
@@ -519,6 +610,32 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 						if tilemap.get_cell(i, j) != terrain.LABYRINTH:
 							tilemap.set_cell(i, j, terrain[attribute_effect[attribute_counter + 1]])
 			attribute_counter += 2
+		elif item == "transform_monster_to_x":
+			var position = Vector2.ZERO
+			for card in effect_targets:
+				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+				destroy_card_at(position.x, position.y)
+				create_card(position.x, position.y)
+				get_node(get_card(position.x, position.y)).card_id = attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "battle_one_sided_destruction":
+			var position = Vector2.ZERO
+			for card in effect_targets:
+				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+				destroy_card_at(position.x, position.y)
+		elif item == "battle_bonus_temporary":
+			for card in effect_targets:
+				get_node(card).battle_atk = attribute_effect[attribute_counter]
+				get_node(card).battle_def = attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "battle_bonus_temporary_atk":
+			for card in effect_targets:
+				get_node(card).battle_atk = attribute_effect[attribute_counter]
+			attribute_counter += 1
+		elif item == "battle_bonus_temporary_def":
+			for card in effect_targets:
+				get_node(card).battle_def = attribute_effect[attribute_counter]
+			attribute_counter += 1
 
 func check_adjacent_tiles_for_limited_trap(x, y):
 	var lim_trap_found = false
@@ -575,5 +692,16 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	get_node("HUD/%LP_Red").text=str(lp_red)
-	get_node("HUD/%LP_White").text=str(lp_white)
+	get_node("HUD/%LP_Red").text=str(lp_red) + " LP"
+	get_node("HUD/%LP_White").text="LP " + str(lp_white)
+	if stars_red > 12:
+		stars_red = 12
+	if stars_white > 12:
+		stars_white = 12
+	
+	if cursor.team == color.RED:
+		get_node("HUD/%Stars_Red").text = str(stars_red) + " ✭✭✭✭✭✭✭✭✭★"
+		get_node("HUD/%Stars_White").text = "??"
+	else:
+		get_node("HUD/%Stars_Red").text = "??"
+		get_node("HUD/%Stars_White").text = "★ ✭" + str(stars_white)

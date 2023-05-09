@@ -35,7 +35,7 @@ var def = 0
 var dc
 var attribute
 var card_type
-var level
+var level = 0
 
 # Movement based arrays
 # Basically the same as in the cursor

@@ -498,10 +498,12 @@ func end_turn(delta):
 			team = color.WHITE
 			grid_x = grid_x_white
 			grid_y = grid_y_white
+			board.stars_white += 3
 		else:
 			team = color.RED
 			grid_x = grid_x_red
 			grid_y = grid_y_red
+			board.stars_red += 3
 		upkeep()
 		hand.hand_pos = 1
 		hand.fusion_queue = []

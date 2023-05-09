@@ -135,7 +135,7 @@
 						"transform_terrain_range_x_distance",
 						"transform_terrain_range_x_square",
 						"terrain_immunity",
-						"transform_to_x",
+						"transform_monster_to_x",
 						"stat_change_x",
 						"stat_change_x_atk",
 						"stat_change_x_def",
@@ -219,7 +219,13 @@
 						"attack_position",
 						"defense_position",
 						"type_x",
-						"name_x"
+						"name_x",
+						"atk_over_x",
+						"atk_equal_to_x",
+						"atk_under_x",
+						"def_over_x",
+						"def_equal_to_x",
+						"def_under_x"
 					  ]
 					}
 				  },

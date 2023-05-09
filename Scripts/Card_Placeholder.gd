@@ -33,6 +33,7 @@ var eternally_spellbound = false
 var just_spellbound = false
 var just_flipped = false
 var spellbound_counter
+var destroyed_battle = false
 
 # Monster based variables
 # Ignored if is_leader == true
@@ -43,7 +44,7 @@ var def_base = 0
 var dc
 var attribute
 var card_type
-var level
+var level = 0
 var toon = false
 var effect_list = []
 var modifier_stat = 0
@@ -133,6 +134,9 @@ func spellbind(turns):
 	else:
 		turns_spellbound = turns
 	just_spellbound = true
+	if !face_up:
+		flip()
+		board.process_trigger(name, ["flipped_face_up"])
 
 func spellbind_decrement():
 	if !eternally_spellbound:
@@ -163,9 +167,9 @@ func flip():
 
 func update_stats():
 	if !is_leader:
-		atk = atk_base + 300*modifier_terrain + modifier_atk + modifier_stat
+		atk = atk_base + 300*modifier_terrain + modifier_atk + modifier_stat + battle_atk
 		$Card_Front_Frame/ATK.text = str(atk)
-		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat
+		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat + battle_def
 		$Card_Front_Frame/DEF.text = str(def)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

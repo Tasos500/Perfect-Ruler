@@ -8,6 +8,8 @@ var current_hand
 var current_deck
 var fusion_queue = []
 var fusion_queue_confirm = []
+var current_stars = 0
+var highest_stars = 0
 
 var movement_percentage = 0.0
 var move_speed = 1000
@@ -121,7 +123,7 @@ func process_button_input():
 			hand_pos -= 1
 		move_cursor()
 	elif Input.is_action_just_pressed("ui_up") and !confirm_step and !mid_animation and !cursor.has_summoned:
-		if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos):
+		if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos) and get_node("Hand" + str(hand_pos)).level <= current_stars:
 			fusion_queue.push_back(hand_pos)
 			process_fusion_counters()
 	elif Input.is_action_just_pressed("ui_down") and !confirm_step and !mid_animation and !cursor.has_summoned:
@@ -132,6 +134,10 @@ func process_button_input():
 		if !confirm_step:
 			process_fusion_queue()
 		elif confirm_step and !mid_animation:
+			if cursor.team == color.RED:
+				board.stars_red -= highest_stars
+			else:
+				board.stars_white -= highest_stars
 			processing_final = true
 			mid_animation = true
 
@@ -199,12 +205,20 @@ func process_fusion_queue():
 	mid_animation = true
 	fusion_queue_confirm = []
 	if fusion_queue.size() == 0:
-		fusion_queue.push_back(hand_pos)
-		fusion_queue_confirm.push_back(get_hand_card_id(hand_pos))
-		queue_empty = true
+		if get_node("Hand" + str(hand_pos)).level <= current_stars:
+			fusion_queue.push_back(hand_pos)
+			fusion_queue_confirm.push_back(get_hand_card_id(hand_pos))
+			queue_empty = true
+		else:
+			mid_animation = false
+			return
 	else:
 		for i in fusion_queue:
 			fusion_queue_confirm.push_back(get_hand_card_id(i))
+	highest_stars = 0
+	for card in fusion_queue:
+		if get_node("Hand" + str(card)).level > highest_stars:
+			highest_stars = get_node("Hand" + str(card)).level
 	if !board.is_empty(cursor.grid_x, cursor.grid_y):
 		first_is_board = true
 		board_card = board.get_node(board.get_card(cursor.grid_x, cursor.grid_y))
@@ -234,6 +248,7 @@ func reverse_fusion_queue():
 	cancelling = true
 	mid_animation = true
 	first_is_board = false
+	highest_stars = 0
 	var fusion_card
 	final_nodes = []
 	for i in range (1, fusion_queue_confirm.size()+1):
@@ -432,6 +447,10 @@ func get_hand_card_id(number):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if cursor.team == color.RED:
+		current_stars = board.stars_red
+	else:
+		current_stars = board.stars_white
 	if is_moving:
 		move(delta)
 		return
