@@ -397,22 +397,22 @@ func search(criteria, attributes, triggered):
 			if item == "cards_all":
 				continue
 			elif item == "cards_own":
-				if get_node(card).team == cursor.team and !get_node(card).is_leader:
+				if get_node(card).team == get_node(triggered).team and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "cards_enemy":
-				if get_node(card).team != cursor.team and !get_node(card).is_leader:
+				if get_node(card).team != get_node(triggered).team and !get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "leader_own":
-				if get_node(card).team == cursor.team and get_node(card).is_leader:
+				if get_node(card).team == get_node(triggered).team and get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
 			elif item == "leader_enemy":
-				if get_node(card).team != cursor.team and get_node(card).is_leader:
+				if get_node(card).team != get_node(triggered).team and get_node(card).is_leader:
 					continue
 				else:
 					card_found = false
