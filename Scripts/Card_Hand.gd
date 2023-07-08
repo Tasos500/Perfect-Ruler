@@ -357,7 +357,8 @@ func _process(delta):
 		if card_type != card_types.MAGIC and \
 		card_type != card_types.TRAP_FULL and \
 		card_type != card_types.TRAP_LIMITED and \
-		card_type != card_types.RITUAL:
+		card_type != card_types.RITUAL and \
+		card_type != card_types.POWER_UP:
 			atk = board.get_card_data(card_id)["atk"]
 			$Card_Front_Frame/ATK.text = str(atk)
 			def = board.get_card_data(card_id)["def"]
@@ -373,7 +374,7 @@ func _process(delta):
 		get_node("%ATK").hide()
 		get_node("%DEF").hide()
 		get_node("%Level").hide()
-		if card_type == card_types.MAGIC or card_type == card_types.RITUAL:
+		if card_type == card_types.MAGIC or card_type == card_types.RITUAL or card_type == card_types.POWER_UP:
 			get_node("%Card_Front_Frame").animation = "Spell"
 			$Card_Front_Frame/Attribute.frame = 6
 			get_node("%Attribute").show()

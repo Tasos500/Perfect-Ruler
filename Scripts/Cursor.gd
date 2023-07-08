@@ -148,17 +148,25 @@ func process_button_input():
 			board.clear_move_tiles()
 			cancelling = true
 	elif Input.is_action_just_pressed("ui_start"):
-		if !holding_card and !summoning and !cancelling:
-			has_summoned = false
-			initial_position = position
-			fake_tile = load_tile.instance()
-			board.add_child(fake_tile, true)
-			fake_tile.position = position
-			fake_tile.clone_cursor = true
-			end_turn_distance = calculate_end_turn_distance()
-			end_turn_direction = calculate_end_turn_direction()
-			turn_ending = true
-			check_spellbound_cards()
+		if !get_node("../HUD/HUD_Layer").is_moving and !get_node("../HUD/HUD_Layer").going_down:
+			get_node("../HUD/HUD_Layer").is_moving = true
+			if team == color.WHITE:
+				board.turn_counter -= 1
+			if board.turn_counter == -1:
+				pass
+				# declare_winner()
+				return
+			if !holding_card and !summoning and !cancelling:
+				has_summoned = false
+				initial_position = position
+				fake_tile = load_tile.instance()
+				board.add_child(fake_tile, true)
+				fake_tile.position = position
+				fake_tile.clone_cursor = true
+				end_turn_distance = calculate_end_turn_distance()
+				end_turn_direction = calculate_end_turn_direction()
+				turn_ending = true
+				check_spellbound_cards()
 	elif Input.is_action_just_pressed("debug_search") and debug:
 		print(board.search(["card_type"],["DRAGON"], null))
 	elif Input.is_action_just_pressed("debug_effects") and debug:
@@ -266,7 +274,7 @@ func card_movement():
 	elif movement_stack.size() == 0:
 		if board.get_node_or_null(card_held) != null:
 			if !board.get_node(card_held).is_moving or card_moving_destroyed:
-				board.process_trigger(card_held, ["flipped_face_up", "flipped_face_up_voluntarily"])
+				board.process_trigger(board.get_node(card_held), ["flipped_face_up", "flipped_face_up_voluntarily"])
 				board.get_node(card_held).just_flipped = false
 				process_card_terrain(card_held)
 				card_is_moving = false
@@ -504,6 +512,7 @@ func end_turn(delta):
 			grid_x = grid_x_red
 			grid_y = grid_y_red
 			board.stars_red += 3
+		get_node("../HUD/HUD_Layer").is_moving = true
 		upkeep()
 		hand.hand_pos = 1
 		hand.fusion_queue = []
@@ -569,7 +578,7 @@ func upkeep():
 	
 	for card in board.card_age: # Standby face-up defense trigger check
 		if card != null and !board.get_node(card).is_leader and board.get_node(card).team == team:
-			board.process_trigger(card, ["standby_face_up_defense"])
+			board.process_trigger(board.get_node(card), ["standby_face_up_defense"])
 
 func check_spellbound_cards():
 	for card in board.card_age:

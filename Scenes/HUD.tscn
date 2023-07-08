@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Fonts/Matrix Regular Small Caps 1.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://Assets/Card/Hand_Cursor.png" type="Texture" id=3]
 [ext_resource path="res://Scripts/Hand.gd" type="Script" id=4]
+[ext_resource path="res://Scenes/HUD_Layer.gd" type="Script" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
@@ -33,6 +34,9 @@ scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
 
 [node name="HUD_Layer" type="CanvasLayer" parent="."]
+offset = Vector2( 0, -150 )
+transform = Transform2D( 1, 0, 0, 1, 0, -150 )
+script = ExtResource( 5 )
 
 [node name="LP_Red" type="Label" parent="HUD_Layer"]
 unique_name_in_owner = true
@@ -42,6 +46,16 @@ margin_bottom = 78.0
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "4000"
+
+[node name="Turn_Counter" type="Label" parent="HUD_Layer"]
+unique_name_in_owner = true
+margin_left = 600.0
+margin_right = 206.0
+margin_bottom = 78.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "99"
+align = 1
 
 [node name="Stars_Red" type="Label" parent="HUD_Layer"]
 unique_name_in_owner = true

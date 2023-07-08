@@ -354,6 +354,13 @@
 					"const": "RITUAL"
 				  }
 				}
+			  },
+			  {
+				"properties": {
+				  "card_type": {
+					"const": "POWER_UP"
+				  }
+				}
 			  }
 			]
 		  },

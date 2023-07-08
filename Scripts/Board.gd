@@ -54,6 +54,8 @@ var summon_y_range
 var trap_activator = null
 var opponent = null
 
+var turn_counter = 99
+
 func create_map(w, h):
 	var map = []
 
@@ -90,7 +92,9 @@ func move_card(x1, y1, x2, y2):
 		return
 	# Target tile is neither empty nor the starting tile, so it's another card.
 	var card1 = get_node(get_card(x1, y1))
+	var card1_name = card1.name
 	var card2 = get_node(get_card(x2, y2))
+	var card2_name = card2.name
 	if card1.team != card2.team:
 		# Defending card flips first.
 		if !card2.despawning:
@@ -100,14 +104,14 @@ func move_card(x1, y1, x2, y2):
 			card2.revealed = true
 			card2.flipping = true
 			opponent = card1.name
-			process_trigger(card2.name, ["flipped_face_up_battle", "flipped_face_up"])
+			process_trigger(card2, ["flipped_face_up_battle", "flipped_face_up"])
 		if !card1.face_up:
 			card1.just_flipped = true
 		card1.face_up = true
 		card1.revealed = true
 		card1.flipping = true
 		opponent = card2.name
-		process_trigger(card1.name, ["flipped_face_up_battle", "flipped_face_up"])
+		process_trigger(card1, ["flipped_face_up_battle", "flipped_face_up"])
 	opponent = null
 	if card1.team == card2.team:
 		if card1.is_leader:
@@ -115,6 +119,25 @@ func move_card(x1, y1, x2, y2):
 			move_card_to_empty(x1, y1, x2, y2)
 		else:
 			# Placeholder for power-up functionality
+			var has_power_up = false
+			var power_1 = false
+			if card1.card_type == card_types.POWER_UP:
+				power_1 = true
+				process_power_up(card1, card2)
+				has_power_up = true
+			elif card2.card_type == card_types.POWER_UP:
+				process_power_up(card2, card1)
+				has_power_up = true
+			if has_power_up:
+				if power_1:
+					destroy_card_name(card1.name)
+					card2.update_stats()
+				else:
+					destroy_card_name(card2.name)
+					move_card_to_empty(x1, y1, x2, y2)
+					card1.update_stats()
+				return
+				
 			var fusion_result = process_fusion(card1.card_id, card2.card_id)
 			if fusion_result != null:
 				destroy_card_name(card1.name)
@@ -126,19 +149,43 @@ func move_card(x1, y1, x2, y2):
 				move_card_to_empty(x1, y1, x2, y2)
 			
 	else:
-		if get_card(x2, y2) == null:
-			opponent = card1.name
-			process_trigger(card2.name, ["battle_engagement"])
-		if get_card(x1, y1) == null:
-			opponent = card2.name
-			process_trigger(card1.name, ["battle_engagement"])
-		opponent = null
-		card1.update_stats()
-		card2.update_stats()
-		
-		if get_card(x1, y1) == null:
+		# Placeholder for power-up functionality
+		var has_power_up = false
+		var power_1 = false
+		if card1.card_type == card_types.POWER_UP:
+			power_1 = true
+			process_power_up(card1, card2)
+			has_power_up = true
+		elif card2.card_type == card_types.POWER_UP:
+			process_power_up(card2, card1)
+			has_power_up = true
+		if has_power_up:
+			if power_1:
+				destroy_card_name(card1.name)
+				card2.update_stats()
+			else:
+				destroy_card_name(card2.name)
+				move_card_to_empty(x1, y1, x2, y2)
+				card1.update_stats()
 			return
-		if get_card(x2, y2) == null:
+		
+		if get_card(x1, y1) == null or get_card(x2, y2) == null \
+		or get_card(x1, y1) != card1_name or get_card(x2, y2) != card2_name:
+			return
+		if get_card(x2, y2) != null:
+			opponent = card1.name
+			process_trigger(card2, ["battle_engagement"])
+		if get_card(x1, y1) != null:
+			opponent = card2.name
+			process_trigger(card1, ["battle_engagement"])
+		opponent = null
+		if get_card(x1, y1) == card1_name or get_card(x2, y2) == card2_name:
+			card1.update_stats()
+			card2.update_stats()
+		
+		if get_card(x1, y1) == null or get_card(x2, y2) == null:
+			return
+		if get_card(x2, y2) == null or get_card(x1, y1) != card1_name:
 			move_card_to_empty(x1, y1, x2, y2)
 			return
 		if card2.is_leader:
@@ -201,6 +248,21 @@ func destroy_card_at(x, y):
 		card_destroyed.despawning = true
 		matrix[x-1][y-1] = null
 		process_trigger(card_destroyed, ["destroyed_battle", "destroyed"])
+		
+func destroy_card_at_nondestructive(x, y):
+	var card_destroyed = get_node(get_card(x, y))
+	if card_destroyed != null:
+		if cursor.card_held != null:
+			if card_destroyed == get_node(cursor.card_held):
+				cursor.card_moving_destroyed = true
+		card_destroyed.can_move = false
+		card_age.erase(get_card(x, y))
+		if card_destroyed.team == 0:
+			graveyard_red.append(card_destroyed.card_id)
+		else:
+			graveyard_white.append(card_destroyed.card_id)
+		card_destroyed.despawning = true
+		matrix[x-1][y-1] = null
 	
 
 func check_spawn_status():
@@ -359,17 +421,17 @@ func check_if_passable(x, y):
 				# If card is self
 				if card_held == get_node(get_card(x,y)):
 					return true
+				# If card checked is own leader
+				if !card_held.is_leader and get_node(get_card(x,y)).team == card_held.team and get_node(get_card(x,y)).is_leader:
+					return false
 				# If card in tile is friendly
-				if card_held.is_leader and get_node(get_card(x,y)).team == card_held.team:
+				elif card_held.is_leader and get_node(get_card(x,y)).team == card_held.team or (get_node(get_card(x,y)).team == card_held.team):
 					return true
 				# If both held card and card in tile are leaders
 				elif card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
 					return false
 				# If holding leader, and card checked is enemy
 				elif card_held.is_leader and get_node(get_card(x,y)).team != card_held.team:
-					return false
-				# If card checked is own leader
-				elif !card_held.is_leader and get_node(get_card(x,y)).team == card_held.team and get_node(get_card(x,y)).is_leader:
 					return false
 				# If card checked is enemy leader
 				elif !card_held.is_leader and get_node(get_card(x,y)).team != card_held.team and get_node(get_card(x,y)).is_leader:
@@ -546,25 +608,25 @@ func search(criteria, attributes, triggered):
 				
 				
 func process_trigger(card, triggers):
-	var effects_list = get_node(card).effect_list
+	var effects_list = card.effect_list
 	var triggered = false
 	for item in effects_list:
 		if triggers.find(item.get("trigger")) != -1:
 			if item.get("trigger") == "standby_face_up_defense":
-				if get_node(card).face_up and !get_node(card).in_attack_position:
+				if card.face_up and !card.in_attack_position:
 					triggered = true
 			elif item.get("trigger") == "flipped_face_up":
-				if get_node(card).just_flipped:
+				if card.just_flipped:
 					triggered = true
-					get_node(card).just_flipped = false
+					card.just_flipped = false
 			elif item.get("trigger") == "flipped_face_up_battle":
-				if get_node(card).just_flipped:
+				if card.just_flipped:
 					triggered = true
-					get_node(card).just_flipped = false
+					card.just_flipped = false
 			elif item.get("trigger") == "destroyed":
 				triggered = true
 			elif item.get("trigger") == "destroyed_battle":
-				if get_node(card).destroyed_battle:
+				if card.destroyed_battle:
 					triggered = true
 			elif item.get("trigger") == "battle_engagement":
 				triggered = true
@@ -602,11 +664,11 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 				get_node(card).spellbind(-1)
 			attribute_counter += 1
 		elif item == "transform_terrain_current":
-			var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+			var center = Vector2(card.grid_x, card.grid_y)
 			tilemap.set_cell(center.x, center.y, terrain[attribute_effect[attribute_counter]])
 			attribute_counter += 1
 		elif item == "transform_terrain_range_x_distance":
-			var center = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+			var center = Vector2(card.grid_x, card.grid_y)
 			for i in range (max(1, center.x - attribute_effect[attribute_counter]), min(center.x + attribute_effect[attribute_counter] + 1, 8)):
 				for j in range (max(1, center.y - attribute_effect[attribute_counter]), min(center.y + attribute_effect[attribute_counter] + 1, 8)):
 					if (abs(i - center.x) + abs(j - center.y)) <= attribute_effect[attribute_counter]:
@@ -617,7 +679,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 			var position = Vector2.ZERO
 			for card in effect_targets:
 				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
-				destroy_card_at(position.x, position.y)
+				destroy_card_at_nondestructive(position.x, position.y)
 				create_card(position.x, position.y)
 				get_node(get_card(position.x, position.y)).card_id = attribute_effect[attribute_counter]
 			attribute_counter += 1
@@ -639,6 +701,35 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 			for card in effect_targets:
 				get_node(card).battle_def = attribute_effect[attribute_counter]
 			attribute_counter += 1
+
+func process_power_up(power_up, affected_card):
+	var effects_list = power_up.effect_list
+	for effects in effects_list:
+		var attribute_effect = effects.get("attribute_effect")
+		var attribute_target = effects.get("attribute_target")
+		var target = effects.get("target")
+		var effect_targets
+		var attribute_counter = 0
+		if target != null:
+			effect_targets = search(target, attribute_target, power_up)
+		if effect_targets.has(affected_card.name):
+			for item in effects.get("effect"):
+				if item == "stat_change_x":
+					affected_card.modifier_stat += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "stat_change_x_atk":
+					affected_card.modifier_atk += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "stat_change_x_def":
+					affected_card.modifier_def += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "spellbind":
+					affected_card.spellbind(attribute_effect[attribute_counter])
+					attribute_counter += 1
+				elif item == "spellbind_eternal":
+					affected_card.spellbind(-1)
+					attribute_counter += 1
+	
 
 func check_adjacent_tiles_for_limited_trap(x, y):
 	var lim_trap_found = false
@@ -697,6 +788,10 @@ func _ready():
 func _process(_delta):
 	get_node("HUD/%LP_Red").text=str(lp_red) + " LP"
 	get_node("HUD/%LP_White").text="LP " + str(lp_white)
+	if turn_counter >= 0:
+		get_node("HUD/%Turn_Counter").text = "%02d" % [turn_counter]
+	else:
+		get_node("HUD/%Turn_Counter").text = "00"
 	if stars_red > 12:
 		stars_red = 12
 	if stars_white > 12:

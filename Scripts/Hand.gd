@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 enum color {RED, WHITE}
+enum card_types {DRAGON, SPELLCASTER, ZOMBIE, WARRIOR, BEAST_WARRIOR, BEAST, WINGED_BEAST, FIEND, FAIRY, INSECT, DINOSAUR, REPTILE, FISH, SEA_SERPENT, MACHINE, THUNDER, AQUA, PYRO, ROCK, PLANT, IMMORTAL, MAGIC, POWER_UP, TRAP_LIMITED, TRAP_FULL, RITUAL}
 var card_num = 0
 var hand_pos = 1
 var hand_active = false
@@ -123,7 +124,12 @@ func process_button_input():
 			hand_pos -= 1
 		move_cursor()
 	elif Input.is_action_just_pressed("ui_up") and !confirm_step and !mid_animation and !cursor.has_summoned:
-		if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos) and get_node("Hand" + str(hand_pos)).level <= current_stars:
+		if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos) and (get_node("Hand" + str(hand_pos)).level <= current_stars\
+		 or get_node("Hand" + str(hand_pos)).card_type == card_types.MAGIC \
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_FULL \
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_LIMITED\
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.RITUAL\
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.POWER_UP):
 			fusion_queue.push_back(hand_pos)
 			process_fusion_counters()
 	elif Input.is_action_just_pressed("ui_down") and !confirm_step and !mid_animation and !cursor.has_summoned:
@@ -205,7 +211,12 @@ func process_fusion_queue():
 	mid_animation = true
 	fusion_queue_confirm = []
 	if fusion_queue.size() == 0:
-		if get_node("Hand" + str(hand_pos)).level <= current_stars:
+		if get_node("Hand" + str(hand_pos)).level <= current_stars \
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.MAGIC \
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_FULL \
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_LIMITED\
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.RITUAL\
+		or get_node("Hand" + str(hand_pos)).card_type == card_types.POWER_UP:
 			fusion_queue.push_back(hand_pos)
 			fusion_queue_confirm.push_back(get_hand_card_id(hand_pos))
 			queue_empty = true
