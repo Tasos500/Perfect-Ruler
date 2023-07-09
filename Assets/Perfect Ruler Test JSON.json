@@ -324,6 +324,15 @@
 			"atk":500,
 			"def":400,
 			"toon":false,
+			"effects":[
+				{
+					"trigger":"flipped_face_up",
+					"effect":["transform_monster_to_x"],
+					"target":["card_type", "atk_under_x"],
+					"attribute_effect":["Tasos500.TestMod.024"],
+					"attribute_target":["DRAGON", 2400]
+				}
+			],
 			"fusions":[
 				{
 					"product":"024",
@@ -358,6 +367,17 @@
 					"material":1
 				}
 			]
+		},
+		{
+			"number":"189",
+			"name":"Millenium Shield",
+			"dc":35,
+			"attribute":"EARTH",
+			"card_type":"WARRIOR",
+			"level":5,
+			"atk":0,
+			"def":3500,
+			"toon":false
 		},
 		{
 			"number":"294",
@@ -426,6 +446,19 @@
 			]
 		},
 		{
+			"number":"780",
+			"name":"Megamorph",
+			"dc":15,
+			"card_type":"POWER_UP",
+			"effects":[
+				{
+					"effect":["stat_change_x"],
+					"attribute_effect":[300],
+					"target":["monsters"]
+				}
+			]
+		},
+		{
 			"number":"801",
 			"name":"Spellbinding Circle",
 			"dc":30,
@@ -437,6 +470,36 @@
 					"attribute_effect":[3]
 				}
 			]
+		},
+		{
+			"number":"830",
+			"name":"Curse of Millenium Shield",
+			"dc":5,
+			"card_type":"RITUAL",
+			"rituals":{
+				"search_material":
+				[
+					{
+						"search_target": [
+							"def_over_x"
+						],
+						"attribute_target": [2000]
+					},
+					{
+						"search_target": [
+							"def_over_x"
+						],
+						"attribute_target": [2000]
+					},
+					{
+						"search_target": [
+							"def_over_x"
+						],
+						"attribute_target": [2000]
+					}
+				],
+				"product": "Tasos500.TestMod.189"
+			}
 		}
 	],
 	"fusions":[

@@ -317,6 +317,77 @@
 				"type": "integer",
 				"minimum": 0
 			  }
+			},
+			"rituals": {
+				"type": "object",
+				"properties": {
+					"explicit_material": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					},
+					"search_material": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"search_target": {
+									"type": "array",
+									"items": {
+										"enum": [
+											"card_self",
+											"opponent",
+											"cards_all",
+											"cards_own",
+											"cards_enemy",
+											"controller",
+											"enemy",
+											"leader_own",
+											"leader_enemy",
+											"range_x",
+											"row_current",
+											"row_x",
+											"line_current",
+											"line_x",
+											"monsters",
+											"magics",
+											"powerups",
+											"rituals",
+											"traps",
+											"traps_limited",
+											"traps_full",
+											"trap_activator",
+											"card_type",
+											"attack_position",
+											"defense_position",
+											"type_x",
+											"name_x",
+											"atk_over_x",
+											"atk_equal_to_x",
+											"atk_under_x",
+											"def_over_x",
+											"def_equal_to_x",
+											"def_under_x"
+										  ]
+									}
+								},
+								"attribute_target": {
+									"type": "array",
+									"items": {
+									  "type": [
+										"string",
+										"integer"
+									  ]
+									}
+								  }
+							}
+						}
+					},
+					"product": {
+						"type": "string"
+					}
+				}
 			}
 		  },
 		  "required": [
@@ -325,59 +396,79 @@
 			"dc",
 			"card_type"
 		  ],
-		  "if": {
-			"anyOf": [
-			  {
-				"properties": {
-				  "card_type": {
-					"const": "MAGIC"
+		  "allOf": [
+			{"if": {
+				"anyOf": [
+				  {
+					"properties": {
+					  "card_type": {
+						"const": "MAGIC"
+					  }
+					}
+				  },
+				  {
+					"properties": {
+					  "card_type": {
+						"const": "TRAP_FULL"
+					  }
+					}
+				  },
+				  {
+					"properties": {
+					  "card_type": {
+						"const": "TRAP_LIMITED"
+					  }
+					}
+				  },
+				  {
+					"properties": {
+					  "card_type": {
+						"const": "POWER_UP"
+					  }
+					}
 				  }
-				}
+				]
 			  },
-			  {
-				"properties": {
-				  "card_type": {
-					"const": "TRAP_FULL"
-				  }
-				}
-			  },
-			  {
-				"properties": {
-				  "card_type": {
-					"const": "TRAP_LIMITED"
-				  }
-				}
-			  },
-			  {
-				"properties": {
-				  "card_type": {
-					"const": "RITUAL"
-				  }
-				}
-			  },
-			  {
-				"properties": {
-				  "card_type": {
-					"const": "POWER_UP"
-				  }
-				}
+			  "then": {
+				"required": [
+				  "effects"
+				]
 			  }
-			]
-		  },
-		  "then": {
-			"required": [
-			  "effects"
-			]
-		  },
-		  "else": {
-			"required": [
-			  "attribute",
-			  "level",
-			  "atk",
-			  "def",
-			  "toon"
-			]
-		  }
+			},
+			{
+				"if": {
+					"properties": {
+					  "card_type": {
+						"const": "MONSTER"
+					  }
+					}
+				  },
+				"then": {
+					"required": [
+						"attribute",
+						"level",
+						"atk",
+						"def",
+						"toon"
+					]
+				}
+			},
+			{
+				"if": {
+					"properties": {
+					  "card_type": {
+						"const": "RITUAL"
+					  }
+					}
+				  },
+				"then": {
+					"required": [
+						"rituals"
+					]
+				}
+			}
+		  ]
+		  
 		}
 	  },
 	  "fusions": {

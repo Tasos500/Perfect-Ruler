@@ -34,6 +34,9 @@ var example_deck = ["Tasos500.TestMod.000",\
 					"Tasos500.TestMod.780",\
 					"Tasos500.TestMod.780",\
 					"Tasos500.TestMod.780",\
+					"Tasos500.TestMod.830",\
+					"Tasos500.TestMod.830",\
+					"Tasos500.TestMod.830",\
 					]
 
 var deck_red = []

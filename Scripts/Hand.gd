@@ -29,6 +29,7 @@ var cancelling = false
 var processing_final = false
 var final_nodes = []
 var valid_fusion = false
+var valid_power_up = false
 var valid_checked = false
 var fusion1
 var fusion2
@@ -348,6 +349,7 @@ func process_final():
 		and fusion2.position.x > 1280/2 and !fusion2.is_moving_horizontally:
 			valid_checked = false
 			valid_fusion = false
+			valid_power_up = false
 			fusion2.is_moving_horizontally = true
 			fusion2.horizontal_distance = abs(1280/2 - fusion2.position.x)
 			fusion2.input_direction = Vector2(-1,0)
@@ -358,8 +360,13 @@ func process_final():
 				valid_fusion = true
 			else:
 				valid_fusion = false
+			# Insert power-up check here
+			# Check if either card is a power-up, and call board.process_power_up()
 			fusion2.is_moving_to_first = true
 			fusion2.has_moved = false
+		# Add an extra elif for when a valid power-up can occur (valid_power_up)
+		# Basically do the same animations for a successful fusion, but update the
+		# affected card's stats
 		elif fusion1.position == fusion2.position and valid_fusion and !fusion1.despawning:
 			var id1 = fusion1.card_id
 			var id2 = fusion2.card_id

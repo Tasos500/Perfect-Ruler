@@ -276,6 +276,8 @@ func card_movement():
 			if !board.get_node(card_held).is_moving or card_moving_destroyed:
 				board.process_trigger(board.get_node(card_held), ["flipped_face_up", "flipped_face_up_voluntarily"])
 				board.get_node(card_held).just_flipped = false
+				if board.get_node(card_held).card_type == card_types.RITUAL and board.get_node(card_held).face_up:
+					board.process_ritual(board.get_node(card_held))
 				process_card_terrain(card_held)
 				card_is_moving = false
 				holding_card = false

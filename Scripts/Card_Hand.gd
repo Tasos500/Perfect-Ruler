@@ -191,7 +191,7 @@ func move_to_first(delta):
 			is_moving_to_first = false
 			has_moved = true
 			initial_position = position
-		elif movement_percentage >= 0.8 and !touching_final and !hand.valid_fusion:
+		elif movement_percentage >= 0.8 and !touching_final and (!hand.valid_fusion or !hand.valid_power_up):
 			touching_final = true
 			hand.fusion1.is_knocked_offscreen = true
 			hand.fusion1.has_moved = false

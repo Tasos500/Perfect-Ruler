@@ -461,6 +461,13 @@ func search(criteria, attributes, triggered):
 				break
 			if item == "cards_all":
 				continue
+			elif item == "card_id":
+				if get_node(card).card_id == attributes[attribute_counter] and !get_node(card).is_leader:
+					attribute_counter += 1
+					continue
+				else:
+					card_found = false
+					attribute_counter += 1
 			elif item == "cards_own":
 				if get_node(card).team == get_node(triggered).team and !get_node(card).is_leader:
 					continue
@@ -731,6 +738,46 @@ func process_power_up(power_up, affected_card):
 					attribute_counter += 1
 	
 
+func process_ritual(card):
+	var success = true
+	var found_material = []
+	var rituals = get_card_data(card.card_id)["rituals"]
+	if rituals.has("explicit_material"):
+		for item in rituals["explicit_material"]:
+			if success:
+				var results = search(["card_own", "card_id"], [item], card.name)
+				var success_individual = false
+				for card in card_age:
+					if results.has(card) and !found_material.has(card):
+						found_material.append(card)
+						success_individual = true
+						break
+				success = success_individual
+			else:
+				break
+	if rituals.has("search_material") and success:
+		for item in rituals["search_material"]:
+			if success:
+				var search_target = item["search_target"]
+				search_target.append("card_own")
+				var results = search(search_target, item["attribute_target"], card.name)
+				var success_individual = false
+				for card in card_age:
+					if results.has(card) and !found_material.has(card):
+						found_material.append(card)
+						success_individual = true
+						break
+				success = success_individual
+			else:
+				break
+	var card_pos = Vector2(card.grid_x, card.grid_y)
+	destroy_card_name(card.name)
+	if success:
+		for found in found_material:
+			destroy_card_name(found)
+		create_card(card_pos.x, card_pos.y)
+		get_node(get_card(card_pos.x, card_pos.y)).card_id = rituals["product"]
+
 func check_adjacent_tiles_for_limited_trap(x, y):
 	var lim_trap_found = false
 	var coords = Vector2(0,0)
@@ -762,11 +809,12 @@ func check_adjacent_tiles_for_limited_trap(x, y):
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
+	get_node("HUD/%Turn_Counter").text = "%02d" % [turn_counter]
 	matrix = create_map(7,7)
 	matrix_indicator = create_map(8,8)
 	validate_addons(get_addons())
 	print("This mod has the ID " + addons_id[0])
-	print(get_card_data("Tasos500.TestMod.417"))
+	print(get_card_data("Tasos500.TestMod.830")["rituals"])
 	if get_card_data("Tasos500.TestMod.417")["effects"][0].get("trigger") == "flipped_face_up_battle" and cursor.debug:
 		print("Effect triggers when card flipped in battle.")
 	
@@ -788,10 +836,6 @@ func _ready():
 func _process(_delta):
 	get_node("HUD/%LP_Red").text=str(lp_red) + " LP"
 	get_node("HUD/%LP_White").text="LP " + str(lp_white)
-	if turn_counter >= 0:
-		get_node("HUD/%Turn_Counter").text = "%02d" % [turn_counter]
-	else:
-		get_node("HUD/%Turn_Counter").text = "00"
 	if stars_red > 12:
 		stars_red = 12
 	if stars_white > 12:

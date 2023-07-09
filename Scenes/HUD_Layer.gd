@@ -8,6 +8,7 @@ var is_moving = true
 var can_move = false
 var going_down = true
 var hud_active = true
+onready var board = get_node("../..")
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -27,8 +28,15 @@ func move(delta):
 		is_moving = false
 		going_down = !going_down
 		initial_position = offset
+		update_turn_count()
 	else:
 		offset = initial_position + (150 * input_direction * movement_percentage)
+
+func update_turn_count():
+	if board.turn_counter >= 0:
+		get_node("%Turn_Counter").text = "%02d" % [board.turn_counter]
+	else:
+		get_node("%Turn_Counter").text = "00"
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
