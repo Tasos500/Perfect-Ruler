@@ -1,10 +1,19 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Fonts/Matrix Regular Small Caps 1.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://Assets/Card/Hand_Cursor.png" type="Texture" id=3]
 [ext_resource path="res://Scripts/Hand.gd" type="Script" id=4]
 [ext_resource path="res://Scenes/HUD_Layer.gd" type="Script" id=5]
+[ext_resource path="res://Assets/Card/CardAttrEARTH.svg" type="Texture" id=6]
+[ext_resource path="res://Assets/Card/CardAttrMAGIC.svg" type="Texture" id=7]
+[ext_resource path="res://Assets/Card/CardAttrTRAP.svg" type="Texture" id=8]
+[ext_resource path="res://Assets/Card/CardAttrWATER.svg" type="Texture" id=9]
+[ext_resource path="res://Assets/Card/CardAttrDARK.svg" type="Texture" id=10]
+[ext_resource path="res://Assets/Card/CardAttrFIRE.svg" type="Texture" id=11]
+[ext_resource path="res://Assets/Card/CardAttrLIGHT.svg" type="Texture" id=12]
+[ext_resource path="res://Assets/Card/CardAttrWIND.svg" type="Texture" id=13]
+[ext_resource path="res://Scenes/HUD_Bottom.gd" type="Script" id=14]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
@@ -20,6 +29,24 @@ font_data = ExtResource( 2 )
 size = 64
 outline_size = 1
 font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 40
+outline_size = 1
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 36
+outline_size = 1
+font_data = ExtResource( 1 )
+
+[sub_resource type="SpriteFrames" id=6]
+animations = [ {
+"frames": [ ExtResource( 12 ), ExtResource( 10 ), ExtResource( 11 ), ExtResource( 6 ), ExtResource( 9 ), ExtResource( 13 ), ExtResource( 7 ), ExtResource( 8 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
 
 [node name="HUD" type="Node2D"]
 
@@ -45,7 +72,7 @@ margin_right = 206.0
 margin_bottom = 78.0
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
-text = "4000"
+text = "4000 LP"
 
 [node name="Turn_Counter" type="Label" parent="HUD_Layer"]
 unique_name_in_owner = true
@@ -87,3 +114,145 @@ custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 3 )
 text = "4000"
 align = 2
+
+[node name="Backgound" type="Node2D" parent="HUD_Layer"]
+z_index = -1
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound"]
+margin_left = 15.0
+margin_top = 6.0
+margin_right = 247.0
+margin_bottom = 138.0
+rect_pivot_offset = Vector2( 72, 132 )
+color = Color( 0, 0, 0, 0.458824 )
+
+[node name="ColorRect2" type="ColorRect" parent="HUD_Layer/Backgound"]
+margin_left = 1030.0
+margin_top = 6.0
+margin_right = 1262.0
+margin_bottom = 138.0
+rect_pivot_offset = Vector2( 72, 132 )
+color = Color( 0, 0, 0, 0.470588 )
+
+[node name="ColorRect3" type="ColorRect" parent="HUD_Layer/Backgound"]
+margin_left = 595.0
+margin_top = 3.0
+margin_right = 667.0
+margin_bottom = 72.0
+rect_pivot_offset = Vector2( 72, 132 )
+color = Color( 0, 0, 0, 0.470588 )
+
+[node name="HUD_Bottom" type="CanvasLayer" parent="."]
+script = ExtResource( 14 )
+
+[node name="Card_Name" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 291.0
+margin_top = 962.0
+margin_right = 860.0
+margin_bottom = 1040.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "Blue-Eyes White Dragon"
+
+[node name="ATK" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 834.0
+margin_top = 964.0
+margin_right = 922.0
+margin_bottom = 1011.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "9999"
+
+[node name="SB_Count" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 1001.0
+margin_top = 984.0
+margin_right = 1072.0
+margin_bottom = 1031.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "∞"
+
+[node name="SB_Label" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 939.0
+margin_top = 984.0
+margin_right = 1010.0
+margin_bottom = 1031.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "SB"
+
+[node name="Type" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 349.0
+margin_top = 1014.0
+margin_right = 437.0
+margin_bottom = 1061.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "MACHINE"
+
+[node name="Terrain" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 50.0
+margin_top = 974.0
+margin_right = 218.0
+margin_bottom = 1059.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "Terrain
+MACHINE"
+align = 1
+
+[node name="Effect" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 682.0
+margin_top = 1014.0
+margin_right = 850.0
+margin_bottom = 1061.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "EFFECT"
+
+[node name="DEF" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 834.0
+margin_top = 1000.0
+margin_right = 922.0
+margin_bottom = 1047.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "9999"
+
+[node name="Attribute" type="AnimatedSprite" parent="HUD_Bottom"]
+unique_name_in_owner = true
+use_parent_material = true
+position = Vector2( 310, 1036 )
+scale = Vector2( 0.544407, 0.544407 )
+frames = SubResource( 6 )
+
+[node name="Backgound" type="Node2D" parent="HUD_Bottom"]
+z_index = -1
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Bottom/Backgound"]
+margin_left = 264.0
+margin_top = 963.0
+margin_right = 1033.0
+margin_bottom = 1068.0
+color = Color( 0, 0, 0, 0.470588 )
+
+[node name="ColorRect2" type="ColorRect" parent="HUD_Bottom/Backgound"]
+margin_left = 25.0
+margin_top = 963.0
+margin_right = 246.0
+margin_bottom = 1068.0
+color = Color( 0, 0, 0, 0.470588 )

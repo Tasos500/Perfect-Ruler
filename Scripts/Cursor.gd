@@ -68,6 +68,7 @@ var cancel_direction = Vector2(0,0)
 onready var board = $".."
 onready var tilemap = $"../TileMap"
 onready var hand = $"../HUD/Hand"
+onready var hud_bottom = $"../HUD/HUD_Bottom"
 
 # Movement stack, in order to hold moves to be done by a card once confirmed.
 var movement_stack = []
@@ -150,6 +151,7 @@ func process_button_input():
 	elif Input.is_action_just_pressed("ui_start"):
 		if !get_node("../HUD/HUD_Layer").is_moving and !get_node("../HUD/HUD_Layer").going_down:
 			get_node("../HUD/HUD_Layer").is_moving = true
+			get_node("../HUD/HUD_Bottom").is_moving = true
 			if team == color.WHITE:
 				board.turn_counter -= 1
 			if board.turn_counter == -1:
@@ -168,7 +170,7 @@ func process_button_input():
 				turn_ending = true
 				check_spellbound_cards()
 	elif Input.is_action_just_pressed("debug_search") and debug:
-		print(board.search(["card_type"],["DRAGON"], null))
+		print(board.search(["card_type"],["DRAGON"], null, board.card_age))
 	elif Input.is_action_just_pressed("debug_effects") and debug:
 		if board.get_card(grid_x, grid_y) != null:
 			print(board.get_node(board.get_card(grid_x, grid_y)).effect_list)
@@ -284,6 +286,10 @@ func card_movement():
 				board.get_node(card_held).has_moved = true
 				card_held = null
 				movement_stack = []
+				if board.get_card(grid_x, grid_y) != null:
+					get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
+				else:
+					get_node("../HUD/HUD_Bottom").update(null)
 
 func process_card_terrain(card):
 	var terrain_current = tilemap.get_cell(board.get_node(card).grid_x, board.get_node(card).grid_y)
@@ -515,12 +521,14 @@ func end_turn(delta):
 			grid_y = grid_y_red
 			board.stars_red += 3
 		get_node("../HUD/HUD_Layer").is_moving = true
+		get_node("../HUD/HUD_Bottom").is_moving = true
 		upkeep()
 		hand.hand_pos = 1
 		hand.fusion_queue = []
 		hand.clear_fusion_counters()
 		hand.reset_cards_position()
 		hand.turn_end_update_hand()
+		get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
 	
 
 func move(delta):
@@ -533,6 +541,10 @@ func move(delta):
 		last_move = next_move
 		update_grid_x()
 		update_grid_y()
+		if board.get_card(grid_x, grid_y) != null:
+			hud_bottom.update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
+		else:
+			hud_bottom.update(null)
 	else:
 		position = initial_position + (tile_size * input_direction * movement_percentage)
 

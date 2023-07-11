@@ -228,6 +228,8 @@ func move_to_field(delta):
 			position = $"../Cursor".position
 			if $"../Cursor".team == 1:
 				rotation_degrees = 180
+			update_stats()
+			get_node("../HUD/HUD_Bottom").update(self)
 		else:
 			position = initial_position + (1280/4 * Vector2(1, 0) * movement_percentage)
 			scale = Vector2(2, 2) + (Vector2(-1, -1) * movement_percentage)
