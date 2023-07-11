@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Fonts/Matrix Regular Small Caps 1.ttf" type="DynamicFontData" id=2]
@@ -32,6 +32,11 @@ font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=4]
 size = 40
+outline_size = 1
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 32
 outline_size = 1
 font_data = ExtResource( 1 )
 
@@ -187,6 +192,28 @@ rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 4 )
 text = "SB"
+
+[node name="Terrain_Boost" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 938.0
+margin_top = 1027.0
+margin_right = 1009.0
+margin_bottom = 1074.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 7 )
+text = "T-"
+
+[node name="Movement_Boost" type="Label" parent="HUD_Bottom"]
+unique_name_in_owner = true
+margin_left = 986.0
+margin_top = 1027.0
+margin_right = 1057.0
+margin_bottom = 1074.0
+rect_pivot_offset = Vector2( -114, 58 )
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 7 )
+text = "M"
 
 [node name="Type" type="Label" parent="HUD_Bottom"]
 unique_name_in_owner = true

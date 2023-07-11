@@ -190,10 +190,20 @@ func process_button_input():
 			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping) and !board.get_node(card_held).revealed:
 				board.get_node(card_held).face_up = false
 				board.get_node(card_held).flipping = true
+				process_card_terrain(card_held)
+				board.get_node(card_held).update_stats()
+				board.clear_move_tiles()
+				board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
+				get_node("../HUD/HUD_Bottom").update(board.get_node(card_held))
 		elif Input.is_action_just_pressed("ui_r2"):
 			if !board.get_node(card_held).is_leader and !(board.get_node(card_held).rotating or board.get_node(card_held).flipping):
 				board.get_node(card_held).face_up = true
 				board.get_node(card_held).flipping = true
+				process_card_terrain(card_held)
+				board.get_node(card_held).update_stats()
+				board.clear_move_tiles()
+				board.show_move_tiles(board.get_node(card_held).tile_speed, grid_x, grid_y)
+				get_node("../HUD/HUD_Bottom").update(board.get_node(card_held))
 
 func process_cursor_input():
 	if !can_move and is_moving:
@@ -287,6 +297,7 @@ func card_movement():
 				card_held = null
 				movement_stack = []
 				if board.get_card(grid_x, grid_y) != null:
+					board.get_node(board.get_card(grid_x, grid_y)).update_stats()
 					get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
 				else:
 					get_node("../HUD/HUD_Bottom").update(null)

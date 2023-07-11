@@ -51,6 +51,8 @@ func initialize(): # A bodge
 	get_node("%SB_Label").hide()
 	get_node("Backgound").show()
 	get_node("Terrain").text = "Terrain\n" + terrain_text[$"../../TileMap".get_cell(cursor.grid_x, cursor.grid_y)]
+	get_node("%Movement_Boost").hide()
+	get_node("%Terrain_Boost").hide()
 
 func update(card):
 	get_node("Backgound/ColorRect").show()
@@ -65,6 +67,8 @@ func update(card):
 		get_node("%Effect").hide()
 		get_node("%Attribute").hide()
 		get_node("Backgound/ColorRect").hide()
+		get_node("%Movement_Boost").hide()
+		get_node("%Terrain_Boost").hide()
 		return
 	elif !card.is_leader:
 		get_node("%Card_Name").show()
@@ -82,6 +86,8 @@ func update(card):
 		get_node("%Effect").hide()
 		get_node("%ATK").hide()
 		get_node("%DEF").hide()
+		get_node("%Movement_Boost").hide()
+		get_node("%Terrain_Boost").hide()
 		return
 	if card.team == cursor.team:
 		get_node("%Card_Name").text = str(card.card_name)
@@ -103,6 +109,18 @@ func update(card):
 			get_node("%SB_Label").show()
 			if card.eternally_spellbound:
 				get_node("%SB_Count").text = str("∞")
+		if card.tile_speed > 1:
+			get_node("%Movement_Boost").show()
+		else:
+			get_node("%Movement_Boost").hide()
+		if card.modifier_terrain > 0:
+			get_node("%Terrain_Boost").show()
+			get_node("%Terrain_Boost").text = "T+"
+		elif card.modifier_terrain < 0:
+			get_node("%Terrain_Boost").show()
+			get_node("%Terrain_Boost").text = "T-"
+		else:
+			get_node("%Terrain_Boost").hide()
 	else:
 		if card.is_leader:
 			get_node("%Card_Name").show()
@@ -137,6 +155,14 @@ func update(card):
 						get_node("%SB_Label").show()
 						if card.eternally_spellbound:
 							get_node("%SB_Count").text = str("∞")
+					if card.modifier_terrain > 0:
+						get_node("%Terrain_Boost").show()
+						get_node("%Terrain_Boost").text = "T+"
+					elif card.modifier_terrain < 0:
+						get_node("%Terrain_Boost").show()
+						get_node("%Terrain_Boost").text = "T-"
+					else:
+						get_node("%Terrain_Boost").hide()
 			else:
 				get_node("%Card_Name").show()
 				get_node("%Card_Name").text = "?????"

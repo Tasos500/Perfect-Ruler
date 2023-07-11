@@ -175,6 +175,10 @@ func update_stats():
 		$Card_Front_Frame/ATK.text = str(atk)
 		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat + battle_def
 		$Card_Front_Frame/DEF.text = str(def)
+	if modifier_terrain > 0 and face_up:
+		tile_speed = 2
+	else:
+		tile_speed = 1
 
 func is_monster():
 	if (card_type == card_types.MAGIC) or (card_type == card_types.POWER_UP) or (card_type == card_types.RITUAL) or (card_types.TRAP_FULL) or (card_type == card_types.TRAP_LIMITED):
