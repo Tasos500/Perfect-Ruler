@@ -43,6 +43,9 @@ var card_anim_active = false
 var card_anim_current = 6
 var card_anim_done = false
 
+var power_card
+var affected_card
+
 onready var board  = $"../.."
 onready var cursor = $"../../Cursor"
 
@@ -358,16 +361,39 @@ func process_final():
 			valid_checked = true
 			if board.process_fusion(fusion1.card_id, fusion2.card_id) != null:
 				valid_fusion = true
+				# Fusion checks take priority, for cards such as Elegant Egotist,
+				# which are Power-Ups used as Fusion material.
+			elif fusion1.card_type == card_types.POWER_UP:
+				if board.search(fusion1.effect_list[0].get("target"), fusion1.effect_list[0].get("attribute_target"), fusion1, ["HUD/Hand/" + fusion2.name]) != null:
+					valid_power_up = true
+					power_card = fusion1
+					affected_card = fusion2
+			elif fusion2.card_type == card_types.POWER_UP:
+				if board.search(fusion2.effect_list[0].get("target"), fusion2.effect_list[0].get("attribute_target"), fusion2, ["HUD/Hand/" + fusion1.name]) != null:
+					valid_power_up = true
+					power_card = fusion2
+					affected_card = fusion1
 			else:
 				valid_fusion = false
-			# Insert power-up check here
-			# Check if either card is a power-up, and call board.process_power_up()
+				valid_power_up = false
+				power_card = null
+				affected_card = null
 			fusion2.is_moving_to_first = true
 			fusion2.has_moved = false
 		# Add an extra elif for when a valid power-up can occur (valid_power_up)
 		# Basically do the same animations for a successful fusion, but update the
 		# affected card's stats
-		elif fusion1.position == fusion2.position and valid_fusion and !fusion1.despawning:
+		elif fusion1.position == fusion2.position and !valid_fusion and valid_power_up and !fusion1.despawning:
+			board.process_power_up_hand(power_card, affected_card)
+			if fusion1 == power_card:
+				fusion1.despawning = true
+			else:
+				fusion2.card_id = fusion1.card_id
+				fusion2.data_paste(fusion1.data_copy())
+				fusion1.despawning = true
+			board.add_to_graveyard(power_card)
+			affected_card.update_stats()
+		elif fusion1.position == fusion2.position and valid_fusion and !valid_power_up and !fusion1.despawning:
 			var id1 = fusion1.card_id
 			var id2 = fusion2.card_id
 			fusion2.card_id = board.process_fusion(id1, id2)
@@ -409,6 +435,7 @@ func reset_hand():
 	processing_final = false
 	final_nodes = []
 	valid_fusion = false
+	valid_power_up = false
 	valid_checked = false
 	card_anim_active = false
 	card_anim_current = 6

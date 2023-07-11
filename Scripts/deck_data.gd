@@ -1,24 +1,12 @@
 extends Node
 
 
-var example_deck = ["Tasos500.TestMod.000",\
-					"Tasos500.TestMod.000",\
-					"Tasos500.TestMod.000",\
-					"Tasos500.TestMod.015",\
+var example_deck = ["Tasos500.TestMod.015",\
 					"Tasos500.TestMod.015",\
 					"Tasos500.TestMod.015",\
 					"Tasos500.TestMod.008",\
 					"Tasos500.TestMod.008",\
 					"Tasos500.TestMod.008",\
-					"Tasos500.TestMod.007",\
-					"Tasos500.TestMod.007",\
-					"Tasos500.TestMod.007",\
-					"Tasos500.TestMod.294",\
-					"Tasos500.TestMod.294",\
-					"Tasos500.TestMod.294",\
-					"Tasos500.TestMod.801",\
-					"Tasos500.TestMod.801",\
-					"Tasos500.TestMod.801",\
 					"Tasos500.TestMod.036",\
 					"Tasos500.TestMod.036",\
 					"Tasos500.TestMod.036",\
@@ -28,15 +16,9 @@ var example_deck = ["Tasos500.TestMod.000",\
 					"Tasos500.TestMod.326",\
 					"Tasos500.TestMod.326",\
 					"Tasos500.TestMod.326",\
-					"Tasos500.TestMod.013",\
-					"Tasos500.TestMod.013",\
-					"Tasos500.TestMod.013",\
 					"Tasos500.TestMod.780",\
 					"Tasos500.TestMod.780",\
 					"Tasos500.TestMod.780",\
-					"Tasos500.TestMod.830",\
-					"Tasos500.TestMod.830",\
-					"Tasos500.TestMod.830",\
 					]
 
 var deck_red = []

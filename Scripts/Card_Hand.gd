@@ -31,11 +31,21 @@ var just_spellbound = false
 # Monster based variables
 # Ignored if is_leader == true
 var atk = 0
+var atk_base = 0
 var def = 0
+var def_base = 0
 var dc
 var attribute
 var card_type
 var level = 0
+var toon = false
+var effect_list = []
+var modifier_stat = 0
+var modifier_atk = 0
+var modifier_def = 0
+var modifier_terrain = 0
+var battle_atk = 0
+var battle_def = 0
 
 # Movement based arrays
 # Basically the same as in the cursor
@@ -191,7 +201,7 @@ func move_to_first(delta):
 			is_moving_to_first = false
 			has_moved = true
 			initial_position = position
-		elif movement_percentage >= 0.8 and !touching_final and (!hand.valid_fusion or !hand.valid_power_up):
+		elif movement_percentage >= 0.8 and !touching_final and !hand.valid_fusion and !hand.valid_power_up:
 			touching_final = true
 			hand.fusion1.is_knocked_offscreen = true
 			hand.fusion1.has_moved = false
@@ -229,7 +239,7 @@ func is_in_center():
 		return false
 
 func data_copy():
-	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move]
+	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move, effect_list, modifier_stat, modifier_atk, modifier_def]
 
 func data_paste(data):
 	team = data[0]
@@ -239,14 +249,21 @@ func data_paste(data):
 	attribute = data[4]
 	card_type = data[5]
 	level = data[6]
-	face_up = data[7]
-	last_face_up = data[8]
+	face_up = false
+	last_face_up = false
 	in_attack_position = data[9]
-	revealed = data[10]
+	revealed = false
 	turns_spellbound = data[11]
 	eternally_spellbound = data[12]
 	just_spellbound = data[13]
 	tile_speed = data[14]
+	has_moved = data[15]
+	can_move =  data[16]
+	effect_list = data[17]
+	modifier_stat = data[18]
+	modifier_atk = data[19]
+	modifier_def = data[20]
+	
 
 func spellbind(turns):
 	has_moved = true
@@ -270,6 +287,13 @@ func is_spellbound():
 func spellbind_cure():
 	eternally_spellbound = false
 	turns_spellbound = 0
+
+func update_stats():
+	if !is_leader:
+		atk = atk_base + 300*modifier_terrain + modifier_atk + modifier_stat + battle_atk
+		$Card_Front_Frame/ATK.text = str(atk)
+		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat + battle_def
+		$Card_Front_Frame/DEF.text = str(def)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -355,16 +379,21 @@ func _process(delta):
 		$Card_Front_Frame/Card_Name.text = str(card_name)
 		card_type = card_types.get(board.get_card_data(card_id)["card_type"])
 		if card_type != card_types.MAGIC and \
+		card_type != card_types.POWER_UP and \
 		card_type != card_types.TRAP_FULL and \
 		card_type != card_types.TRAP_LIMITED and \
-		card_type != card_types.RITUAL and \
-		card_type != card_types.POWER_UP:
-			atk = board.get_card_data(card_id)["atk"]
+		card_type != card_types.RITUAL:
+			atk_base = board.get_card_data(card_id)["atk"]
+			atk = atk_base
 			$Card_Front_Frame/ATK.text = str(atk)
-			def = board.get_card_data(card_id)["def"]
+			def_base = board.get_card_data(card_id)["def"]
+			def = def_base
 			$Card_Front_Frame/DEF.text = str(def)
 			level = board.get_card_data(card_id)["level"]
 			$Card_Front_Frame/Level.frame = level
+			toon = board.get_card_data(card_id)["toon"]
+		else:
+			level = 0
 		dc = board.get_card_data(card_id)["dc"]
 		if "attribute" in board.get_card_data(card_id):
 			attribute = attributes.get(board.get_card_data(card_id)["attribute"])
@@ -394,6 +423,8 @@ func _process(delta):
 			get_node("%DEF").show()
 			get_node("%Level").show()
 			get_node("%Attribute").show()
+		if "effects" in board.get_card_data(card_id):
+			effect_list = board.get_card_data(card_id)["effects"]
 		last_card_id = card_id
 		
 		#Grabbing card art texture

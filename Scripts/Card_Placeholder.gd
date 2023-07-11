@@ -105,7 +105,7 @@ func move(delta):
 			position = initial_position + (tile_size * input_direction * movement_percentage)
 
 func data_copy():
-	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move]
+	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move, effect_list, modifier_stat, modifier_atk, modifier_def]
 
 func data_paste(data):
 	team = data[0]
@@ -125,6 +125,10 @@ func data_paste(data):
 	tile_speed = data[14]
 	has_moved = data[15]
 	can_move =  data[16]
+	effect_list = data[17]
+	modifier_stat = data[18]
+	modifier_atk = data[19]
+	modifier_def = data[20]
 
 func spellbind(turns):
 	has_moved = true

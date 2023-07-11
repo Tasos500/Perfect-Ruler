@@ -450,10 +450,10 @@ func get_card_data(card_id):
 			if card["number"] == str(mod_id[2]):
 				return card
 
-func search(criteria, attributes, triggered):
+func search(criteria, attributes, triggered, card_list):
 	var results = []
 	var attribute_counter = 0
-	for card in card_age:
+	for card in card_list:
 		attribute_counter = 0
 		var card_found = true
 		for item in criteria:
@@ -645,7 +645,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 	var effect_targets
 	var attribute_counter = 0
 	if target != null:
-		effect_targets = search(target, attribute_target, card)
+		effect_targets = search(target, attribute_target, card, card_age)
 	for item in effect:
 		if item == "destroy":
 			for card in effect_targets:
@@ -718,8 +718,8 @@ func process_power_up(power_up, affected_card):
 		var effect_targets
 		var attribute_counter = 0
 		if target != null:
-			effect_targets = search(target, attribute_target, power_up)
-		if effect_targets.has(affected_card.name):
+			effect_targets = search(target, attribute_target, power_up, card_age)
+		if effect_targets.has(affected_card.name) or target == null:
 			for item in effects.get("effect"):
 				if item == "stat_change_x":
 					affected_card.modifier_stat += attribute_effect[attribute_counter]
@@ -736,7 +736,35 @@ func process_power_up(power_up, affected_card):
 				elif item == "spellbind_eternal":
 					affected_card.spellbind(-1)
 					attribute_counter += 1
-	
+
+func process_power_up_hand(power_up, affected_card):
+	var effects_list = power_up.effect_list
+	for effects in effects_list:
+		var attribute_effect = effects.get("attribute_effect")
+		var attribute_target = effects.get("attribute_target")
+		var target = effects.get("target")
+		var effect_targets
+		var attribute_counter = 0
+		if target != null:
+			effect_targets = search(target, attribute_target, power_up, ["HUD/Hand/" + affected_card.name])
+		if effect_targets.has("HUD/Hand/" + affected_card.name) or target == null:
+			for item in effects.get("effect"):
+				if item == "stat_change_x":
+					affected_card.modifier_stat += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "stat_change_x_atk":
+					affected_card.modifier_atk += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "stat_change_x_def":
+					affected_card.modifier_def += attribute_effect[attribute_counter]
+					attribute_counter += 1
+				elif item == "spellbind":
+					affected_card.spellbind(attribute_effect[attribute_counter])
+					attribute_counter += 1
+				elif item == "spellbind_eternal":
+					affected_card.spellbind(-1)
+					attribute_counter += 1
+
 
 func process_ritual(card):
 	var success = true
@@ -745,7 +773,7 @@ func process_ritual(card):
 	if rituals.has("explicit_material"):
 		for item in rituals["explicit_material"]:
 			if success:
-				var results = search(["card_own", "card_id"], [item], card.name)
+				var results = search(["card_own", "card_id"], [item], card.name, card_age)
 				var success_individual = false
 				for card in card_age:
 					if results.has(card) and !found_material.has(card):
@@ -760,7 +788,7 @@ func process_ritual(card):
 			if success:
 				var search_target = item["search_target"]
 				search_target.append("card_own")
-				var results = search(search_target, item["attribute_target"], card.name)
+				var results = search(search_target, item["attribute_target"], card.name, card_age)
 				var success_individual = false
 				for card in card_age:
 					if results.has(card) and !found_material.has(card):
