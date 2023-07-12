@@ -645,7 +645,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 	var effect_targets
 	var attribute_counter = 0
 	if target != null:
-		effect_targets = search(target, attribute_target, card, card_age)
+		effect_targets = search(target, attribute_target, card.name, card_age)
 	for item in effect:
 		if item == "destroy":
 			for card in effect_targets:
@@ -686,9 +686,11 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 			var position = Vector2.ZERO
 			for card in effect_targets:
 				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
+				var original_team = get_node(get_card(position.x, position.y)).team
 				destroy_card_at_nondestructive(position.x, position.y)
 				create_card(position.x, position.y)
 				get_node(get_card(position.x, position.y)).card_id = attribute_effect[attribute_counter]
+				get_node(get_card(position.x, position.y)).team = original_team
 			attribute_counter += 1
 		elif item == "battle_one_sided_destruction":
 			var position = Vector2.ZERO

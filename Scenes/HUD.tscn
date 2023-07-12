@@ -195,9 +195,9 @@ text = "SB"
 
 [node name="Terrain_Boost" type="Label" parent="HUD_Bottom"]
 unique_name_in_owner = true
-margin_left = 938.0
+margin_left = 958.0
 margin_top = 1027.0
-margin_right = 1009.0
+margin_right = 1029.0
 margin_bottom = 1074.0
 rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
@@ -206,9 +206,9 @@ text = "T-"
 
 [node name="Movement_Boost" type="Label" parent="HUD_Bottom"]
 unique_name_in_owner = true
-margin_left = 986.0
+margin_left = 1006.0
 margin_top = 1027.0
-margin_right = 1057.0
+margin_right = 1077.0
 margin_bottom = 1074.0
 rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
@@ -273,7 +273,7 @@ z_index = -1
 [node name="ColorRect" type="ColorRect" parent="HUD_Bottom/Backgound"]
 margin_left = 264.0
 margin_top = 963.0
-margin_right = 1033.0
+margin_right = 1048.0
 margin_bottom = 1068.0
 color = Color( 0, 0, 0, 0.470588 )
 

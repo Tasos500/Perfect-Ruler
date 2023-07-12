@@ -179,6 +179,10 @@ func update_stats():
 		tile_speed = 2
 	else:
 		tile_speed = 1
+	if team == color.WHITE:
+		rotation_degrees = 180
+	else:
+		rotation_degrees = 0
 
 func is_monster():
 	if (card_type == card_types.MAGIC) or (card_type == card_types.POWER_UP) or (card_type == card_types.RITUAL) or (card_types.TRAP_FULL) or (card_type == card_types.TRAP_LIMITED):

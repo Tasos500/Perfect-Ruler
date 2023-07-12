@@ -539,7 +539,10 @@ func end_turn(delta):
 		hand.clear_fusion_counters()
 		hand.reset_cards_position()
 		hand.turn_end_update_hand()
-		get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
+		if board.get_card(grid_x, grid_y) != null:
+			get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
+		else:
+			get_node("../HUD/HUD_Bottom").update(null)
 	
 
 func move(delta):
