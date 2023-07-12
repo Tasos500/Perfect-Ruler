@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Fonts/Matrix Regular Small Caps 1.ttf" type="DynamicFontData" id=2]
@@ -14,6 +14,7 @@
 [ext_resource path="res://Assets/Card/CardAttrLIGHT.svg" type="Texture" id=12]
 [ext_resource path="res://Assets/Card/CardAttrWIND.svg" type="Texture" id=13]
 [ext_resource path="res://Scenes/HUD_Bottom.gd" type="Script" id=14]
+[ext_resource path="res://Scenes/Winner_Message.gd" type="Script" id=15]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
@@ -282,4 +283,32 @@ margin_left = 25.0
 margin_top = 963.0
 margin_right = 246.0
 margin_bottom = 1068.0
+color = Color( 0, 0, 0, 0.470588 )
+
+[node name="Winner_Message" type="CanvasLayer" parent="."]
+offset = Vector2( 0, 1000 )
+transform = Transform2D( 1, 0, 0, 1, 0, 1000 )
+script = ExtResource( 15 )
+
+[node name="Winner_Text" type="Label" parent="Winner_Message"]
+unique_name_in_owner = true
+margin_left = 320.0
+margin_top = 450.0
+margin_right = 1030.0
+margin_bottom = 591.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "Player 1 Wins!
+Press [X] to play again.
+Press [Z] to go back to the deck editor."
+align = 1
+
+[node name="Backgound2" type="Node2D" parent="Winner_Message"]
+z_index = -1
+
+[node name="ColorRect" type="ColorRect" parent="Winner_Message/Backgound2"]
+margin_left = 269.0
+margin_top = 430.0
+margin_right = 1061.0
+margin_bottom = 613.0
 color = Color( 0, 0, 0, 0.470588 )

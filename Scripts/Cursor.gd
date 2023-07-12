@@ -85,7 +85,7 @@ func _process(delta):
 	if cancelling:
 		$Sprite.modulate.a8 = 0
 		move_cancel(delta)
-	if !in_menu:
+	if !in_menu and !board.winner_declared:
 		if turn_ending:
 			$Sprite.modulate.a8 = 0
 			end_turn(delta)
@@ -155,8 +155,13 @@ func process_button_input():
 			if team == color.WHITE:
 				board.turn_counter -= 1
 			if board.turn_counter == -1:
-				pass
-				# declare_winner()
+				if board.lp_red > board.lp_white:
+					get_node("../HUD/Winner_Message").declare_winner(color.RED)
+				elif board.lp_red < board.lp_white:
+					get_node("../HUD/Winner_Message").declare_winner(color.WHITE)
+				else:
+					get_node("../HUD/Winner_Message").declare_winner(69) # Draw
+				board.winner_declared = true
 				return
 			if !holding_card and !summoning and !cancelling:
 				has_summoned = false

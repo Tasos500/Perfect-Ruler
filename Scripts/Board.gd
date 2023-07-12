@@ -56,6 +56,8 @@ var opponent = null
 
 var turn_counter = 99
 
+var winner_declared = false
+
 func create_map(w, h):
 	var map = []
 
@@ -901,3 +903,17 @@ func _process(_delta):
 	else:
 		get_node("HUD/%Stars_Red").text = "??"
 		get_node("HUD/%Stars_White").text = "★ ✭" + str(stars_white)
+	
+	if !winner_declared:
+		if lp_red <= 0:
+			lp_red = 0
+			get_node("HUD/HUD_Layer").is_moving = true
+			get_node("HUD/HUD_Bottom").is_moving = true
+			get_node("HUD/Winner_Message").declare_winner(color.RED)
+			winner_declared = true
+		elif lp_white <= 0:
+			lp_white = 0
+			get_node("HUD/HUD_Layer").is_moving = true
+			get_node("HUD/HUD_Bottom").is_moving = true
+			get_node("HUD/Winner_Message").declare_winner(color.WHITE)
+			winner_declared = true
