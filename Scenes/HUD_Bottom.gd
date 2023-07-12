@@ -73,7 +73,8 @@ func update(card):
 	elif !card.is_leader:
 		get_node("%Card_Name").show()
 		get_node("%Type").show()
-		get_node("%Type").text = str(card_types_text[card.card_type])
+		if !card.card_type == null:
+			get_node("%Type").text = str(card_types_text[card.card_type])
 		get_node("%Attribute").show()
 	else:
 		get_node("%Card_Name").show()
@@ -100,7 +101,8 @@ func update(card):
 			get_node("%ATK").text = "A " + str(card.atk)
 			get_node("%DEF").show()
 			get_node("%DEF").text = "D " + str(card.def)
-			get_node("%Attribute").frame = card.attribute
+			if !card.attribute == null:
+				get_node("%Attribute").frame = card.attribute
 			if card.effect_list != []:
 				get_node("%Effect").show()
 		if card.turns_spellbound != 0:

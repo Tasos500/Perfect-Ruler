@@ -363,6 +363,11 @@ func process_card_terrain(card):
 			board.get_node(card).update_stats()
 			if board.get_node(card).atk >= 1500:
 				board.destroy_card_at(board.get_node(card).grid_x, board.get_node(card).grid_y)
+				if board.get_card(grid_x, grid_y) != null:
+					board.get_node(board.get_card(grid_x, grid_y)).update_stats()
+					get_node("../HUD/HUD_Bottom").update(board.get_node_or_null(board.get_card(grid_x, grid_y)))
+				else:
+					get_node("../HUD/HUD_Bottom").update(null)
 	elif terrain_current == terrain.TOON:
 		if board.get_node(card).toon:
 			board.get_node(card).modifier_terrain = 1
