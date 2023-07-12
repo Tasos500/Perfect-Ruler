@@ -706,6 +706,7 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 				create_card(position.x, position.y)
 				get_node(get_card(position.x, position.y)).card_id = attribute_effect[attribute_counter]
 				get_node(get_card(position.x, position.y)).team = original_team
+				get_node(get_card(position.x, position.y)).correct_rotation()
 			attribute_counter += 1
 		elif item == "battle_one_sided_destruction":
 			var position = Vector2.ZERO

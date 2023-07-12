@@ -179,6 +179,8 @@ func update_stats():
 		tile_speed = 2
 	else:
 		tile_speed = 1
+
+func correct_rotation():
 	if team == color.WHITE:
 		rotation_degrees = 180
 	else:
