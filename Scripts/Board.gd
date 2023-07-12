@@ -198,12 +198,17 @@ func move_card(x1, y1, x2, y2):
 				destroy_card_at(x2, y2)
 				move_card_to_empty(x1, y1, x2, y2)
 				return
+			var card1attr = card1.attribute
+			var card2attr = card2.attribute
 			if card2.in_attack_position:
 				if card1.atk > card2.atk:
 					calculate_damage(card1.atk, card2.atk, card2.team)
 					card2.destroyed_battle = true
 					destroy_card_at(x2, y2)
-					move_card_to_empty(x1, y1, x2, y2)
+					if !post_battle_spellbinding(card1attr, card2attr):
+						move_card_to_empty(x1, y1, x2, y2)
+					else:
+						card1.spellbind(1)
 				elif card1.atk == card2.atk:
 					$Cursor.card_moving_destroyed = true
 					card1.destroyed_battle = true
@@ -215,13 +220,21 @@ func move_card(x1, y1, x2, y2):
 					$Cursor.card_moving_destroyed = true
 					card1.destroyed_battle = true
 					destroy_card_at(x1, y1)
+					if post_battle_spellbinding(card2attr, card1attr):
+						card2.spellbind(1)
 			else:
 				if card1.atk > card2.def:
 					card2.destroyed_battle = true
 					destroy_card_at(x2, y2)
 					move_card_to_empty(x1, y1, x2, y2)
+					if post_battle_spellbinding(card1attr, card2attr):
+						card1.spellbind(1)
 				elif card1.atk < card2.def:
 					calculate_damage(card1.atk, card2.def, card1.team)
+					if post_battle_spellbinding(card2attr, card1attr):
+						card2.spellbind(1)
+					elif post_battle_spellbinding(card1attr, card2attr):
+						card1.spellbind(1)
 		if get_card(x1, y1) != null:
 			card1.battle_atk = 0
 			card1.update_stats()
@@ -835,6 +848,17 @@ func check_adjacent_tiles_for_limited_trap(x, y):
 			process_effect(item.get("effect"), item.get("target"), item.get("attribute_effect"), item.get("attribute_target"), card)
 	trap_activator = null
 			
+
+func post_battle_spellbinding(survivor, defeated):
+	if (survivor == attributes.DARK and defeated == attributes.LIGHT) \
+	or (survivor == attributes.LIGHT and defeated == attributes.WATER) \
+	or (survivor == attributes.WATER and defeated == attributes.FIRE) \
+	or (survivor == attributes.FIRE and defeated == attributes.EARTH) \
+	or (survivor == attributes.EARTH and defeated == attributes.WIND) \
+	or (survivor == attributes.WIND and defeated == attributes.DARK):
+		return true
+	else:
+		return false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

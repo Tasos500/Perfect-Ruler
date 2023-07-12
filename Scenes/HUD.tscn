@@ -169,13 +169,13 @@ margin_bottom = 1011.0
 rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 4 )
-text = "9999"
+text = "A 9999"
 
 [node name="SB_Count" type="Label" parent="HUD_Bottom"]
 unique_name_in_owner = true
-margin_left = 1001.0
+margin_left = 1022.0
 margin_top = 984.0
-margin_right = 1072.0
+margin_right = 1093.0
 margin_bottom = 1031.0
 rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
@@ -184,9 +184,9 @@ text = "∞"
 
 [node name="SB_Label" type="Label" parent="HUD_Bottom"]
 unique_name_in_owner = true
-margin_left = 939.0
+margin_left = 960.0
 margin_top = 984.0
-margin_right = 1010.0
+margin_right = 1031.0
 margin_bottom = 1031.0
 rect_pivot_offset = Vector2( -114, 58 )
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
@@ -258,7 +258,7 @@ margin_right = 922.0
 margin_bottom = 1047.0
 custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 4 )
-text = "9999"
+text = "D 9999"
 
 [node name="Attribute" type="AnimatedSprite" parent="HUD_Bottom"]
 unique_name_in_owner = true
@@ -273,7 +273,7 @@ z_index = -1
 [node name="ColorRect" type="ColorRect" parent="HUD_Bottom/Backgound"]
 margin_left = 264.0
 margin_top = 963.0
-margin_right = 1048.0
+margin_right = 1056.0
 margin_bottom = 1068.0
 color = Color( 0, 0, 0, 0.470588 )
 
