@@ -126,7 +126,7 @@ func process_button_input():
 			elif confirm_step and !mid_animation:
 				reverse_fusion_queue()
 		elif Input.is_action_just_pressed("ui_right") and !confirm_step and !mid_animation:
-			if hand_pos != 5 and hand_pos < card_num:
+			if hand_pos != 5 and hand_pos < current_hand.size():
 				hand_pos += 1
 			move_cursor()
 		elif Input.is_action_just_pressed("ui_left") and !confirm_step and !mid_animation:
@@ -165,12 +165,12 @@ func draw():
 		current_deck = board.deck_white
 	card_num = current_hand.size()
 	while current_hand.size() != 5 and current_deck.size() != 0:
-		if current_deck.size() == 0:
-			break
 		current_hand.push_back(str(current_deck.pop_front()))
-		get_node("Hand"+str(card_num)).card_id = current_hand[current_hand.size() - 1]
+		get_node("Hand"+str(current_hand.size())).card_id = current_hand[current_hand.size() - 1]
 	for i in range (1, current_hand.size() + 1):
 			get_node("Hand"+str(i)).show()
+	for i in range (current_hand.size()+1, 6):
+			get_node("Hand"+str(i)).hide()
 
 func draw_post_summon():
 	if cursor.team == color.RED:
@@ -192,7 +192,7 @@ func process_fusion_counters():
 			get_node("Fusion_Counter"+str(i+1)).position = Vector2(180 + 230*(fusion_queue[i]-1), 250)
 			get_node("Fusion_Counter"+str(i+1)).show()
 		if fusion_queue.size() < 5:
-			for i in range(fusion_queue.size(), current_hand.size() + 1):
+			for i in range(fusion_queue.size(), 5):
 				get_node("Fusion_Counter"+str(i+1)).hide()
 	else:
 		for i in range (1, 5):
@@ -293,7 +293,7 @@ func reverse_fusion_queue():
 func return_to_hand():
 	if board_card != null:
 		board_card.show()
-	for i in range (1, 6):
+	for i in range (1, current_hand.size() + 1):
 		get_node("Hand"+str(i)).show()
 		get_node("Hand"+str(i)).initial_position = get_node("Hand"+str(i)).position
 		if fusion_queue.has(i):
@@ -472,12 +472,13 @@ func reset_hand():
 func setup_hand():
 	var hand
 	var fusion_counter
-	for i in range(1, card_num + 1):
+	for i in range(1, 6):
 		hand = load("res://Scenes/Card_Hand.tscn").instance()
 		hand.name = str("Hand"+str(i))
 		hand.position = Vector2(180 + 230 * (i-1), 480)
 		hand.default_position = hand.position
 		hand.scale = Vector2(2, 2)
+		hand.hide()
 		add_child(hand, false)
 		fusion_counter = load("res://Scenes/Fusion_Counter.tscn").instance()
 		fusion_counter.visible = false
@@ -486,13 +487,13 @@ func setup_hand():
 	show()
 	board_card = null
 	draw_post_summon()
-	for i in range (1, card_num + 1):
+	for i in range (1, 6):
 		get_node("Hand"+str(i)).show()
 	$"Hand_Cursor".show()
 	cursor.last_summoning = false
 	show()
 	cursor.summoning = false
-	for i in range (1, card_num + 1):
+	for i in range (1, 6):
 		get_node("Hand"+str(i)).position = get_node("Hand"+str(i)).default_position
 	
 	hand_pos = 1

@@ -111,10 +111,11 @@ func process_button_input():
 		if !holding_card and !cancelling and !turn_ending:
 			if !summoning and !has_summoned:
 				if board.get_card(grid_x, grid_y) != null:
-					if board.get_node(board.get_card(grid_x, grid_y)).is_leader == true and board.get_node(board.get_card(grid_x, grid_y)).team == team:
+					if board.get_node(board.get_card(grid_x, grid_y)).is_leader == true and board.get_node(board.get_card(grid_x, grid_y)).team == team \
+					and (hand.current_hand.size() != 0 or board.current_deck.size() != 0):
 						summoning = true
 						process_summon()
-			else:
+			elif (hand.current_hand.size() != 0 or board.current_deck.size() != 0):
 				summoning = false
 				process_summon()
 	elif Input.is_action_just_pressed("ui_accept"):
@@ -472,12 +473,20 @@ func move_is_valid():
 func process_summon():
 	can_move = false
 	if board.get_card(grid_x, grid_y) != null:
-		if has_summoned and board.get_node_or_null(board.get_card(grid_x, grid_y)).is_leader:
+		if has_summoned and board.get_node_or_null(board.get_card(grid_x, grid_y)).is_leader and hand.current_hand.size() != 0:
 			in_menu = true
 			get_node("../HUD/Hand").move_hand()
 			hand.can_move = true
 			can_move = true
 			return
+		else:
+			var current_deck
+			if team == color.RED:
+				current_deck = board.deck_red
+			else:
+				current_deck = board.deck_white
+			if hand.current_hand.size() == 0 and current_deck.size() == 0:
+				return
 	if last_summoning != summoning:
 		if summoning == true:
 			board.show_summon_tiles(grid_x, grid_y)

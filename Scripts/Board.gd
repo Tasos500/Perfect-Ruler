@@ -22,6 +22,7 @@ var card_age = []
 # Decks have exactly 40 cards. These will contain pointers to the databases.
 var deck_red = []
 var deck_white = []
+var current_deck
 
 # Hands can have up to five cards, which are drawn immediately when the hand is opened for a summon.
 var hand_red = []
@@ -948,3 +949,8 @@ func _process(_delta):
 			get_node("HUD/HUD_Bottom").is_moving = true
 			get_node("HUD/Winner_Message").declare_winner(color.WHITE)
 			winner_declared = true
+			
+	if cursor.team == color.RED:
+		current_deck = deck_red
+	else:
+		current_deck = deck_white
