@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Assets/Fonts/Matrix Regular Small Caps 1.ttf" type="DynamicFontData" id=2]
@@ -15,6 +15,12 @@
 [ext_resource path="res://Assets/Card/CardAttrWIND.svg" type="Texture" id=13]
 [ext_resource path="res://Scenes/HUD_Bottom.gd" type="Script" id=14]
 [ext_resource path="res://Scenes/Winner_Message.gd" type="Script" id=15]
+[ext_resource path="res://Assets/Card/CardLevel.png" type="Texture" id=16]
+[ext_resource path="res://Assets/Card/CardFront_Monster_Normal.png" type="Texture" id=17]
+[ext_resource path="res://Assets/Card/CardFront_Monster_Effect.png" type="Texture" id=18]
+[ext_resource path="res://Assets/Card/CardFront_Spell.png" type="Texture" id=19]
+[ext_resource path="res://Assets/Card/CardFront_Trap.png" type="Texture" id=20]
+[ext_resource path="res://Assets/Card/Card_back_01.svg.png" type="Texture" id=21]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
@@ -67,86 +73,295 @@ scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
 
 [node name="HUD_Layer" type="CanvasLayer" parent="."]
-offset = Vector2( 0, -150 )
-transform = Transform2D( 1, 0, 0, 1, 0, -150 )
+offset = Vector2( 0, -175 )
+transform = Transform2D( 1, 0, 0, 1, 0, -175 )
 script = ExtResource( 5 )
-
-[node name="LP_Red" type="Label" parent="HUD_Layer"]
-unique_name_in_owner = true
-margin_left = 20.0
-margin_right = 206.0
-margin_bottom = 78.0
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 1 )
-text = "4000 LP"
-
-[node name="Turn_Counter" type="Label" parent="HUD_Layer"]
-unique_name_in_owner = true
-margin_left = 600.0
-margin_right = 206.0
-margin_bottom = 78.0
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 1 )
-text = "99"
-align = 1
-
-[node name="Stars_Red" type="Label" parent="HUD_Layer"]
-unique_name_in_owner = true
-margin_left = 20.0
-margin_top = 82.0
-margin_right = 96.0
-margin_bottom = 160.0
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 3 )
-text = "4000"
-
-[node name="LP_White" type="Label" parent="HUD_Layer"]
-unique_name_in_owner = true
-margin_left = 1020.0
-margin_right = 1259.0
-margin_bottom = 81.0
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 2 )
-text = "LP 4000"
-align = 2
-
-[node name="Stars_White" type="Label" parent="HUD_Layer"]
-unique_name_in_owner = true
-margin_left = 1180.0
-margin_top = 82.0
-margin_right = 1256.0
-margin_bottom = 160.0
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_fonts/font = SubResource( 3 )
-text = "4000"
-align = 2
 
 [node name="Backgound" type="Node2D" parent="HUD_Layer"]
 z_index = -1
 
-[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound"]
+[node name="StatsRed" type="ColorRect" parent="HUD_Layer/Backgound"]
 margin_left = 15.0
 margin_top = 6.0
 margin_right = 247.0
-margin_bottom = 138.0
+margin_bottom = 161.0
 rect_pivot_offset = Vector2( 72, 132 )
 color = Color( 0, 0, 0, 0.458824 )
 
-[node name="ColorRect2" type="ColorRect" parent="HUD_Layer/Backgound"]
+[node name="LP_Red" type="Label" parent="HUD_Layer/Backgound/StatsRed"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = -6.0
+margin_right = 224.0
+margin_bottom = 72.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "4000 LP"
+
+[node name="TopRow" type="Node2D" parent="HUD_Layer/Backgound/StatsRed"]
+position = Vector2( 0, -15 )
+
+[node name="Stars_Red" type="Label" parent="HUD_Layer/Backgound/StatsRed/TopRow"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = 76.0
+margin_right = 43.0
+margin_bottom = 154.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "12"
+align = 2
+
+[node name="Deck_Red" type="Label" parent="HUD_Layer/Backgound/StatsRed/TopRow"]
+unique_name_in_owner = true
+margin_left = 145.0
+margin_top = 76.0
+margin_right = 183.0
+margin_bottom = 154.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "12"
+align = 2
+
+[node name="LevelSpriteR" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/TopRow"]
+position = Vector2( 65.75, 97.75 )
+scale = Vector2( 1.55882, 1.55882 )
+texture = ExtResource( 16 )
+
+[node name="DeckSizeR" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/TopRow"]
+position = Vector2( 209, 96 )
+scale = Vector2( 0.148485, 0.148485 )
+texture = ExtResource( 21 )
+
+[node name="BottomRow" type="Node2D" parent="HUD_Layer/Backgound/StatsRed"]
+position = Vector2( 0, -9 )
+
+[node name="Monsters_Red" type="Label" parent="HUD_Layer/Backgound/StatsRed/BottomRow"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = 118.0
+margin_right = 43.0
+margin_bottom = 196.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+
+[node name="Magics_Red" type="Label" parent="HUD_Layer/Backgound/StatsRed/BottomRow"]
+unique_name_in_owner = true
+margin_left = 145.0
+margin_top = 118.0
+margin_right = 183.0
+margin_bottom = 196.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+
+[node name="MonstersR" type="Node2D" parent="HUD_Layer/Backgound/StatsRed/BottomRow"]
+position = Vector2( 40, 115 )
+scale = Vector2( 0.05, 0.05 )
+
+[node name="CardFrontMonsterNormal" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MonstersR"]
+position = Vector2( 450, 500 )
+z_index = 1
+texture = ExtResource( 17 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MonstersR/CardFrontMonsterNormal"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="CardFrontMonsterEffect" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MonstersR"]
+position = Vector2( 570, 450 )
+texture = ExtResource( 18 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MonstersR/CardFrontMonsterEffect"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="MagicsR" type="Node2D" parent="HUD_Layer/Backgound/StatsRed/BottomRow"]
+position = Vector2( 183, 115 )
+scale = Vector2( 0.05, 0.05 )
+
+[node name="CardFrontMonsterNormal" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MagicsR"]
+position = Vector2( 450, 500 )
+z_index = 1
+texture = ExtResource( 19 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MagicsR/CardFrontMonsterNormal"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="CardFrontMonsterEffect" type="Sprite" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MagicsR"]
+position = Vector2( 570, 450 )
+texture = ExtResource( 20 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsRed/BottomRow/MagicsR/CardFrontMonsterEffect"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="StatsWhite" type="ColorRect" parent="HUD_Layer/Backgound"]
 margin_left = 1030.0
 margin_top = 6.0
 margin_right = 1262.0
-margin_bottom = 138.0
+margin_bottom = 161.0
 rect_pivot_offset = Vector2( 72, 132 )
 color = Color( 0, 0, 0, 0.470588 )
 
-[node name="ColorRect3" type="ColorRect" parent="HUD_Layer/Backgound"]
+[node name="LP_White" type="Label" parent="HUD_Layer/Backgound/StatsWhite"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = -6.0
+margin_right = 244.0
+margin_bottom = 75.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 2 )
+text = "4000 LP"
+
+[node name="TopRow" type="Node2D" parent="HUD_Layer/Backgound/StatsWhite"]
+position = Vector2( 0, -15 )
+
+[node name="Stars_White" type="Label" parent="HUD_Layer/Backgound/StatsWhite/TopRow"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = 76.0
+margin_right = 43.0
+margin_bottom = 154.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "12"
+align = 2
+
+[node name="Deck_White" type="Label" parent="HUD_Layer/Backgound/StatsWhite/TopRow"]
+unique_name_in_owner = true
+margin_left = 145.0
+margin_top = 76.0
+margin_right = 183.0
+margin_bottom = 154.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "12"
+align = 2
+
+[node name="LevelSpriteW" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/TopRow"]
+position = Vector2( 65.75, 97.75 )
+scale = Vector2( 1.55882, 1.55882 )
+texture = ExtResource( 16 )
+
+[node name="DeckSizeW" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/TopRow"]
+position = Vector2( 209, 96 )
+scale = Vector2( 0.148485, 0.148485 )
+texture = ExtResource( 21 )
+
+[node name="BottomRow" type="Node2D" parent="HUD_Layer/Backgound/StatsWhite"]
+position = Vector2( 0, -9 )
+
+[node name="MonstersW" type="Node2D" parent="HUD_Layer/Backgound/StatsWhite/BottomRow"]
+position = Vector2( 40, 115 )
+scale = Vector2( 0.05, 0.05 )
+
+[node name="CardFrontMonsterNormal" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MonstersW"]
+position = Vector2( 450, 500 )
+z_index = 1
+texture = ExtResource( 17 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MonstersW/CardFrontMonsterNormal"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="CardFrontMonsterEffect" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MonstersW"]
+position = Vector2( 570, 450 )
+texture = ExtResource( 18 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MonstersW/CardFrontMonsterEffect"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="MagicsW" type="Node2D" parent="HUD_Layer/Backgound/StatsWhite/BottomRow"]
+position = Vector2( 183, 115 )
+scale = Vector2( 0.05, 0.05 )
+
+[node name="CardFrontMonsterNormal" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MagicsW"]
+position = Vector2( 450, 500 )
+z_index = 1
+texture = ExtResource( 19 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MagicsW/CardFrontMonsterNormal"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="CardFrontMonsterEffect" type="Sprite" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MagicsW"]
+position = Vector2( 570, 450 )
+texture = ExtResource( 20 )
+
+[node name="ColorRect" type="ColorRect" parent="HUD_Layer/Backgound/StatsWhite/BottomRow/MagicsW/CardFrontMonsterEffect"]
+margin_left = -159.0
+margin_top = -192.0
+margin_right = 159.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="Monsters_White" type="Label" parent="HUD_Layer/Backgound/StatsWhite/BottomRow"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = 118.0
+margin_right = 43.0
+margin_bottom = 196.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+
+[node name="Magics_White" type="Label" parent="HUD_Layer/Backgound/StatsWhite/BottomRow"]
+unique_name_in_owner = true
+margin_left = 145.0
+margin_top = 118.0
+margin_right = 183.0
+margin_bottom = 196.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+
+[node name="TurnCounterRect" type="ColorRect" parent="HUD_Layer/Backgound"]
 margin_left = 595.0
 margin_top = 3.0
 margin_right = 667.0
 margin_bottom = 72.0
 rect_pivot_offset = Vector2( 72, 132 )
 color = Color( 0, 0, 0, 0.470588 )
+
+[node name="Turn_Counter" type="Label" parent="HUD_Layer/Backgound/TurnCounterRect"]
+unique_name_in_owner = true
+margin_left = 5.0
+margin_top = -3.0
+margin_right = 69.0
+margin_bottom = 75.0
+custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "99"
+align = 1
 
 [node name="HUD_Bottom" type="CanvasLayer" parent="."]
 script = ExtResource( 14 )

@@ -46,6 +46,9 @@ var card_anim_done = false
 var power_card
 var affected_card
 
+# Prevents mashing the confirm button, to avoid crash.
+var confirm_timer = 0
+
 onready var board  = $"../.."
 onready var cursor = $"../../Cursor"
 
@@ -114,42 +117,43 @@ func move(delta):
 		offset = initial_position + (1000 * input_direction * movement_percentage)
 
 func process_button_input():
-	if Input.is_action_just_pressed("ui_cancel") and !mid_animation:
-		if !confirm_step:
-			move_hand()
-		elif confirm_step and !mid_animation:
-			reverse_fusion_queue()
-	elif Input.is_action_just_pressed("ui_right") and !confirm_step and !mid_animation:
-		if hand_pos != 5 and hand_pos < card_num:
-			hand_pos += 1
-		move_cursor()
-	elif Input.is_action_just_pressed("ui_left") and !confirm_step and !mid_animation:
-		if hand_pos != 1:
-			hand_pos -= 1
-		move_cursor()
-	elif Input.is_action_just_pressed("ui_up") and !confirm_step and !mid_animation and !cursor.has_summoned:
-		if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos) and (get_node("Hand" + str(hand_pos)).level <= current_stars\
-		 or get_node("Hand" + str(hand_pos)).card_type == card_types.MAGIC \
-		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_FULL \
-		or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_LIMITED\
-		or get_node("Hand" + str(hand_pos)).card_type == card_types.RITUAL\
-		or get_node("Hand" + str(hand_pos)).card_type == card_types.POWER_UP):
-			fusion_queue.push_back(hand_pos)
-			process_fusion_counters()
-	elif Input.is_action_just_pressed("ui_down") and !confirm_step and !mid_animation and !cursor.has_summoned:
-		if fusion_queue.size() != 0:
-			fusion_queue.erase(hand_pos)
-			process_fusion_counters()
-	elif Input.is_action_just_pressed("ui_accept") and !mid_animation and !cursor.has_summoned:
-		if !confirm_step:
-			process_fusion_queue()
-		elif confirm_step and !mid_animation:
-			if cursor.team == color.RED:
-				board.stars_red -= highest_stars
-			else:
-				board.stars_white -= highest_stars
-			processing_final = true
-			mid_animation = true
+	if mid_animation or processing_final:
+		return
+	else:
+		if Input.is_action_just_pressed("ui_cancel") and !mid_animation:
+			if !confirm_step:
+				move_hand()
+			elif confirm_step and !mid_animation:
+				reverse_fusion_queue()
+		elif Input.is_action_just_pressed("ui_right") and !confirm_step and !mid_animation:
+			if hand_pos != 5 and hand_pos < card_num:
+				hand_pos += 1
+			move_cursor()
+		elif Input.is_action_just_pressed("ui_left") and !confirm_step and !mid_animation:
+			if hand_pos != 1:
+				hand_pos -= 1
+			move_cursor()
+		elif Input.is_action_just_pressed("ui_up") and !confirm_step and !mid_animation and !cursor.has_summoned:
+			if fusion_queue.size() != 5 and !fusion_queue.has(hand_pos) and (get_node("Hand" + str(hand_pos)).level <= current_stars\
+			 or get_node("Hand" + str(hand_pos)).card_type == card_types.MAGIC \
+			or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_FULL \
+			or get_node("Hand" + str(hand_pos)).card_type == card_types.TRAP_LIMITED\
+			or get_node("Hand" + str(hand_pos)).card_type == card_types.RITUAL\
+			or get_node("Hand" + str(hand_pos)).card_type == card_types.POWER_UP):
+				fusion_queue.push_back(hand_pos)
+				process_fusion_counters()
+		elif Input.is_action_just_pressed("ui_down") and !confirm_step and !mid_animation and !cursor.has_summoned:
+			if fusion_queue.size() != 0:
+				fusion_queue.erase(hand_pos)
+				process_fusion_counters()
+		elif Input.is_action_just_pressed("ui_accept") and !mid_animation and !cursor.has_summoned and confirm_timer >= 0.45:
+			confirm_timer = 0
+			if !confirm_step and !processing_final and !cancelling:
+				process_fusion_queue()
+			elif confirm_step and !mid_animation and !cancelling and !processing_final:
+				processing_final = true
+				mid_animation = true
+			
 
 # Draws cards into the Cursor's hand, until it reaches 5.
 func draw():
@@ -160,12 +164,12 @@ func draw():
 		current_hand = board.hand_white
 		current_deck = board.deck_white
 	card_num = current_hand.size()
-	while current_hand.size() != 5:
+	while current_hand.size() != 5 and current_deck.size() != 0:
 		if current_deck.size() == 0:
 			break
 		current_hand.push_back(str(current_deck.pop_front()))
-		get_node("Hand"+str(current_hand.size())).card_id = current_hand[current_hand.size() - 1]
-	for i in range (1, 6):
+		get_node("Hand"+str(card_num)).card_id = current_hand[current_hand.size() - 1]
+	for i in range (1, current_hand.size() + 1):
 			get_node("Hand"+str(i)).show()
 
 func draw_post_summon():
@@ -185,10 +189,10 @@ func draw_post_summon():
 func process_fusion_counters():
 	if fusion_queue.size() > 0:
 		for i in range (0, fusion_queue.size()):
-			get_node("Fusion_Counter"+str(i+1)).position = Vector2(180 + 230*(fusion_queue[i]-1), 180)
+			get_node("Fusion_Counter"+str(i+1)).position = Vector2(180 + 230*(fusion_queue[i]-1), 250)
 			get_node("Fusion_Counter"+str(i+1)).show()
 		if fusion_queue.size() < 5:
-			for i in range(fusion_queue.size(), 5):
+			for i in range(fusion_queue.size(), current_hand.size() + 1):
 				get_node("Fusion_Counter"+str(i+1)).hide()
 	else:
 		for i in range (1, 5):
@@ -263,6 +267,15 @@ func reverse_fusion_queue():
 	cancelling = true
 	mid_animation = true
 	first_is_board = false
+	
+	# These fix a possible crash when mashing the confirm button 
+	# during the combine-split animation before the confirm step, then returning.
+	# This happened due to the game thinking the queue was confirmed then cancelled at the same time,
+	# resulting in final_nodes[] being empty when looking to reverse the process.
+	processing_final = false
+	confirm_step = false
+	cursor.has_summoned = false
+	
 	highest_stars = 0
 	var fusion_card
 	final_nodes = []
@@ -306,7 +319,6 @@ func return_to_hand():
 	cancelling = false
 
 func prepare_confirm_screen():
-	confirm_step = true
 	if board_card != null and first_is_board:
 		board_card.hide()
 	var fusion_card
@@ -333,9 +345,10 @@ func prepare_confirm_screen():
 			for j in range (1, 6):
 				get_node("Hand"+str(j)).hide()
 	mid_animation = false
+	confirm_step = true
 
 func process_final():
-	cursor.has_summoned = true
+	mid_animation = true
 	if fusion_queue_confirm.size() > 1:
 		if get_node_or_null(final_nodes[0]) == null:
 			final_nodes.pop_front()
@@ -409,6 +422,11 @@ func process_final():
 		fusion1.is_moving_to_field = true
 		fusion1.has_moved = false
 		mid_animation = false
+		cursor.has_summoned = true
+		if cursor.team == color.RED:
+			board.stars_red -= highest_stars
+		else:
+			board.stars_white -= highest_stars
 
 func reset_hand():
 	hide()
@@ -454,7 +472,7 @@ func reset_hand():
 func setup_hand():
 	var hand
 	var fusion_counter
-	for i in range(1, 6):
+	for i in range(1, card_num + 1):
 		hand = load("res://Scenes/Card_Hand.tscn").instance()
 		hand.name = str("Hand"+str(i))
 		hand.position = Vector2(180 + 230 * (i-1), 480)
@@ -468,13 +486,13 @@ func setup_hand():
 	show()
 	board_card = null
 	draw_post_summon()
-	for i in range (1, 6):
+	for i in range (1, card_num + 1):
 		get_node("Hand"+str(i)).show()
 	$"Hand_Cursor".show()
 	cursor.last_summoning = false
 	show()
 	cursor.summoning = false
-	for i in range (1, 6):
+	for i in range (1, card_num + 1):
 		get_node("Hand"+str(i)).position = get_node("Hand"+str(i)).default_position
 	
 	hand_pos = 1
@@ -525,3 +543,5 @@ func _process(delta):
 			if get_node("Fusion_Card"+str(fusion_queue.size())).is_in_center():
 				return_to_hand()
 				ready_to_split = false
+	if confirm_timer < 0.45: # Approximate time for confirm animation to finish, with some margin for error.
+		confirm_timer += delta

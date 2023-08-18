@@ -104,6 +104,7 @@ func _process(delta):
 				get_node("Sprite").texture = cursor_red
 			elif team == color.WHITE:
 				get_node("Sprite").texture = cursor_white
+			board.check_card_limit()
 
 func process_button_input():
 	if Input.is_action_just_pressed("ui_summon"):

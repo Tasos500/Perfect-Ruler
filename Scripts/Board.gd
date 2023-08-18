@@ -755,6 +755,23 @@ func process_power_up(power_up, affected_card):
 					affected_card.spellbind(-1)
 					attribute_counter += 1
 
+# Limits cards per type and user to 5. A 6th card of a type will be destroyed.
+func check_card_limit():
+	var mon_red = search(["cards_own", "monsters"], ["dummy"], "Card", card_age)
+	var mag_red = search(["cards_own", "magics", "powerups", "traps", "rituals"], ["dummy"], "Card", card_age)
+	var mon_white = search(["cards_own", "monsters"], ["dummy"], "Card2", card_age)
+	var mag_white = search(["cards_own", "magics", "powerups", "traps", "rituals"], ["dummy"], "Card2", card_age)
+	
+	while mon_red.size() > 5:
+		destroy_card_name(mon_red.pop_back())
+	while mag_red.size() > 5:
+		destroy_card_name(mag_red.pop_back())
+	while mon_white.size() > 5:
+		destroy_card_name(mon_white.pop_back())
+	while mag_white.size() > 5:
+		destroy_card_name(mag_white.pop_back())
+	
+
 func process_power_up_hand(power_up, affected_card):
 	var effects_list = power_up.effect_list
 	for effects in effects_list:
@@ -892,18 +909,31 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	get_node("HUD/%LP_Red").text=str(lp_red) + " LP"
-	get_node("HUD/%LP_White").text="LP " + str(lp_white)
+	get_node("HUD/%LP_White").text=str(lp_white) + " LP"
 	if stars_red > 12:
 		stars_red = 12
 	if stars_white > 12:
 		stars_white = 12
 	
+	# The number of cards in the deck is the only public piece of information regarding cards.
+	get_node("HUD/%Deck_Red").text=str(deck_red.size())
+	get_node("HUD/%Deck_White").text=str(deck_white.size())
+	
 	if cursor.team == color.RED:
-		get_node("HUD/%Stars_Red").text = str(stars_red) + " ✭✭✭✭✭✭✭✭✭★"
+		get_node("HUD/%Stars_Red").text = str(stars_red)
+		get_node("HUD/%Monsters_Red").text = str(search(["cards_own", "monsters"], ["dummy"], "Card", card_age).size())
+		get_node("HUD/%Magics_Red").text = str(search(["cards_own", "magics", "powerups", "traps", "rituals"], ["dummy"], "Card", card_age).size())
 		get_node("HUD/%Stars_White").text = "??"
+		get_node("HUD/%Monsters_White").text = "??"
+		get_node("HUD/%Magics_White").text = "??"
 	else:
 		get_node("HUD/%Stars_Red").text = "??"
-		get_node("HUD/%Stars_White").text = "★ ✭" + str(stars_white)
+		get_node("HUD/%Stars_White").text = str(stars_white)
+		get_node("HUD/%Monsters_White").text = str(search(["cards_own", "monsters"], ["dummy"], "Card2", card_age).size())
+		get_node("HUD/%Magics_White").text = str(search(["cards_own", "magics", "powerups", "traps", "rituals"], ["dummy"], "Card2", card_age).size())
+		get_node("HUD/%Stars_Red").text = "??"
+		get_node("HUD/%Monsters_Red").text = "??"
+		get_node("HUD/%Magics_Red").text = "??"
 	
 	if !winner_declared:
 		if lp_red <= 0:

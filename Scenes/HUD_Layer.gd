@@ -23,14 +23,14 @@ func _ready():
 func move(delta):
 	movement_percentage += 3 * delta
 	if movement_percentage >= 1.0:
-		offset = initial_position + (150 * input_direction)
+		offset = initial_position + (175 * input_direction)
 		movement_percentage = 0.0
 		is_moving = false
 		going_down = !going_down
 		initial_position = offset
 		update_turn_count()
 	else:
-		offset = initial_position + (150 * input_direction * movement_percentage)
+		offset = initial_position + (175 * input_direction * movement_percentage)
 
 func update_turn_count():
 	if board.turn_counter >= 0:
