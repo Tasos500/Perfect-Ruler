@@ -146,7 +146,7 @@ func process_button_input():
 			if fusion_queue.size() != 0:
 				fusion_queue.erase(hand_pos)
 				process_fusion_counters()
-		elif Input.is_action_just_pressed("ui_accept") and !mid_animation and !cursor.has_summoned and confirm_timer >= 0.45:
+		elif Input.is_action_just_pressed("ui_accept") and !mid_animation and !cursor.has_summoned and confirm_timer >= 0.4:
 			confirm_timer = 0
 			if !confirm_step and !processing_final and !cancelling:
 				process_fusion_queue()
@@ -544,5 +544,5 @@ func _process(delta):
 			if get_node("Fusion_Card"+str(fusion_queue.size())).is_in_center():
 				return_to_hand()
 				ready_to_split = false
-	if confirm_timer < 0.45: # Approximate time for confirm animation to finish, with some margin for error.
+	if confirm_timer < 0.4: # Approximate time for confirm animation to finish, with some margin for error.
 		confirm_timer += delta
