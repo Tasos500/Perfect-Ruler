@@ -26,7 +26,7 @@ var deck_white = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	debug_set_example_deck()
+	#debug_set_example_deck()
 	pass # Replace with function body.
 
 func debug_set_example_deck():

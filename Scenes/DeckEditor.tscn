@@ -1,0 +1,121 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Assets/Fonts/times.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Scenes/DeckMenu.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Card_Display.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scripts/Card_Display.gd" type="Script" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 1 )
+
+[node name="DeckMenu" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Card_Display" parent="." instance=ExtResource( 3 )]
+position = Vector2( 647, 478 )
+scale = Vector2( 2, 2 )
+script = ExtResource( 4 )
+
+[node name="SetCardList" type="ItemList" parent="."]
+margin_left = 128.0
+margin_top = 202.0
+margin_right = 532.0
+margin_bottom = 816.0
+custom_fonts/font = SubResource( 1 )
+
+[node name="DeckCardList" type="ItemList" parent="."]
+margin_left = 774.0
+margin_top = 202.0
+margin_right = 1178.0
+margin_bottom = 816.0
+custom_fonts/font = SubResource( 1 )
+
+[node name="SetListName" type="Label" parent="."]
+margin_left = 138.0
+margin_top = 98.0
+margin_right = 333.0
+margin_bottom = 151.0
+rect_scale = Vector2( 2, 2 )
+text = "Current Set:
+Test.Test"
+align = 1
+
+[node name="SetListTooltip" type="Label" parent="."]
+margin_left = 138.0
+margin_top = 16.0
+margin_right = 333.0
+margin_bottom = 69.0
+rect_scale = Vector2( 2, 2 )
+text = "L1-D / R1-F
+<-- Change Set -->"
+align = 1
+
+[node name="DeckListTooltip" type="Label" parent="."]
+margin_left = 773.0
+margin_top = 16.0
+margin_right = 968.0
+margin_bottom = 69.0
+rect_scale = Vector2( 2, 2 )
+text = "L2-E / R2-R
+<-- Change Deck -->"
+align = 1
+
+[node name="DeckListName" type="Label" parent="."]
+margin_left = 774.0
+margin_top = 98.0
+margin_right = 969.0
+margin_bottom = 151.0
+rect_scale = Vector2( 2, 2 )
+text = "Current Deck:
+Deck 1
+Size: 0/40"
+align = 1
+
+[node name="PressStartText" type="Label" parent="."]
+visible = false
+margin_left = 441.0
+margin_top = 829.0
+margin_right = 636.0
+margin_bottom = 882.0
+rect_scale = Vector2( 2, 2 )
+text = "Press START/Enter
+to start the Duel!"
+align = 1
+
+[node name="PrevSet" type="Button" parent="."]
+margin_left = 164.0
+margin_top = 41.0
+margin_right = 202.0
+margin_bottom = 86.0
+text = "<--"
+
+[node name="PrevDeck" type="Button" parent="."]
+margin_left = 797.0
+margin_top = 41.0
+margin_right = 835.0
+margin_bottom = 86.0
+text = "<--"
+
+[node name="NextSet" type="Button" parent="."]
+margin_left = 462.0
+margin_top = 41.0
+margin_right = 500.0
+margin_bottom = 86.0
+text = "-->"
+
+[node name="NextDeck" type="Button" parent="."]
+margin_left = 1109.0
+margin_top = 41.0
+margin_right = 1147.0
+margin_bottom = 86.0
+text = "-->"
+
+[connection signal="item_activated" from="SetCardList" to="." method="_on_SetCardList_item_activated"]
+[connection signal="item_selected" from="SetCardList" to="." method="_on_SetCardList_item_selected"]
+[connection signal="item_activated" from="DeckCardList" to="." method="_on_DeckCardList_item_activated"]
+[connection signal="item_selected" from="DeckCardList" to="." method="_on_DeckCardList_item_selected"]
+[connection signal="pressed" from="PrevSet" to="." method="_on_PrevSet_pressed"]
+[connection signal="pressed" from="PrevDeck" to="." method="_on_PrevDeck_pressed"]
+[connection signal="pressed" from="NextSet" to="." method="_on_NextSet_pressed"]
+[connection signal="pressed" from="NextDeck" to="." method="_on_NextDeck_pressed"]
