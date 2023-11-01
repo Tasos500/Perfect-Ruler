@@ -79,8 +79,8 @@ onready var board = $".."
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	cursor = get_parent().get_node("Cursor")
-	grid_x = cursor.grid_x
-	grid_y = cursor.grid_y
+	#grid_x = cursor.grid_x
+	#grid_y = cursor.grid_y
 	position = cursor.position
 	team = cursor.team
 	if team == color.WHITE:

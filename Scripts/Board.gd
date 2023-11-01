@@ -250,7 +250,7 @@ func get_card(x, y):
 		return matrix[x-1][y-1]
 
 func destroy_card_at(x, y):
-	var card_destroyed = get_node(get_card(x, y))
+	var card_destroyed = get_node_or_null(get_card(x, y))
 	if card_destroyed != null:
 		if cursor.card_held != null:
 			if card_destroyed == get_node(cursor.card_held):
@@ -317,6 +317,8 @@ func create_card(w, h):
 		new_card.team = color.WHITE
 	else:
 		new_card.team = color.RED
+	new_card.grid_x = w
+	new_card.grid_y = h
 	add_child(new_card, true)
 	add_to_matrix(new_card, w, h)
 	get_node(get_card(w,h)).position = Vector2(75 + 150*w, 75 + 150*h)
@@ -664,27 +666,27 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 		effect_targets = search(target, attribute_target, card.name, card_age)
 	for item in effect:
 		if item == "destroy":
-			for card in effect_targets:
-				destroy_card_name(card)
+			for effect_card in effect_targets:
+				destroy_card_name(effect_card)
 		elif item == "stat_change_x":
-			for card in effect_targets:
-				get_node(card).modifier_stat += attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).modifier_stat += attribute_effect[attribute_counter]
 			attribute_counter += 1
 		elif item == "stat_change_x_atk":
-			for card in effect_targets:
-				get_node(card).modifier_atk += attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).modifier_atk += attribute_effect[attribute_counter]
 			attribute_counter += 1
 		elif item == "stat_change_x_def":
-			for card in effect_targets:
-				get_node(card).modifier_def += attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).modifier_def += attribute_effect[attribute_counter]
 			attribute_counter += 1
 		elif item == "spellbind":
-			for card in effect_targets:
-				get_node(card).spellbind(attribute_effect[attribute_counter])
+			for effect_card in effect_targets:
+				get_node(effect_card).spellbind(attribute_effect[attribute_counter])
 			attribute_counter += 1
 		elif item == "spellbind_eternal":
-			for card in effect_targets:
-				get_node(card).spellbind(-1)
+			for effect_card in effect_targets:
+				get_node(effect_card).spellbind(-1)
 			attribute_counter += 1
 		elif item == "transform_terrain_current":
 			var center = Vector2(card.grid_x, card.grid_y)
@@ -699,33 +701,34 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 							tilemap.set_cell(i, j, terrain[attribute_effect[attribute_counter + 1]])
 			attribute_counter += 2
 		elif item == "transform_monster_to_x":
-			var position = Vector2.ZERO
-			for card in effect_targets:
-				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
-				var original_team = get_node(get_card(position.x, position.y)).team
-				destroy_card_at_nondestructive(position.x, position.y)
-				create_card(position.x, position.y)
-				get_node(get_card(position.x, position.y)).card_id = attribute_effect[attribute_counter]
-				get_node(get_card(position.x, position.y)).team = original_team
-				get_node(get_card(position.x, position.y)).correct_rotation()
+			var old_position = Vector2.ZERO
+			var original_team
+			for effect_card in effect_targets:
+				old_position = Vector2(get_node(effect_card).grid_x, get_node(effect_card).grid_y)
+				original_team = get_node(get_card(old_position.x, old_position.y)).team
+				destroy_card_at_nondestructive(old_position.x, old_position.y)
+				create_card(old_position.x, old_position.y)
+				get_node(get_card(old_position.x, old_position.y)).card_id = attribute_effect[attribute_counter]
+				get_node(get_card(old_position.x, old_position.y)).team = original_team
+				get_node(get_card(old_position.x, old_position.y)).correct_rotation()
 			attribute_counter += 1
 		elif item == "battle_one_sided_destruction":
-			var position = Vector2.ZERO
-			for card in effect_targets:
-				position = Vector2(get_node(card).grid_x, get_node(card).grid_y)
-				destroy_card_at(position.x, position.y)
+			var old_position = Vector2.ZERO
+			for effect_card in effect_targets:
+				old_position = Vector2(get_node(effect_card).grid_x, get_node(card).grid_y)
+				destroy_card_at(old_position.x, old_position.y)
 		elif item == "battle_bonus_temporary":
-			for card in effect_targets:
-				get_node(card).battle_atk = attribute_effect[attribute_counter]
-				get_node(card).battle_def = attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).battle_atk = attribute_effect[attribute_counter]
+				get_node(effect_card).battle_def = attribute_effect[attribute_counter]
 			attribute_counter += 1
 		elif item == "battle_bonus_temporary_atk":
-			for card in effect_targets:
-				get_node(card).battle_atk = attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).battle_atk = attribute_effect[attribute_counter]
 			attribute_counter += 1
 		elif item == "battle_bonus_temporary_def":
-			for card in effect_targets:
-				get_node(card).battle_def = attribute_effect[attribute_counter]
+			for effect_card in effect_targets:
+				get_node(effect_card).battle_def = attribute_effect[attribute_counter]
 			attribute_counter += 1
 
 func process_power_up(power_up, affected_card):
@@ -941,13 +944,13 @@ func _process(_delta):
 			lp_red = 0
 			get_node("HUD/HUD_Layer").is_moving = true
 			get_node("HUD/HUD_Bottom").is_moving = true
-			get_node("HUD/Winner_Message").declare_winner(color.RED)
+			get_node("HUD/Winner_Message").declare_winner(color.WHITE)
 			winner_declared = true
 		elif lp_white <= 0:
 			lp_white = 0
 			get_node("HUD/HUD_Layer").is_moving = true
 			get_node("HUD/HUD_Bottom").is_moving = true
-			get_node("HUD/Winner_Message").declare_winner(color.WHITE)
+			get_node("HUD/Winner_Message").declare_winner(color.RED)
 			winner_declared = true
 			
 	if cursor.team == color.RED:

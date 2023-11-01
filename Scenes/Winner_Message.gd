@@ -40,9 +40,9 @@ func declare_winner(winner):
 
 func process_button_input():
 	if Input.is_action_just_pressed("ui_accept"):
-		pass # Play again (Maybe change scene to itself?)
+		var _scene_change = get_tree().change_scene("res://Scenes/Board.tscn")
 	elif Input.is_action_just_pressed("ui_cancel"):
-		pass # Go back to deck editor (Or maybe quit?)
+		var _scene_change = get_tree().change_scene("res://Scenes/DeckEditor.tscn")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
