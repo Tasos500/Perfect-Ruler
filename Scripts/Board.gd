@@ -350,6 +350,8 @@ func get_addons():
 		elif not file.begins_with(".") and file.ends_with(".json"):
 			files.append(file)
 	dir.list_dir_end()
+	if files == []:
+		var _scene_change = get_tree().change_scene("res://Scenes/No_Sets_Error.tscn")
 	return files
 
 func validate_addons(addons):

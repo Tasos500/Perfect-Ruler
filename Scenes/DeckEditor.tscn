@@ -41,6 +41,16 @@ text = "Current Set:
 Test.Test"
 align = 1
 
+[node name="DCTotals" type="Label" parent="."]
+margin_left = 446.0
+margin_top = 98.0
+margin_right = 641.0
+margin_bottom = 151.0
+rect_scale = Vector2( 2, 2 )
+text = "Player 1's DC: 0
+Player 2's DC: 0"
+align = 1
+
 [node name="SetListTooltip" type="Label" parent="."]
 margin_left = 138.0
 margin_top = 16.0

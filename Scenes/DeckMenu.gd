@@ -15,6 +15,7 @@ var deck2 = []
 var deck2_names = []
 var set_list_last = 0
 var deck_list_last = null
+var dc_totals = Vector2.ZERO
 onready var set_list = $SetCardList
 onready var deck_list = $DeckCardList
 onready var card_display = $Card_Display
@@ -43,6 +44,8 @@ func get_addons():
 		elif not file.begins_with(".") and file.ends_with(".json"):
 			files.append(file)
 	dir.list_dir_end()
+	if files == []:
+		var _scene_change = get_tree().change_scene("res://Scenes/No_Sets_Error.tscn")
 	return files
 
 func validate_addons(addons):
@@ -80,6 +83,7 @@ func _on_SetCardList_item_activated(index):
 			deck_list.add_item(set_list.get_item_text(index))
 			card_display.card_id = current_set_data[index]
 			deck_list_name.text = "Current Deck:\nDeck " + str(current_deck) + "\nSize: " + str(deck2.size()) + "/40"
+	calculate_dc_total()
 
 func _on_SetCardList_item_selected(index):
 	card_display.show()
@@ -161,6 +165,7 @@ func _on_DeckCardList_item_activated(index):
 			_on_DeckCardList_item_selected(index - 1)
 	else:
 		card_display.hide()
+	calculate_dc_total()
 
 
 func _on_DeckCardList_item_selected(index):
@@ -182,6 +187,15 @@ func _on_NextSet_pressed():
 	if current_set + 1 < addons_id.size():
 		load_set_list(current_set + 1)
 		set_list.select(0, true)
+
+func calculate_dc_total():
+	dc_totals = Vector2.ZERO
+	for card in deck1:
+		dc_totals.x += get_card_data(card)["dc"]
+	for card in deck2:
+		dc_totals.y += get_card_data(card)["dc"]
+	$DCTotals.text = "Player 1's DC: " + str(dc_totals.x) + "\nPlayer 2's DC: " + str(dc_totals.y)
+	return
 
 
 func _on_PrevDeck_pressed():
