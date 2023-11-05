@@ -23,6 +23,8 @@ var example_deck = ["Tasos500.TestMod.015",\
 
 var deck_red = []
 var deck_white = []
+var addons_id = []
+var valid_addons = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

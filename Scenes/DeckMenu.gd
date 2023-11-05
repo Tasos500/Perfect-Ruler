@@ -132,6 +132,8 @@ func _process(_delta):
 	elif Input.is_action_just_pressed("ui_start") and deck1.size() == 40 and deck2.size() == 40:
 		DeckData.deck_red = deck1
 		DeckData.deck_white = deck2
+		DeckData.addons_id = addons_id
+		DeckData.valid_addons = valid_addons
 		var _scene_change = get_tree().change_scene("res://Scenes/Board.tscn")
 	
 	

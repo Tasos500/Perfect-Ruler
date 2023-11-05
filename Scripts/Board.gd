@@ -892,7 +892,8 @@ func _ready():
 	get_node("HUD/%Turn_Counter").text = "%02d" % [turn_counter]
 	matrix = create_map(7,7)
 	matrix_indicator = create_map(8,8)
-	validate_addons(get_addons())
+	addons_id = DeckData.addons_id
+	valid_addons = DeckData.valid_addons
 	print("This mod has the ID " + addons_id[0])
 	print(get_card_data("Tasos500.TestMod.830")["rituals"])
 	if get_card_data("Tasos500.TestMod.417")["effects"][0].get("trigger") == "flipped_face_up_battle" and cursor.debug:
