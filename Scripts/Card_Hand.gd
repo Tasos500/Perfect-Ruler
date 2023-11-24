@@ -72,6 +72,7 @@ var is_second_in_queue = false
 var touching_final = false
 var is_moving_to_first = false
 var is_moving_to_field = false
+var has_moved_card = false
 
 # Spawning variables (Porting Tile Indicator code)
 var spawning = true
@@ -241,7 +242,7 @@ func is_in_center():
 		return false
 
 func data_copy():
-	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved, can_move, effect_list, modifier_stat, modifier_atk, modifier_def]
+	return [team, atk, def, dc, attribute, card_type, level, face_up, last_face_up, in_attack_position, revealed, turns_spellbound, eternally_spellbound, just_spellbound, tile_speed, has_moved_card, can_move, effect_list, modifier_stat, modifier_atk, modifier_def]
 
 func data_paste(data):
 	team = data[0]
@@ -259,7 +260,7 @@ func data_paste(data):
 	eternally_spellbound = data[12]
 	just_spellbound = data[13]
 	tile_speed = data[14]
-	has_moved = data[15]
+	has_moved_card = data[15]
 	can_move =  data[16]
 	effect_list = data[17]
 	modifier_stat = data[18]

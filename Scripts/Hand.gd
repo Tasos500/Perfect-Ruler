@@ -410,6 +410,7 @@ func process_final():
 			var id1 = fusion1.card_id
 			var id2 = fusion2.card_id
 			fusion2.card_id = board.process_fusion(id1, id2)
+			fusion2.has_moved_card = false
 			board.add_to_graveyard(id1)
 			board.add_to_graveyard(id2)
 			fusion1.despawning = true

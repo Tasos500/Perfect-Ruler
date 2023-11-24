@@ -3,10 +3,12 @@
 	"type": "object",
 	"properties": {
 	  "mod_creator": {
-		"type": "string"
+		"type": "string",
+		"pattern": "^[a-zA-Z0-9]+$"
 	  },
 	  "mod_name": {
-		"type": "string"
+		"type": "string",
+		"pattern": "^[a-zA-Z0-9]+$"
 	  },
 	  "description": {
 		"type": "string"

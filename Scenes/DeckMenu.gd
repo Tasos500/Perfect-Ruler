@@ -93,9 +93,20 @@ func _on_SetCardList_item_selected(index):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	current_deck = 1
+	current_deck = 2
 	deck_list_name.text = "Current Deck:\nDeck " + str(current_deck) + "\nSize: " + str(deck1.size()) + "/40"
-	validate_addons(get_addons())
+	if !DeckData.first_run:
+		validate_addons(get_addons())
+		DeckData.addons_id = addons_id
+		DeckData.valid_addons = valid_addons
+		DeckData.first_run = true
+	else:
+		addons_id = DeckData.addons_id
+		valid_addons = DeckData.valid_addons
+		deck1 = DeckData.deck_red
+		deck2 = DeckData.deck_white
+		deck1_names = DeckData.deck_red_names
+		deck2_names = DeckData.deck_white_names
 	if addons_id.size() > 0:
 		load_set_list(0)
 		set_list.grab_focus()
@@ -103,6 +114,8 @@ func _ready():
 		card_display.show()
 		card_display.card_id = current_set_data[0]
 		set_list_name.text = "Current Set:\n" + addons_id[current_set]
+	_on_PrevDeck_pressed()
+	calculate_dc_total()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -129,11 +142,12 @@ func _process(_delta):
 		_on_PrevDeck_pressed()
 	elif Input.is_action_just_pressed("ui_r2"):
 		_on_NextDeck_pressed()
-	elif Input.is_action_just_pressed("ui_start") and deck1.size() == 40 and deck2.size() == 40:
-		DeckData.deck_red = deck1
-		DeckData.deck_white = deck2
-		DeckData.addons_id = addons_id
-		DeckData.valid_addons = valid_addons
+	elif Input.is_action_just_pressed("ui_start") and ((deck1.size() == 40 and deck2.size() == 40) or DeckData.debug):
+		if !DeckData.debug:
+			DeckData.deck_red = deck1
+			DeckData.deck_white = deck2
+			DeckData.deck_red_names = deck1_names
+			DeckData.deck_white_names = deck2_names
 		var _scene_change = get_tree().change_scene("res://Scenes/Board.tscn")
 	
 	
