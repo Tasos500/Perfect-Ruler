@@ -669,7 +669,8 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 	for item in effect:
 		if item == "destroy":
 			for effect_card in effect_targets:
-				destroy_card_name(effect_card)
+				if !get_node(effect_card).is_leader:
+					destroy_card_name(effect_card)
 		elif item == "stat_change_x":
 			for effect_card in effect_targets:
 				get_node(effect_card).modifier_stat += attribute_effect[attribute_counter]
@@ -684,11 +685,13 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 			attribute_counter += 1
 		elif item == "spellbind":
 			for effect_card in effect_targets:
-				get_node(effect_card).spellbind(attribute_effect[attribute_counter])
+				if !get_node(effect_card).is_leader:
+					get_node(effect_card).spellbind(attribute_effect[attribute_counter])
 			attribute_counter += 1
 		elif item == "spellbind_eternal":
 			for effect_card in effect_targets:
-				get_node(effect_card).spellbind(-1)
+				if !get_node(effect_card).is_leader:
+					get_node(effect_card).spellbind(-1)
 			attribute_counter += 1
 		elif item == "transform_terrain_current":
 			var center = Vector2(card.grid_x, card.grid_y)
@@ -706,6 +709,8 @@ func process_effect(effect, target, attribute_effect, attribute_target, card):
 			var old_position = Vector2.ZERO
 			var original_team
 			for effect_card in effect_targets:
+				if get_node(effect_card).is_leader:
+					continue
 				old_position = Vector2(get_node(effect_card).grid_x, get_node(effect_card).grid_y)
 				original_team = get_node(get_card(old_position.x, old_position.y)).team
 				destroy_card_at_nondestructive(old_position.x, old_position.y)

@@ -48,7 +48,7 @@ var valid_addons = []
 var first_run = false
 var deck_red_names = []
 var deck_white_names = []
-var debug = true
+var debug = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

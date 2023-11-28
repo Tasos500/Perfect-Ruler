@@ -114,8 +114,8 @@ func _ready():
 		card_display.show()
 		card_display.card_id = current_set_data[0]
 		set_list_name.text = "Current Set:\n" + addons_id[current_set]
-	_on_PrevDeck_pressed()
-	calculate_dc_total()
+		_on_PrevDeck_pressed()
+		calculate_dc_total()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

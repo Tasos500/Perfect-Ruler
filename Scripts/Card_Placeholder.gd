@@ -172,8 +172,12 @@ func flip():
 func update_stats():
 	if !is_leader:
 		atk = atk_base + 300*modifier_terrain + modifier_atk + modifier_stat + battle_atk
+		if atk < 0:
+			atk = 0
 		$Card_Front_Frame/ATK.text = str(atk)
 		def = def_base + 300*modifier_terrain + modifier_def + modifier_stat + battle_def
+		if def < 0:
+			def = 0
 		$Card_Front_Frame/DEF.text = str(def)
 	if modifier_terrain > 0 and face_up:
 		tile_speed = 2
@@ -332,11 +336,15 @@ func _process(delta):
 		else:
 			get_node("%Card_Art").texture = default_card_art
 			return
-		file = Image.new()
-		file.load(file_location)
-		var new_texture = ImageTexture.new()
-		new_texture.create_from_image(file)
-		get_node("%Card_Art").texture = new_texture
+		file = File.new()
+		file.open(file_location, File.READ)
+		if file.get_len() <= 5000000:
+			file = Image.new()
+			file.load(file_location)
+			var new_texture = ImageTexture.new()
+			new_texture.create_from_image(file)
+			get_node("%Card_Art").texture = new_texture
+		file.close()
 	
 	update_stats()
 	
